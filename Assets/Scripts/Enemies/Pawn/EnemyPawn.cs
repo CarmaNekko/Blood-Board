@@ -16,13 +16,13 @@ public class EnemyPawn : MonoBehaviour
     [SerializeField] private int maxHealth = 10;
     private int currentHealth;
 
-    private NavMeshAgent agent;
+    private UnityEngine.AI.NavMeshAgent agent;
     private float lastAttackTime;
     private bool isAwake = false;
 
     void Start()
     {
-        agent = GetComponent<NavMeshAgent>();
+        agent = GetComponent<UnityEngine.AI.NavMeshAgent>();
 
         if (playerTarget == null)
         {
@@ -63,7 +63,13 @@ public class EnemyPawn : MonoBehaviour
     {
         if (Time.time >= lastAttackTime + attackCooldown)
         {
-            playerTarget.GetComponent<PlayerMovement>().TakeDamage(10f);
+            PlayerHealth healthScript = playerTarget.GetComponent<PlayerHealth>();
+
+            if (healthScript != null)
+            {
+                healthScript.TakeDamage(10f);
+            }
+
             lastAttackTime = Time.time;
         }
     }

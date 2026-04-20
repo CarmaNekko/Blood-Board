@@ -7,10 +7,6 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float jumpForce = 2f;
     [SerializeField] private float gravity = -19.81f;
 
-    [Header("Health")]
-    [SerializeField] private float maxHealth = 100f;
-    private float currentHealth;
-
     [Header("Camera Settings")]
     [SerializeField] private Transform playerCamera;
     [SerializeField] private float mouseSensitivity = 200f;
@@ -27,7 +23,6 @@ public class PlayerMovement : MonoBehaviour
 
     void Start()
     {
-        currentHealth = maxHealth;
         controller = GetComponent<CharacterController>();
         Cursor.lockState = CursorLockMode.Locked;
     }
@@ -64,14 +59,5 @@ public class PlayerMovement : MonoBehaviour
 
         velocity.y += gravity * Time.deltaTime;
         controller.Move(velocity * Time.deltaTime);
-    }
-    public void TakeDamage(float amount)
-    {
-        currentHealth -= amount;
-        if (currentHealth <= 0)
-        {
-            UnityEngine.SceneManagement.SceneManager.LoadScene(
-                UnityEngine.SceneManagement.SceneManager.GetActiveScene().name);
-        }
     }
 }
