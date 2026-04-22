@@ -10,6 +10,17 @@ public class RoomEnemySpawner : MonoBehaviour
 
     void Start()
     {
+
+        if (LevelManager.currentEnemiesPerRoom > 0)
+        {
+            enemiesToSpawn = LevelManager.currentEnemiesPerRoom;
+        }
+
+        if (enemiesToSpawn > spawnPoints.Count)
+        {
+            enemiesToSpawn = spawnPoints.Count;
+        }
+
         Invoke("SpawnEnemies", 0.5f);
     }
 

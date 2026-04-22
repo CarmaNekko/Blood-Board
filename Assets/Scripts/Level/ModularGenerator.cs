@@ -25,10 +25,9 @@ public class ModularGenerator : MonoBehaviour
     private List<GameObject> allSpawnedPieces = new List<GameObject>();
     private int roomCount = 0;
 
-    void Start() => GenerateLevel();
-
-    void GenerateLevel()
+     public void GenerateLevel(int targetRooms)
     {
+        maxRooms = targetRooms;
         pendingRoomDoors.Clear();
         pendingCorridorDoors.Clear();
         allSpawnedPieces.Clear();
