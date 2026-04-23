@@ -18,7 +18,7 @@ public class PlayerHealth : MonoBehaviour
 
         if (currentHealth <= 0)
         {
-            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+            Object.FindFirstObjectByType<GameOver>().ShowGameOver();
         }
     }
 
