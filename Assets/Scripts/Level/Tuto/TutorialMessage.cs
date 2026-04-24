@@ -7,11 +7,37 @@ public class TutorialMessage : MonoBehaviour
 
     private bool hasBeenTriggered = false;
 
+    public static bool IsTutorialActive = false;
+
+    private void Awake()
+    {
+        if (tutorialPanel != null)
+        {
+            tutorialPanel.SetActive(false);
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (hasBeenTriggered && IsTutorialActive)
+        {
+            ResetTutorialState();
+        }
+    }
+
+    public static void ResetTutorialState()
+    {
+        IsTutorialActive = false;
+    }
+
     void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player") && !hasBeenTriggered)
         {
-            tutorialPanel.SetActive(true);
+            if (tutorialPanel != null)
+            {
+                tutorialPanel.SetActive(true);
+            }
 
             Time.timeScale = 0f;
 
@@ -19,16 +45,23 @@ public class TutorialMessage : MonoBehaviour
             Cursor.visible = true;
 
             hasBeenTriggered = true;
+            IsTutorialActive = true;
         }
     }
 
     public void CloseTutorial()
     {
-        tutorialPanel.SetActive(false);
+        if (tutorialPanel != null)
+        {
+            tutorialPanel.SetActive(false);
+        }
 
-        Time.timeScale = 1f;
+        Time.timeScale = PauseScreen.IsPaused ? 0f : 1f;
 
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
+        Cursor.lockState = PauseScreen.IsPaused ? CursorLockMode.None : CursorLockMode.Locked;
+        Cursor.visible = PauseScreen.IsPaused;
+
+        ResetTutorialState();
     }
 }
+

@@ -10,6 +10,7 @@ public class PlayerMovement : MonoBehaviour
     [Header("Camera Settings")]
     [SerializeField] private Transform playerCamera;
     [SerializeField] private float mouseSensitivity = 200f;
+    public static float GlobalMouseSensitivity { get; private set; }
 
     [Header("Ground Radar")]
     [SerializeField] private Transform groundCheck;
@@ -25,15 +26,20 @@ public class PlayerMovement : MonoBehaviour
     {
         controller = GetComponent<CharacterController>();
         Cursor.lockState = CursorLockMode.Locked;
+        GlobalMouseSensitivity = PlayerPrefs.GetFloat("MouseSensitivity", mouseSensitivity);
     }
 
     void Update()
     {
+        if (PauseScreen.IsPaused || TutorialMessage.IsTutorialActive)
+        {
+            return;
+        }
 
         isActuallyGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
 
-        float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;
-        float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity * Time.deltaTime;
+        float mouseX = Input.GetAxis("Mouse X") * GlobalMouseSensitivity * Time.deltaTime;
+        float mouseY = Input.GetAxis("Mouse Y") * GlobalMouseSensitivity * Time.deltaTime;
 
         xRotation -= mouseY;
         xRotation = Mathf.Clamp(xRotation, -90f, 90f);
@@ -59,5 +65,10 @@ public class PlayerMovement : MonoBehaviour
 
         velocity.y += gravity * Time.deltaTime;
         controller.Move(velocity * Time.deltaTime);
+    }
+
+    public static void SetGlobalMouseSensitivity(float sensitivity)
+    {
+        GlobalMouseSensitivity = Mathf.Clamp(sensitivity, 10f, 1000f);
     }
 }

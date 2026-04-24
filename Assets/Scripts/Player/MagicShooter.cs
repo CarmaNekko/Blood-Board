@@ -54,6 +54,11 @@ public class MagicShooter : MonoBehaviour
 
     void Update()
     {
+        if (PauseScreen.IsPaused || TutorialMessage.IsTutorialActive)
+        {
+            return;
+        }
+
         RegenerateMana();
 
         if (Input.GetButtonDown("Fire1") && currentWhiteMana >= whiteManaCost)
