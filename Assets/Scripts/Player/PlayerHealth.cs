@@ -37,4 +37,18 @@ public class PlayerHealth : MonoBehaviour
     {
         return currentHealth / maxHealth;
     }
+    public void RestoreHealth(float amount)
+    {
+        currentHealth += amount;
+
+        if (currentHealth > maxHealth)
+        {
+            currentHealth = maxHealth;
+        }
+
+        if (healthBarUI != null)
+        {
+            healthBarUI.value = currentHealth;
+        }
+    }
 }
