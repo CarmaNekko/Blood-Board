@@ -76,6 +76,6 @@ public class GameOver : MonoBehaviour
     public void OnMenuButton()
     {
         Time.timeScale = 1f;
-        Debug.Log("salida no disponible");
+        SceneManager.LoadScene("TitleScreen");
     }
 }
