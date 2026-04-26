@@ -1,11 +1,13 @@
+using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class LevelManager : MonoBehaviour
 {
     public static int currentLevel = 1;
-
     public static int currentEnemiesPerRoom;
+    public static DungeonLayout CurrentLayout { get; private set; }
+    public static event Action<DungeonLayout> LayoutGenerated;
 
     [Header("Progression Settings")]
     [SerializeField] private int baseRooms = 6;
@@ -15,23 +17,25 @@ public class LevelManager : MonoBehaviour
     [SerializeField] private int extraRoomsPerLevel = 1;
     [SerializeField] private int extraEnemiesPerLevel = 1;
 
-    void Awake()
+    private void Awake()
     {
+        CurrentLayout = null;
         currentEnemiesPerRoom = baseEnemiesPerRoom + (extraEnemiesPerLevel * (currentLevel - 1));
 
         int roomsToGenerate = baseRooms + (extraRoomsPerLevel * (currentLevel - 1));
 
         Debug.Log($"Iniciando Nivel {currentLevel}. Salas: {roomsToGenerate}, Enemigos por sala: {currentEnemiesPerRoom}");
 
-        ModularGenerator generator = Object.FindFirstObjectByType<ModularGenerator>();
+        ModularGenerator generator = UnityEngine.Object.FindFirstObjectByType<ModularGenerator>();
 
         if (generator != null)
         {
-            generator.GenerateLevel(roomsToGenerate);
+            CurrentLayout = generator.GenerateLevel(roomsToGenerate);
+            LayoutGenerated?.Invoke(CurrentLayout);
         }
         else
         {
-            Debug.LogError("No se encontró el ModularGenerator en la escena.");
+            Debug.LogError("No se encontro el ModularGenerator en la escena.");
         }
     }
 
@@ -39,5 +43,10 @@ public class LevelManager : MonoBehaviour
     {
         currentLevel++;
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+
+    private void OnDestroy()
+    {
+        CurrentLayout = null;
     }
 }

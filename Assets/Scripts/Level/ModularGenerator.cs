@@ -15,31 +15,39 @@ public class ModularGenerator : MonoBehaviour
     [Header("Parches")]
     public List<GameObject> deadEndPrefabs;
 
-    [Header("Configuracioncioncion")]
+    [Header("Configuracion")]
     public int maxRooms = 6;
     public LayerMask collisionMask;
     public NavMeshSurface navMesh;
+    [SerializeField] private float mapGridWorldSize = 30f;
 
-    private List<DoorConnector> pendingRoomDoors = new List<DoorConnector>();
-    private List<DoorConnector> pendingCorridorDoors = new List<DoorConnector>();
-    private List<GameObject> allSpawnedPieces = new List<GameObject>();
-    private int roomCount = 0;
+    private readonly List<DoorConnector> pendingRoomDoors = new List<DoorConnector>();
+    private readonly List<DoorConnector> pendingCorridorDoors = new List<DoorConnector>();
+    private readonly List<GameObject> allSpawnedPieces = new List<GameObject>();
 
-     public void GenerateLevel(int targetRooms)
+    private int roomCount;
+    private DungeonLayout generatedLayout;
+
+    public DungeonLayout GenerateLevel(int targetRooms)
     {
         maxRooms = targetRooms;
         pendingRoomDoors.Clear();
         pendingCorridorDoors.Clear();
         allSpawnedPieces.Clear();
         roomCount = 0;
+        generatedLayout = new DungeonLayout();
 
         GameObject startRoom = Instantiate(startRoomPrefab, Vector3.zero, Quaternion.identity);
         allSpawnedPieces.Add(startRoom);
         roomCount++;
-        AddDoorsToList(startRoom, false);
+
+        int startRoomId = RegisterRoom(startRoom, DungeonRoomType.Start, true);
+        AddDoorsToList(startRoom, false, startRoomId, startRoomId);
 
         int attempts = 0;
-        while (roomCount < maxRooms && (pendingRoomDoors.Count > 0 || pendingCorridorDoors.Count > 0) && attempts < 2000)
+        while (roomCount < maxRooms &&
+               (pendingRoomDoors.Count > 0 || pendingCorridorDoors.Count > 0) &&
+               attempts < 2000)
         {
             attempts++;
             SpawnNextPiece();
@@ -48,36 +56,49 @@ public class ModularGenerator : MonoBehaviour
         PlaceFinalRoom();
         SealOpenDoors();
 
-        if (navMesh != null) navMesh.BuildNavMesh();
+        if (navMesh != null)
+        {
+            navMesh.BuildNavMesh();
+        }
 
         Debug.Log($"Calabozo generado. Habitaciones: {roomCount}. Intentos: {attempts}");
+        return generatedLayout;
     }
 
-    void SpawnNextPiece()
+    private void SpawnNextPiece()
     {
         if (pendingCorridorDoors.Count > 0)
         {
-            int index = Random.Range(0, pendingCorridorDoors.Count);
-            DoorConnector targetDoor = pendingCorridorDoors[index];
-            pendingCorridorDoors.RemoveAt(index);
-            TryConnect(targetDoor, roomPrefabs, false);
+            DoorConnector targetDoor = TakeRandomPendingDoor(pendingCorridorDoors);
+            if (targetDoor != null)
+            {
+                TryConnect(targetDoor, roomPrefabs, false);
+            }
         }
         else if (pendingRoomDoors.Count > 0)
         {
-            int index = Random.Range(0, pendingRoomDoors.Count);
-            DoorConnector targetDoor = pendingRoomDoors[index];
-            pendingRoomDoors.RemoveAt(index);
-            TryConnect(targetDoor, corridorPrefabs, true);
+            DoorConnector targetDoor = TakeRandomPendingDoor(pendingRoomDoors);
+            if (targetDoor != null)
+            {
+                TryConnect(targetDoor, corridorPrefabs, true);
+            }
         }
     }
 
-    bool TryConnect(DoorConnector targetDoor, List<GameObject> prefabList, bool isCorridor)
+    private bool TryConnect(DoorConnector targetDoor, List<GameObject> prefabList, bool isCorridor)
     {
+        if (targetDoor == null || targetDoor.isConnected)
+        {
+            return false;
+        }
+
         List<GameObject> shuffled = new List<GameObject>(prefabList);
         for (int i = 0; i < shuffled.Count; i++)
         {
-            int r = Random.Range(i, shuffled.Count);
-            var tmp = shuffled[i]; shuffled[i] = shuffled[r]; shuffled[r] = tmp;
+            int randomIndex = Random.Range(i, shuffled.Count);
+            GameObject temp = shuffled[i];
+            shuffled[i] = shuffled[randomIndex];
+            shuffled[randomIndex] = temp;
         }
 
         foreach (GameObject prefab in shuffled)
@@ -87,29 +108,51 @@ public class ModularGenerator : MonoBehaviour
 
             foreach (DoorConnector newDoor in newDoors)
             {
-                if (newDoor.doorHeightOffset == targetDoor.doorHeightOffset)
+                if (newDoor.doorHeightOffset != targetDoor.doorHeightOffset)
                 {
-                    AlignPiece(targetDoor, newDoor, newPiece);
-
-                    if (!HasOverlap(newPiece))
-                    {
-                        allSpawnedPieces.Add(newPiece);
-                        if (!isCorridor) roomCount++;
-
-                        AddDoorsToList(newPiece, isCorridor);
-                        newDoor.isConnected = true;
-                        targetDoor.isConnected = true;
-                        return true;
-                    }
+                    continue;
                 }
+
+                AlignPiece(targetDoor, newDoor, newPiece);
+
+                if (HasOverlap(newPiece))
+                {
+                    continue;
+                }
+
+                allSpawnedPieces.Add(newPiece);
+                newDoor.isConnected = true;
+                targetDoor.isConnected = true;
+
+                if (isCorridor)
+                {
+                    RegisterStandaloneArea(newPiece, MapAreaShape.Corridor, false);
+                    AddDoorsToList(newPiece, true, -1, targetDoor.GetSourceRoomNodeId());
+                }
+                else
+                {
+                    roomCount++;
+                    int newRoomId = RegisterRoom(newPiece, DungeonRoomType.Normal, false);
+                    int parentRoomId = targetDoor.GetSourceRoomNodeId();
+                    if (parentRoomId >= 0)
+                    {
+                        generatedLayout.ConnectRooms(parentRoomId, newRoomId);
+                    }
+
+                    AddDoorsToList(newPiece, false, newRoomId, newRoomId);
+                }
+
+                return true;
             }
+
             newPiece.SetActive(false);
             Destroy(newPiece);
         }
+
         return false;
     }
 
-    void PlaceFinalRoom()
+    private void PlaceFinalRoom()
     {
         List<DoorConnector> candidates = new List<DoorConnector>(pendingCorridorDoors);
         candidates.AddRange(pendingRoomDoors);
@@ -117,111 +160,232 @@ public class ModularGenerator : MonoBehaviour
         for (int i = candidates.Count - 1; i >= 0; i--)
         {
             DoorConnector targetDoor = candidates[i];
-            if (targetDoor.isConnected) continue;
-
-            GameObject final = Instantiate(finalRoomPrefab);
-            DoorConnector fDoor = final.GetComponentInChildren<DoorConnector>();
-
-            if (fDoor.doorHeightOffset == targetDoor.doorHeightOffset)
+            if (targetDoor == null || targetDoor.isConnected)
             {
-                AlignPiece(targetDoor, fDoor, final);
-
-                if (!HasOverlap(final))
-                {
-                    targetDoor.isConnected = true;
-                    fDoor.isConnected = true;
-                    return;
-                }
+                continue;
             }
-            final.SetActive(false);
-            Destroy(final);
+
+            GameObject finalRoom = Instantiate(finalRoomPrefab);
+            DoorConnector finalDoor = finalRoom.GetComponentInChildren<DoorConnector>();
+
+            if (finalDoor.doorHeightOffset != targetDoor.doorHeightOffset)
+            {
+                finalRoom.SetActive(false);
+                Destroy(finalRoom);
+                continue;
+            }
+
+            AlignPiece(targetDoor, finalDoor, finalRoom);
+
+            if (HasOverlap(finalRoom))
+            {
+                finalRoom.SetActive(false);
+                Destroy(finalRoom);
+                continue;
+            }
+
+            allSpawnedPieces.Add(finalRoom);
+            targetDoor.isConnected = true;
+            finalDoor.isConnected = true;
+
+            int finalRoomId = RegisterRoom(finalRoom, DungeonRoomType.Final, false);
+            int parentRoomId = targetDoor.GetSourceRoomNodeId();
+            if (parentRoomId >= 0)
+            {
+                generatedLayout.ConnectRooms(parentRoomId, finalRoomId);
+            }
+
+            return;
         }
     }
 
-    void SealOpenDoors()
+    private void SealOpenDoors()
     {
-        foreach (DoorConnector cDoor in pendingCorridorDoors)
+        foreach (DoorConnector corridorDoor in pendingCorridorDoors)
         {
-            if (!cDoor.isConnected) PlaceDeadEnd(cDoor);
+            if (corridorDoor != null && !corridorDoor.isConnected)
+            {
+                PlaceDeadEnd(corridorDoor);
+            }
         }
 
-        foreach (DoorConnector rDoor in pendingRoomDoors)
+        foreach (DoorConnector roomDoor in pendingRoomDoors)
         {
-            if (rDoor.isConnected) continue;
+            if (roomDoor == null || roomDoor.isConnected)
+            {
+                continue;
+            }
 
             bool corridorPlaced = false;
+
             foreach (GameObject corridorPrefab in corridorPrefabs)
             {
                 GameObject corridor = Instantiate(corridorPrefab);
-                DoorConnector cEntrance = corridor.GetComponentInChildren<DoorConnector>();
+                DoorConnector corridorEntrance = corridor.GetComponentInChildren<DoorConnector>();
 
-                if (cEntrance.doorHeightOffset == rDoor.doorHeightOffset)
+                if (corridorEntrance.doorHeightOffset != roomDoor.doorHeightOffset)
                 {
-                    AlignPiece(rDoor, cEntrance, corridor);
+                    corridor.SetActive(false);
+                    Destroy(corridor);
+                    continue;
+                }
 
-                    if (!HasOverlap(corridor))
+                AlignPiece(roomDoor, corridorEntrance, corridor);
+
+                if (HasOverlap(corridor))
+                {
+                    corridor.SetActive(false);
+                    Destroy(corridor);
+                    continue;
+                }
+
+                allSpawnedPieces.Add(corridor);
+                RegisterStandaloneArea(corridor, MapAreaShape.Corridor, false);
+                roomDoor.isConnected = true;
+                corridorEntrance.isConnected = true;
+                corridorPlaced = true;
+
+                foreach (DoorConnector corridorExit in corridor.GetComponentsInChildren<DoorConnector>())
+                {
+                    if (!corridorExit.isConnected)
                     {
-                        rDoor.isConnected = true;
-                        cEntrance.isConnected = true;
-                        corridorPlaced = true;
-
-                        foreach (DoorConnector cExit in corridor.GetComponentsInChildren<DoorConnector>())
-                        {
-                            if (!cExit.isConnected) PlaceDeadEnd(cExit);
-                        }
-                        break;
+                        PlaceDeadEnd(corridorExit);
                     }
                 }
-                corridor.SetActive(false);
-                Destroy(corridor);
+
+                break;
             }
 
-            if (!corridorPlaced) PlaceDeadEnd(rDoor);
+            if (!corridorPlaced)
+            {
+                PlaceDeadEnd(roomDoor);
+            }
         }
     }
 
-    void PlaceDeadEnd(DoorConnector targetDoor)
+    private void PlaceDeadEnd(DoorConnector targetDoor)
     {
-        if (deadEndPrefabs.Count == 0) return;
+        if (deadEndPrefabs.Count == 0 || targetDoor == null || targetDoor.isConnected)
+        {
+            return;
+        }
 
         GameObject prefabToUse = deadEndPrefabs[Random.Range(0, deadEndPrefabs.Count)];
         GameObject deadEnd = Instantiate(prefabToUse);
-        DoorConnector dDoor = deadEnd.GetComponentInChildren<DoorConnector>();
+        DoorConnector deadEndDoor = deadEnd.GetComponentInChildren<DoorConnector>();
 
-        AlignPiece(targetDoor, dDoor, deadEnd);
+        AlignPiece(targetDoor, deadEndDoor, deadEnd);
+        allSpawnedPieces.Add(deadEnd);
+        RegisterStandaloneArea(deadEnd, MapAreaShape.Corridor, false);
         targetDoor.isConnected = true;
-        dDoor.isConnected = true;
+        deadEndDoor.isConnected = true;
     }
 
-    void AlignPiece(DoorConnector targetDoor, DoorConnector newDoor, GameObject piece)
+    private void AlignPiece(DoorConnector targetDoor, DoorConnector newDoor, GameObject piece)
     {
-        float rot = (targetDoor.transform.eulerAngles.y + 180f) - newDoor.transform.eulerAngles.y;
-        piece.transform.RotateAround(newDoor.transform.position, Vector3.up, rot);
-        piece.transform.position += (targetDoor.transform.position - newDoor.transform.position);
+        float rotation = (targetDoor.transform.eulerAngles.y + 180f) - newDoor.transform.eulerAngles.y;
+        piece.transform.RotateAround(newDoor.transform.position, Vector3.up, rotation);
+        piece.transform.position += targetDoor.transform.position - newDoor.transform.position;
         Physics.SyncTransforms();
     }
 
-    bool HasOverlap(GameObject piece)
+    private bool HasOverlap(GameObject piece)
     {
-        Vector3 checkCenter = piece.transform.position + new Vector3(0, 2f, 0);
-        Collider[] hitColliders = Physics.OverlapBox(checkCenter, new Vector3(14.5f, 4f, 14.5f), piece.transform.rotation, collisionMask);
+        Vector3 checkCenter = piece.transform.position + new Vector3(0f, 2f, 0f);
+        Collider[] hitColliders = Physics.OverlapBox(
+            checkCenter,
+            new Vector3(14.5f, 4f, 14.5f),
+            piece.transform.rotation,
+            collisionMask
+        );
 
-        foreach (var hit in hitColliders)
+        foreach (Collider hit in hitColliders)
         {
-            if (hit.transform.root != piece.transform) return true;
+            if (hit.transform.root != piece.transform)
+            {
+                return true;
+            }
         }
+
         return false;
     }
 
-    void AddDoorsToList(GameObject piece, bool isCorridor)
+    private void AddDoorsToList(GameObject piece, bool isCorridor, int owningRoomId, int sourceRoomId)
     {
-        foreach (DoorConnector d in piece.GetComponentsInChildren<DoorConnector>())
+        foreach (DoorConnector door in piece.GetComponentsInChildren<DoorConnector>())
         {
-            if (!d.isConnected)
+            if (door.isConnected)
             {
-                if (isCorridor) pendingCorridorDoors.Add(d);
-                else pendingRoomDoors.Add(d);
+                continue;
+            }
+
+            door.owningRoomNodeId = isCorridor ? -1 : owningRoomId;
+            door.sourceRoomNodeId = sourceRoomId;
+
+            if (isCorridor)
+            {
+                pendingCorridorDoors.Add(door);
+            }
+            else
+            {
+                pendingRoomDoors.Add(door);
             }
         }
+    }
+
+    private DoorConnector TakeRandomPendingDoor(List<DoorConnector> doorList)
+    {
+        while (doorList.Count > 0)
+        {
+            int index = Random.Range(0, doorList.Count);
+            DoorConnector door = doorList[index];
+            doorList.RemoveAt(index);
+
+            if (door != null && !door.isConnected)
+            {
+                return door;
+            }
+        }
+
+        return null;
+    }
+
+    private int RegisterRoom(GameObject roomObject, DungeonRoomType roomType, bool discoverOnStart)
+    {
+        Vector2Int gridPosition = WorldToGrid(roomObject.transform.position);
+        int roomId = generatedLayout.AddRoom(roomType, gridPosition, roomObject.transform.position);
+
+        RoomInstance roomInstance = roomObject.GetComponent<RoomInstance>();
+        if (roomInstance == null)
+        {
+            roomInstance = roomObject.AddComponent<RoomInstance>();
+        }
+
+        roomInstance.Initialize(generatedLayout, roomId, roomType, MapAreaShape.Room, discoverOnStart);
+        return roomId;
+    }
+
+    private void RegisterStandaloneArea(GameObject areaObject, MapAreaShape areaShape, bool discoverOnStart)
+    {
+        RoomInstance roomInstance = areaObject.GetComponent<RoomInstance>();
+        if (roomInstance == null)
+        {
+            roomInstance = areaObject.AddComponent<RoomInstance>();
+        }
+
+        roomInstance.InitializeStandalone(areaShape, discoverOnStart);
+    }
+
+    private Vector2Int WorldToGrid(Vector3 worldPosition)
+    {
+        if (Mathf.Approximately(mapGridWorldSize, 0f))
+        {
+            return Vector2Int.zero;
+        }
+
+        return new Vector2Int(
+            Mathf.RoundToInt(worldPosition.x / mapGridWorldSize),
+            Mathf.RoundToInt(worldPosition.z / mapGridWorldSize)
+        );
     }
 }
