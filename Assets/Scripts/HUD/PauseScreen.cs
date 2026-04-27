@@ -7,6 +7,7 @@ public class PauseScreen : MonoBehaviour
 {
     public static PauseScreen Instance { get; private set; }
     public static bool IsPaused { get; private set; }
+    public static bool IsFloorSignActive { get; set; } = false;
 
     [Header("Referencias")]
     [SerializeField] private GameObject pauseBackground;
@@ -61,7 +62,7 @@ public class PauseScreen : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (!IsFloorSignActive && Input.GetKeyDown(KeyCode.Escape))
         {
             if (Options.Instance != null && Options.Instance.IsOpen)
             {
