@@ -2500,6 +2500,7 @@ GameObject:
   - component: {fileID: 6995956964962900790}
   - component: {fileID: 4592169427945557782}
   - component: {fileID: 7434993368709473074}
+  - component: {fileID: 2250256687202262370}
   m_Layer: 0
   m_Name: Cube
   m_TagString: Untagged
@@ -2612,6 +2613,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbac0a590c6cbba41bff781294990c3f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LevelExit
+  score: 50
+--- !u!114 &2250256687202262370
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5802179279381726782}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 67ae7f04a995ffa41b924a7626dfa730, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Finish_Level
+  playerTag: Player
+  mainLevelScene: Level_1
+  endScene: Credits
 --- !u!1 &5836899396554946125
 GameObject:
   m_ObjectHideFlags: 0
@@ -2890,6 +2907,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DoorConnector
   isConnected: 0
   doorHeightOffset: 0
+  owningRoomNodeId: -1
+  sourceRoomNodeId: -1
 --- !u!1 &6054679082714747499
 GameObject:
   m_ObjectHideFlags: 0

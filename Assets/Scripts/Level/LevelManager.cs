@@ -8,6 +8,7 @@ public class LevelManager : MonoBehaviour
     public static int currentEnemiesPerRoom;
     public static DungeonLayout CurrentLayout { get; private set; }
     public static event Action<DungeonLayout> LayoutGenerated;
+    public static event Action<int> OnFloorAdvanced;
 
     [Header("Progression Settings")]
     [SerializeField] private int baseRooms = 6;
@@ -32,6 +33,11 @@ public class LevelManager : MonoBehaviour
         {
             CurrentLayout = generator.GenerateLevel(roomsToGenerate);
             LayoutGenerated?.Invoke(CurrentLayout);
+
+            // Save checkpoint at floor start
+            float initialHealth = FindFirstObjectByType<PlayerHealth>()?.maxHealth ?? 100f;
+            SaveManager.SaveToSlot(GameModeManager.CurrentSlot, currentLevel, 0, initialHealth, GameModeManager.CurrentMode.GetModeName()); // Score 0, full health
+            Debug.Log("Guardado checkpoint al iniciar piso: " + currentLevel);
         }
         else
         {
@@ -42,6 +48,7 @@ public class LevelManager : MonoBehaviour
     public void AdvanceLevel()
     {
         currentLevel++;
+        OnFloorAdvanced?.Invoke(currentLevel);
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 

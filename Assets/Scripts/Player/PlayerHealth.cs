@@ -29,6 +29,10 @@ public class PlayerHealth : MonoBehaviour
 
         if (currentHealth <= 0)
         {
+            // Save on death
+            int currentFloor = LevelManager.currentLevel;
+            SaveManager.SaveToSlot(GameModeManager.CurrentSlot, currentFloor, 0, currentHealth, GameModeManager.CurrentMode.GetModeName()); // Approximate score, actual health
+            Debug.Log("Guardando al morir en piso: " + currentFloor);
             Object.FindFirstObjectByType<GameOver>().ShowGameOver();
         }
     }
