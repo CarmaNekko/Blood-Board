@@ -1,10 +1,9 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using BloodBoard.GameManagement; // Added for ScoreManager
 
 public class LevelExit : MonoBehaviour
 {
-    [SerializeField] private int score; // Asigna score actual
-
     private void Awake()
     {
         Debug.Log("LevelExit adjunto en: " + gameObject.name);
@@ -17,22 +16,14 @@ public class LevelExit : MonoBehaviour
         {
             int currentFloor = LevelManager.currentLevel;
             float playerHealth = other.GetComponent<PlayerHealth>()?.currentHealth ?? 100f;
+            int currentScore = ScoreManager.Instance != null ? ScoreManager.Instance.GetCurrentScore() : 0;
 
-            Debug.Log("Guardando en piso: " + currentFloor);
-            SaveManager.SaveToSlot(GameModeManager.CurrentSlot, currentFloor, score, playerHealth, GameModeManager.CurrentMode.GetModeName());
+            SaveManager.SaveToSlot(GameModeManager.CurrentSlot, currentFloor, currentScore, playerHealth, GameModeManager.CurrentMode.GetModeName());
+            Debug.Log($"Guardando en piso: {currentFloor}, Score: {currentScore}");
 
-            if (GameModeManager.CurrentMode.IsBossFloor(currentFloor))
-            {
-                SceneManager.LoadScene("TitleScreen"); // Fin de juego en jefe
-            }
-            else
-            {
-                LevelManager manager = Object.FindFirstObjectByType<LevelManager>();
-                if (manager != null)
-                {
-                    manager.AdvanceLevel();
-                }
-            }
+            // La lógica de avance de nivel ahora está centralizada en Finish_Level.cs
+            // para evitar el doble incremento de pisos. Se ha eliminado de este script
+            // para corregir el bug.
         }
     }
 }

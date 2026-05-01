@@ -1,11 +1,11 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using BloodBoard.GameManagement; // Added for ScoreManager
 
 public class Finish_Level : MonoBehaviour
 {
     [SerializeField] private string playerTag = "Player";
     [SerializeField] private string mainLevelScene = "Level_1";
-    [SerializeField] private string endScene = "Credits"; // Escena final para el modo Normal
 
     private bool isLoading = false;
 
@@ -24,7 +24,9 @@ public class Finish_Level : MonoBehaviour
         {
             // El juego ha terminado (solo en modo Normal).
             Debug.Log($"Piso final ({LevelManager.currentLevel}) alcanzado en modo {GameModeManager.CurrentMode.GetModeName()}. Fin del juego.");
-            SceneManager.LoadScene(endScene);
+            // Muestra la pantalla de victoria en lugar de ir directamente a los créditos.
+            var gameOverScreen = Object.FindFirstObjectByType<GameOver>();
+            if (gameOverScreen != null) gameOverScreen.ShowGameOver(true);
         }
         else
         {
@@ -34,11 +36,11 @@ public class Finish_Level : MonoBehaviour
             // Incrementar el contador de pisos.
             LevelManager.currentLevel++;
 
-            // Guardar el progreso para el nuevo piso.
+            // Guardar el progreso para el nuevo piso, incluyendo el score actual.
             PlayerHealth playerHealth = other.GetComponent<PlayerHealth>();
             float health = playerHealth != null ? playerHealth.currentHealth : 100f;
-            // Nota: El score se guarda como 0, siguiendo la lógica existente. Si tienes un ScoreManager, deberías obtener el score actual aquí.
-            SaveManager.SaveToSlot(GameModeManager.CurrentSlot, LevelManager.currentLevel, 0, health, GameModeManager.CurrentMode.GetModeName());
+            int currentScore = ScoreManager.Instance != null ? ScoreManager.Instance.GetCurrentScore() : 0;
+            SaveManager.SaveToSlot(GameModeManager.CurrentSlot, LevelManager.currentLevel, currentScore, health, GameModeManager.CurrentMode.GetModeName());
             Debug.Log($"Guardando progreso para el piso {LevelManager.currentLevel} en el slot {GameModeManager.CurrentSlot}.");
 
             // Recargar la escena del nivel. LevelManager se encargará de generar el nuevo piso.

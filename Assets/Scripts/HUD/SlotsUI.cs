@@ -87,6 +87,9 @@ public class SlotsUI : MonoBehaviour
                 GameModeManager.SetSlot(slot);
                 GameModeManager.SetMode(data.mode == "Normal" ? GameModeManager.CreateNormalMode() : GameModeManager.CreateEndlessMode());
                 LevelManager.currentLevel = data.floor;
+                // Restaura la puntuación guardada para que no se acumule al salir y continuar.
+                BloodBoard.GameManagement.ScoreManager.Instance?.SetCurrentScore(data.score);
+
                 if (data.floor == 0) // Floor 0 is the tutorial
                 {
                     UnityEngine.SceneManagement.SceneManager.LoadScene("Level_Tuto");

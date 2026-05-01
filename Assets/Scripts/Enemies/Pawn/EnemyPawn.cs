@@ -1,4 +1,5 @@
 using UnityEngine;
+using BloodBoard.GameManagement; // Added for ScoreManager
 using UnityEngine.AI;
 
 public class EnemyPawn : MonoBehaviour
@@ -147,6 +148,7 @@ public class EnemyPawn : MonoBehaviour
 
     private void Die()
     {
+        ScoreManager.Instance?.AddScoreToCurrent(100); // Example: Add 100 points per enemy kill
         Destroy(gameObject);
     }
 }

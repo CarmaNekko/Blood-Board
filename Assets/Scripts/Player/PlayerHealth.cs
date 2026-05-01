@@ -1,6 +1,8 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using BloodBoard.GameManagement; // Added for ScoreManager
+using BloodBoard.UI; // Added for EndlessScoreInputUI
 
 public class PlayerHealth : MonoBehaviour
 {
@@ -30,10 +32,21 @@ public class PlayerHealth : MonoBehaviour
         if (currentHealth <= 0)
         {
             // Save on death
-            int currentFloor = LevelManager.currentLevel;
-            SaveManager.SaveToSlot(GameModeManager.CurrentSlot, currentFloor, 0, currentHealth, GameModeManager.CurrentMode.GetModeName()); // Approximate score, actual health
-            Debug.Log("Guardando al morir en piso: " + currentFloor);
-            Object.FindFirstObjectByType<GameOver>().ShowGameOver();
+            int currentFloor = LevelManager.currentLevel; // Get current floor before potential scene load
+            float finalHealth = currentHealth; // Use currentHealth as final health
+            int finalScore = ScoreManager.Instance != null ? ScoreManager.Instance.GetCurrentScore() : 0;
+
+            if (GameModeManager.CurrentMode is EndlessMode)
+            {
+                // For Endless mode, prompt for name before showing game over
+                EndlessScoreInputUI.Instance?.Show(currentFloor, finalScore, finalHealth);
+            }
+            else
+            {
+                SaveManager.SaveToSlot(GameModeManager.CurrentSlot, currentFloor, finalScore, finalHealth, GameModeManager.CurrentMode.GetModeName());
+                Debug.Log("Guardando al morir en piso: " + currentFloor);
+                Object.FindFirstObjectByType<GameOver>().ShowGameOver();
+            }
         }
     }
 

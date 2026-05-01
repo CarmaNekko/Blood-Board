@@ -3,6 +3,8 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using BloodBoard.GameManagement; // Added for ScoreManager
+using BloodBoard.UI; // Added for LeaderboardUI
 
 public enum SlotAction
 {
@@ -23,14 +25,13 @@ public class TitleScreen : MonoBehaviour
     [SerializeField] private Button normalButton;
     [SerializeField] private Button endlessButton;
     [SerializeField] private Button continueButton;
-    [SerializeField] private TMP_Text continueText;
     [SerializeField] private TMP_Text descriptionText; // Para descripciones de modos
     [SerializeField] private Button backButton; // Para volver del selector
     [SerializeField] private Button newGameButton; // Para mostrar selector de modos
     [SerializeField] private SlotsUI slotsUI; // Referencia al script de slots
     [SerializeField] private GameObject slotsPanel; // Panel padre de slots
     [SerializeField] private Button optionsButton;
-    [SerializeField] private Button quitButton; // Added for completeness, if it exists
+    [SerializeField] private Button leaderboardButton; // New button for leaderboards
     [SerializeField] private Button creditsButton;
 
     private void Awake()
@@ -113,14 +114,14 @@ public class TitleScreen : MonoBehaviour
             optionsButton.onClick.AddListener(OnOptionsButton);
         }
 
+        if (leaderboardButton != null)
+        {
+            leaderboardButton.onClick.AddListener(OnLeaderboardButton);
+        }
+
         if (creditsButton != null)
         {
             creditsButton.onClick.AddListener(OnCreditsButton);
-        }
-
-        if (quitButton != null)
-        {
-            quitButton.onClick.AddListener(OnQuitButton);
         }
     }
 
@@ -170,8 +171,8 @@ public class TitleScreen : MonoBehaviour
         {
             creditsButton.gameObject.SetActive(false);
         }
-        if (quitButton != null) { // Hide quit button too
-            quitButton.gameObject.SetActive(false);
+        if (leaderboardButton != null) { // Hide leaderboard button too
+            leaderboardButton.gameObject.SetActive(false);
         }
     }
 
@@ -181,6 +182,7 @@ public class TitleScreen : MonoBehaviour
         if (selectedSlot == -1) return; // Should not happen
 
         GameModeManager.SetSlot(selectedSlot);
+        ScoreManager.Instance?.ResetCurrentScore(); // Reset score for new game
         GameModeManager.SetMode(GameModeManager.CreateNormalMode());
         // Perform initial save for a new game starting in tutorial
         SaveManager.SaveToSlot(selectedSlot, 0, 0, 100f, GameModeManager.CurrentMode.GetModeName()); // Floor 0 for tutorial
@@ -194,6 +196,7 @@ public class TitleScreen : MonoBehaviour
         if (selectedSlot == -1) return; // Should not happen
 
         GameModeManager.SetSlot(selectedSlot);
+        ScoreManager.Instance?.ResetCurrentScore(); // Reset score for new game
         GameModeManager.SetMode(GameModeManager.CreateEndlessMode());
         LevelManager.currentLevel = 1;
         SaveManager.SaveToSlot(selectedSlot, 1, 0, 100f, GameModeManager.CurrentMode.GetModeName());
@@ -219,6 +222,23 @@ public class TitleScreen : MonoBehaviour
         }
     }
 
+    public void OnLeaderboardButton()
+    {
+        // Assuming LeaderboardUI is a separate panel
+        LeaderboardUI.Instance?.ShowLeaderboards();
+
+        if (titleBackground != null)
+        {
+            titleBackground.SetActive(false);
+        }
+
+        // Hide main menu buttons
+        if (newGameButton != null) newGameButton.gameObject.SetActive(false);
+        if (continueButton != null) continueButton.gameObject.SetActive(false);
+        if (optionsButton != null) optionsButton.gameObject.SetActive(false);
+        if (leaderboardButton != null) leaderboardButton.gameObject.SetActive(false);
+        if (creditsButton != null) creditsButton.gameObject.SetActive(false);
+    }
     private void AddHoverListeners(Button button, string description)
     {
         var trigger = button.gameObject.AddComponent<EventTrigger>();
@@ -275,8 +295,9 @@ public class TitleScreen : MonoBehaviour
         {
             creditsButton.gameObject.SetActive(true);
         }
-        if (quitButton != null) { // Show quit button too
-            quitButton.gameObject.SetActive(true);
+        if (leaderboardButton != null)
+        {
+            leaderboardButton.gameObject.SetActive(true);
         }
     }
 
@@ -287,6 +308,10 @@ public class TitleScreen : MonoBehaviour
         {
             slotsPanel.SetActive(false);
             Debug.Log("slotsPanel oculto: " + !slotsPanel.activeSelf);
+        }
+        if (modeSelectorContent != null)
+        {
+            modeSelectorContent.SetActive(false);
         }
         if (titleBackground != null)
         {
@@ -309,17 +334,10 @@ public class TitleScreen : MonoBehaviour
         {
             creditsButton.gameObject.SetActive(true);
         }
-        if (quitButton != null) { // Show quit button too
-            quitButton.gameObject.SetActive(true);
+        if (leaderboardButton != null)
+        {
+            leaderboardButton.gameObject.SetActive(true);
         }
-    }
-
-    public void OnQuitButton()
-    {
-        Application.Quit();
-        #if UNITY_EDITOR
-        UnityEditor.EditorApplication.isPlaying = false;
-        #endif
     }
 
     public SlotAction GetCurrentSlotAction() { return currentSlotAction; } // New public getter

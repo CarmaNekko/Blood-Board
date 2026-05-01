@@ -341,6 +341,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   navMesh: {fileID: 999563471}
+  mapGridWorldSize: 30
 --- !u!114 &999563471
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -494,11 +495,23 @@ PrefabInstance:
       propertyPath: m_Name
       value: Canvas
       objectReference: {fileID: 0}
+    - target: {fileID: 2121950755388970666, guid: d9fad25a5ba93d54da34f557342663f8, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2396089969498449037, guid: d9fad25a5ba93d54da34f557342663f8, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4011485350280797599, guid: d9fad25a5ba93d54da34f557342663f8, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5636566928949237832, guid: d9fad25a5ba93d54da34f557342663f8, type: 3}
+      propertyPath: m_text
+      value: "\u200B"
+      objectReference: {fileID: 0}
+    - target: {fileID: 8164400798890253586, guid: d9fad25a5ba93d54da34f557342663f8, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}

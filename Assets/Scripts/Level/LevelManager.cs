@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using BloodBoard.GameManagement;
 
 public class LevelManager : MonoBehaviour
 {
@@ -35,8 +36,9 @@ public class LevelManager : MonoBehaviour
             LayoutGenerated?.Invoke(CurrentLayout);
 
             // Save checkpoint at floor start
+            int currentScore = ScoreManager.Instance != null ? ScoreManager.Instance.GetCurrentScore() : 0;
             float initialHealth = FindFirstObjectByType<PlayerHealth>()?.maxHealth ?? 100f;
-            SaveManager.SaveToSlot(GameModeManager.CurrentSlot, currentLevel, 0, initialHealth, GameModeManager.CurrentMode.GetModeName()); // Score 0, full health
+            SaveManager.SaveToSlot(GameModeManager.CurrentSlot, currentLevel, currentScore, initialHealth, GameModeManager.CurrentMode.GetModeName()); // Score 0, full health
             Debug.Log("Guardado checkpoint al iniciar piso: " + currentLevel);
         }
         else
