@@ -9,7 +9,7 @@ public class MagicProjectile : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        EnemyPawn enemy = other.GetComponent<EnemyPawn>();
+        EnemyHealth enemy = other.GetComponent<EnemyHealth>();
 
         if (enemy != null)
         {

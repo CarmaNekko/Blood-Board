@@ -1,38 +1,32 @@
 using UnityEngine;
-using BloodBoard.GameManagement; // Added for ScoreManager
 using UnityEngine.AI;
-
 public class EnemyPawn : MonoBehaviour
 {
     [Header("Targeting")]
     [SerializeField] private Transform playerTarget;
     [SerializeField] private float detectionRange = 18f;
 
-    [Header("Combat Stats")]
+    [Header("Combat Stats Base")]
     [SerializeField] private float attackRange = 10f;
     [SerializeField] private float attackCooldown = 2f;
+    [SerializeField] private float baseSpeed = 4f;
 
     [Header("Ranged Attack")]
     [SerializeField] private GameObject magicProjectilePrefab;
     [SerializeField] private Transform firePoint;
 
-    [Header("Polarity & Health")]
-    [SerializeField] private MagicColor pawnColor;
-    [SerializeField] private int maxHealth = 10;
-    private int currentHealth;
-
-    [Header("Buff Status (Frenesí)")]
-    private bool isBuffed = false;
-    [SerializeField] private GameObject frenzyParticles;
-
     private NavMeshAgent agent;
     private float lastAttackTime;
     private bool isAwake = false;
 
+    private EnemyHealth healthScript;
+
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
-        agent.speed = 4f;
+        healthScript = GetComponent<EnemyHealth>();
+
+        agent.speed = baseSpeed;
         agent.stoppingDistance = attackRange - 1f;
 
         if (playerTarget == null)
@@ -43,17 +37,13 @@ public class EnemyPawn : MonoBehaviour
                 playerTarget = playerObj.transform;
             }
         }
-
-        currentHealth = maxHealth;
-
-        if (frenzyParticles != null)
-        {
-            frenzyParticles.SetActive(false);
-        }
     }
 
     void Update()
     {
+
+        agent.speed = healthScript.isBuffed ? baseSpeed + 2.5f : baseSpeed;
+
         if (playerTarget != null)
         {
             float distanceToPlayer = Vector3.Distance(transform.position, playerTarget.position);
@@ -70,7 +60,6 @@ public class EnemyPawn : MonoBehaviour
                     agent.SetDestination(playerTarget.position);
                     agent.isStopped = false;
                 }
-
                 else
                 {
                     agent.isStopped = true;
@@ -87,7 +76,9 @@ public class EnemyPawn : MonoBehaviour
 
     private void TryAttack()
     {
-        if (Time.time >= lastAttackTime + attackCooldown)
+        float currentCooldown = healthScript.isBuffed ? (attackCooldown / 2f) : attackCooldown;
+
+        if (Time.time >= lastAttackTime + currentCooldown)
         {
             if (magicProjectilePrefab != null && firePoint != null)
             {
@@ -97,7 +88,11 @@ public class EnemyPawn : MonoBehaviour
                 if (projectileScript != null)
                 {
                     Vector3 targetLastPosition = playerTarget.position;
-                    projectileScript.Setup(targetLastPosition, 10f);
+                    
+                    float damage = healthScript.isBuffed ? 20f : 10f;
+                    float size = healthScript.isBuffed ? 1.5f : 1f;
+
+                    projectileScript.Setup(targetLastPosition, damage, size);
                 }
             }
             else
@@ -107,48 +102,5 @@ public class EnemyPawn : MonoBehaviour
 
             lastAttackTime = Time.time;
         }
-    }
-
-    public void TakeDamage(int damageAmount, MagicColor incomingMagicColor)
-    {
-        if (pawnColor != incomingMagicColor)
-        {
-            currentHealth -= damageAmount;
-
-            if (currentHealth <= 0)
-            {
-                Die();
-            }
-        }
-        else
-        {
-            ApplyBuff();
-        }
-    }
-
-    private void ApplyBuff()
-    {
-        if (isBuffed) return;
-
-        isBuffed = true;
-
-        if (agent != null)
-        {
-            agent.speed += 2.5f;
-        }
-        attackCooldown /= 2f;
-
-        transform.localScale *= 1.25f;
-
-        if (frenzyParticles != null)
-        {
-            frenzyParticles.SetActive(true);
-        }
-    }
-
-    private void Die()
-    {
-        ScoreManager.Instance?.AddScoreToCurrent(100); // Example: Add 100 points per enemy kill
-        Destroy(gameObject);
     }
 }

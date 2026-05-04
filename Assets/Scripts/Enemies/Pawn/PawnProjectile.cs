@@ -8,16 +8,16 @@ public class PawnProjectile : MonoBehaviour
     private float damage;
     private bool isSetup = false;
 
-    public void Setup(Vector3 targetPos, float projectileDamage)
+    public void Setup(Vector3 targetPos, float projectileDamage, float sizeMultiplier)
     {
         targetPosition = targetPos;
         damage = projectileDamage;
 
-        moveDirection = (targetPosition - transform.position).normalized;
+        transform.localScale *= sizeMultiplier;
 
+        moveDirection = (targetPosition - transform.position).normalized;
         transform.forward = moveDirection;
         isSetup = true;
-
         Destroy(gameObject, 4f);
     }
 
@@ -38,7 +38,6 @@ public class PawnProjectile : MonoBehaviour
             {
                 playerHealth.TakeDamage(damage);
             }
-
             Destroy(gameObject);
         }
         else if (!other.CompareTag("Enemy"))

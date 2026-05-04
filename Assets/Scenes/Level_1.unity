@@ -666,9 +666,21 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 1156367064293503880, guid: 5e95e756df1eba343ba25da4ed081cbb, type: 3}
+      propertyPath: blackManaCost
+      value: 16
+      objectReference: {fileID: 0}
+    - target: {fileID: 1156367064293503880, guid: 5e95e756df1eba343ba25da4ed081cbb, type: 3}
+      propertyPath: whiteManaCost
+      value: 16
+      objectReference: {fileID: 0}
+    - target: {fileID: 1156367064293503880, guid: 5e95e756df1eba343ba25da4ed081cbb, type: 3}
       propertyPath: blackManaBarUI
       value: 
       objectReference: {fileID: 318682328}
+    - target: {fileID: 1156367064293503880, guid: 5e95e756df1eba343ba25da4ed081cbb, type: 3}
+      propertyPath: blackManaRegen
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 1156367064293503880, guid: 5e95e756df1eba343ba25da4ed081cbb, type: 3}
       propertyPath: whiteManaBarUI
       value: 

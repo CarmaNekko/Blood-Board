@@ -4975,6 +4975,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 2aa8daf5431a73f41b833bd50a4a8f92, type: 3}
       insertIndex: -1
       addedObject: {fileID: 9028829389767459963}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 2aa8daf5431a73f41b833bd50a4a8f92, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6108100979565116953}
   m_SourcePrefab: {fileID: 100100000, guid: 2aa8daf5431a73f41b833bd50a4a8f92, type: 3}
 --- !u!1 &1373527571380540041 stripped
 GameObject:
@@ -5040,10 +5043,24 @@ MonoBehaviour:
   detectionRange: 19
   attackRange: 19
   attackCooldown: 1
+  baseSpeed: 4
   magicProjectilePrefab: {fileID: 6653451336201665546, guid: 88a0811960ad54244854d9e8326ce8e0, type: 3}
   firePoint: {fileID: 1624515260518793005}
-  pawnColor: 0
+--- !u!114 &6108100979565116953
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1373527571380540041}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: adfe344e379f6b64998f849cd7af0960, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth
+  myColor: 0
   maxHealth: 10
+  scoreValue: 100
   frenzyParticles: {fileID: 2142880900780310640}
 --- !u!4 &1748540835242690611 stripped
 Transform:

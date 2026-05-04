@@ -17,6 +17,10 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float groundDistance = 0.4f;
     [SerializeField] private LayerMask groundMask;
 
+    [Header("Físicas de Impacto")]
+    [SerializeField] private float mass = 3f;
+    private Vector3 impactVelocity = Vector3.zero;
+
     private CharacterController controller;
     private Vector3 velocity;
     private float xRotation = 0f;
@@ -53,6 +57,16 @@ public class PlayerMovement : MonoBehaviour
         Vector3 move = transform.right * x + transform.forward * z;
         controller.Move(move * moveSpeed * Time.deltaTime);
 
+        if (impactVelocity.magnitude > 0.2f)
+        {
+            controller.Move(impactVelocity * Time.deltaTime);
+            impactVelocity = Vector3.Lerp(impactVelocity, Vector3.zero, 5f * Time.deltaTime);
+        }
+        else
+        {
+            impactVelocity = Vector3.zero;
+        }
+
         if (isActuallyGrounded && velocity.y < 0)
         {
             velocity.y = -2f;
@@ -65,6 +79,17 @@ public class PlayerMovement : MonoBehaviour
 
         velocity.y += gravity * Time.deltaTime;
         controller.Move(velocity * Time.deltaTime);
+    }
+
+    public void ApplyKnockback(Vector3 direction, float force)
+    {
+        direction.Normalize();
+
+        if (direction.y < 0) direction.y = -direction.y;
+
+        direction.y += 0.5f;
+
+        impactVelocity += direction * force / mass;
     }
 
     public static void SetGlobalMouseSensitivity(float sensitivity)
