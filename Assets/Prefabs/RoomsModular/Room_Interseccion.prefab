@@ -460,6 +460,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DoorConnector
   isConnected: 0
   doorHeightOffset: 0
+  owningRoomNodeId: -1
+  sourceRoomNodeId: -1
 --- !u!1 &1503976114602322628
 GameObject:
   m_ObjectHideFlags: 0
@@ -912,6 +914,7 @@ MonoBehaviour:
   enemyPrefabs:
   - {fileID: 6434576575197070758, guid: a24064ef919d06148819ee9e274b84b6, type: 3}
   - {fileID: 1373527571380540041, guid: 2c7f150f9ba254b4ebfd34bb522ddbcc, type: 3}
+  - {fileID: 3075264855909393596, guid: 2a63e8531f0961a4e8737182a0db27f6, type: 3}
   spawnPoints:
   - {fileID: 3809642345110822273}
   - {fileID: 3791827204060526766}
@@ -1161,6 +1164,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DoorConnector
   isConnected: 0
   doorHeightOffset: 0
+  owningRoomNodeId: -1
+  sourceRoomNodeId: -1
 --- !u!1 &4633443997358536986
 GameObject:
   m_ObjectHideFlags: 0
@@ -2196,6 +2201,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DoorConnector
   isConnected: 0
   doorHeightOffset: 0
+  owningRoomNodeId: -1
+  sourceRoomNodeId: -1
 --- !u!1 &7078117803693129092
 GameObject:
   m_ObjectHideFlags: 0
@@ -2679,6 +2686,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DoorConnector
   isConnected: 0
   doorHeightOffset: 0
+  owningRoomNodeId: -1
+  sourceRoomNodeId: -1
 --- !u!1 &8790262570904459848
 GameObject:
   m_ObjectHideFlags: 0

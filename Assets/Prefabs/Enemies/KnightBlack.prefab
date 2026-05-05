@@ -29,8 +29,8 @@ Transform:
   m_GameObject: {fileID: 2327773162218134825}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: -0.013900001, y: 0.0484, z: 0.0055}
-  m_LocalScale: {x: 0.04848949, y: 0.04848949, z: 0.04848949}
+  m_LocalPosition: {x: 0, y: 0.0378, z: 0.00684}
+  m_LocalScale: {x: 0.023202704, y: 0.023202704, z: 0.023202704}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2442738508998688262}
@@ -153,7 +153,7 @@ Transform:
   m_GameObject: {fileID: 8032103425494684486}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.16609646, y: -0.017956685, z: -0.17664045}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.45325813, y: 0.5079535, z: 0.41072804}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -4993,15 +4993,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 49a646464613a8c45a14a126560b3335, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -1.8601
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 49a646464613a8c45a14a126560b3335, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 2.595
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 49a646464613a8c45a14a126560b3335, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -10.712
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 49a646464613a8c45a14a126560b3335, type: 3}
       propertyPath: m_LocalRotation.w
@@ -5200,14 +5200,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9fb4cb2e9b238d8449f6012406dc12e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::KnightAttack
+  detectionRange: 25
   baseDamage: 20
   baseRadius: 4
   cooldown: 4
   riseHeight: 6
   hangTime: 0.6
   dropDuration: 0.15
-  yOffsetDelSuelo: 1
+  offsetCentroModelo: 2
   alertIcon: {fileID: 2327773162218134825}
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 64
   audioSource: {fileID: 326476192207401606}
   neighSound: {fileID: 8300000, guid: 28e362a0dde59f64fa2a46cd4e58dd15, type: 3}
   damageArea: {fileID: 1167798690200825190}
