@@ -4,8 +4,8 @@ using System.Collections;
 
 public class FloorSign : MonoBehaviour
 {
-    [SerializeField] private GameObject signPanel; // Asigna el Panel UI en Inspector
-    [SerializeField] private TextMeshProUGUI signText; // Asigna el TextMeshProUGUI en Inspector
+    [SerializeField] private GameObject signPanel;
+    [SerializeField] private TextMeshProUGUI signText;
 
     private void Start()
     {
@@ -20,8 +20,8 @@ public class FloorSign : MonoBehaviour
             {
                 signText.text = "Tutorial - Castillo Monárquico";
             }
-            PauseScreen.IsFloorSignActive = true; // Bloquea input de pausa
-            Time.timeScale = 0f; // Pausa el juego durante el cartel
+            PauseScreen.IsFloorSignActive = true;
+            Time.timeScale = 0f;
             signPanel.SetActive(true);
             Debug.Log("Mostrando cartel: " + signText.text);
             StartCoroutine(HideSign());
@@ -36,8 +36,8 @@ public class FloorSign : MonoBehaviour
     {
         yield return new WaitForSecondsRealtime(3f);
         signPanel.SetActive(false);
-        Time.timeScale = 1f; // Restaura el tiempo del juego
-        PauseScreen.IsFloorSignActive = false; // Permite input de pausa
+        Time.timeScale = 1f;
+        PauseScreen.IsFloorSignActive = false;
         Debug.Log("Ocultando cartel");
     }
 }

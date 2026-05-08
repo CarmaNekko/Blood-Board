@@ -66,7 +66,6 @@ public class SaveManager : MonoBehaviour
     public static SaveManager Instance { get; private set; }
     private static SaveSystem saveSystem;
 
-    // Static constructor to ensure saveSystem is initialized once
     static SaveManager()
     {
         saveSystem = new PlayerPrefsSaveSystem();
@@ -110,15 +109,13 @@ public class SaveManager : MonoBehaviour
         return saveSystem.IsSlotEmpty(slot);
     }
 
-    // Legacy methods for compatibility
     public static void SaveGame(int floor, int score, float health)
     {
-        // Assume default slot or something, but for now, ignore or use slot 1
     }
 
     public static SaveData LoadGame(int floor)
     {
-        return null; // Not used
+        return null;
     }
 
     public static List<int> GetAvailableSaves()
@@ -136,6 +133,5 @@ public class SaveManager : MonoBehaviour
 
     public static void DeleteSave(int floor)
     {
-        // Not used
     }
 }

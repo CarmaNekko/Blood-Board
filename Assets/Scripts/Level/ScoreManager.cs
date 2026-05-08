@@ -1,17 +1,16 @@
 using UnityEngine;
 using System.Collections.Generic;
-using System.Linq; // For sorting
+using System.Linq;
 
-namespace BloodBoard.GameManagement // Added namespace
+namespace BloodBoard.GameManagement
 {
 
-// Data structure for a single score entry
 [System.Serializable]
 public class ScoreEntry
 {
     public string playerName;
     public int score;
-    public int floor; // Only relevant for Endless mode, can be 0 or 1 for Normal
+    public int floor;
 
     public ScoreEntry(string name, int s, int f = 0)
     {
@@ -20,11 +19,9 @@ public class ScoreEntry
         floor = f;
     }
 
-    // Constructor for Normal mode where floor might not be explicitly needed
     public ScoreEntry(string name, int s) : this(name, s, 0) { }
 }
 
-// Container for all leaderboard data
 [System.Serializable]
 public class ScoreData
 {
@@ -40,7 +37,7 @@ public class ScoreManager : MonoBehaviour
     private const int MaxLeaderboardEntries = 6;
 
     private ScoreData _scoreData;
-    private int _currentRunScore = 0; // Tracks score for the current game session
+    private int _currentRunScore = 0;
 
     void Awake()
     {

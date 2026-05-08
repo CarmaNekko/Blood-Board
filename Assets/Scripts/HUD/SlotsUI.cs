@@ -39,7 +39,6 @@ public class SlotsUI : MonoBehaviour
 
     private void OnDisable()
     {
-        // Hide these buttons when the slots panel is inactive
         if (deleteAllButton != null) deleteAllButton.gameObject.SetActive(false);
         if (backToMenuButton != null) backToMenuButton.gameObject.SetActive(false);
     }
@@ -70,13 +69,10 @@ public class SlotsUI : MonoBehaviour
 
     private void OnSlotClicked(int slot)
     {
-        selectedSlot = slot; // Always set selected slot
+        selectedSlot = slot;
 
         if (TitleScreen.Instance.GetCurrentSlotAction() == SlotAction.NewGame)
         {
-            // If user clicked "New Game" and then a slot, proceed to mode selection.
-            // If the slot is not empty, it implies the user wants to overwrite it.
-            // A proper game would show a confirmation dialog here.
             TitleScreen.Instance.ShowModeSelector();
         }
         else if (TitleScreen.Instance.GetCurrentSlotAction() == SlotAction.ContinueGame)
@@ -87,10 +83,9 @@ public class SlotsUI : MonoBehaviour
                 GameModeManager.SetSlot(slot);
                 GameModeManager.SetMode(data.mode == "Normal" ? GameModeManager.CreateNormalMode() : GameModeManager.CreateEndlessMode());
                 LevelManager.currentLevel = data.floor;
-                // Restaura la puntuación guardada para que no se acumule al salir y continuar.
                 BloodBoard.GameManagement.ScoreManager.Instance?.SetCurrentScore(data.score);
 
-                if (data.floor == 0) // Floor 0 is the tutorial
+                if (data.floor == 0)
                 {
                     UnityEngine.SceneManagement.SceneManager.LoadScene("Level_Tuto");
                 }

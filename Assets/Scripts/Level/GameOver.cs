@@ -72,7 +72,7 @@ public class GameOver : MonoBehaviour
                 exitButton.gameObject.SetActive(true);
             }
         }
-        else // Derrota
+        else
         {
             if (titleText != null)
             {
@@ -91,7 +91,6 @@ public class GameOver : MonoBehaviour
 
     private void OnRegisterScore()
     {
-        // Oculta esta pantalla y muestra la de registro de nombre
         if (deathScreen != null) deathScreen.SetActive(false);
 
         int finalScore = ScoreManager.Instance != null ? ScoreManager.Instance.GetCurrentScore() : 0;
@@ -106,7 +105,7 @@ public class GameOver : MonoBehaviour
 
     public void OnRetryButton()
     {
-        ScoreManager.Instance?.ResetCurrentScore(); // Reinicia la puntuación para la nueva partida
+        ScoreManager.Instance?.ResetCurrentScore();
         Time.timeScale = 1f;
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }

@@ -4,7 +4,7 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using BloodBoard.GameManagement;
 
-namespace BloodBoard.UI // Added namespace
+namespace BloodBoard.UI
 {
 
 public class EndlessScoreInputUI : MonoBehaviour
@@ -13,7 +13,7 @@ public class EndlessScoreInputUI : MonoBehaviour
 
     [Header("UI Elements")]
     [SerializeField] private GameObject panel;
-    [SerializeField] private TMP_Text titleText; // Asignar el texto del título del panel
+    [SerializeField] private TMP_Text titleText;
     [SerializeField] private TMP_InputField nameInputField;
     [SerializeField] private Button submitButton;
     [SerializeField] private Button skipButton;
@@ -39,7 +39,6 @@ public class EndlessScoreInputUI : MonoBehaviour
         {
             panel.SetActive(false);
         }
-        // Explicitly hide child elements to ensure a clean start
         if (nameInputField != null) nameInputField.gameObject.SetActive(false);
         if (submitButton != null) submitButton.gameObject.SetActive(false);
         if (skipButton != null) skipButton.gameObject.SetActive(false);
@@ -64,7 +63,7 @@ public class EndlessScoreInputUI : MonoBehaviour
         }
     }
 
-    public void Show(int floor, int score, float healthAtDeath) // Para Modo Infinito
+    public void Show(int floor, int score, float healthAtDeath)
     {
         _isNormalModeCompletion = false;
         _currentFloor = floor;
@@ -106,22 +105,21 @@ public class EndlessScoreInputUI : MonoBehaviour
         {
             panel.SetActive(true);
         }
-        // Explicitly show child elements
         if (nameInputField != null) nameInputField.gameObject.SetActive(true);
         if (submitButton != null) submitButton.gameObject.SetActive(true);
         if (skipButton != null) skipButton.gameObject.SetActive(true);
         if (scoreDisplay != null) scoreDisplay.gameObject.SetActive(true);
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
-        Time.timeScale = 0f; // Pause game while inputting name
+        Time.timeScale = 0f;
 
         if (scoreDisplay != null)
         {
-            scoreDisplay.text = $"Puntuación: {_currentScore}";
+            scoreDisplay.text = $"{_currentScore}";
         }
         if (nameInputField != null)
         {
-            nameInputField.text = ""; // Clear previous input
+            nameInputField.text = "";
             nameInputField.Select();
             nameInputField.ActivateInputField();
         }
@@ -134,14 +132,13 @@ public class EndlessScoreInputUI : MonoBehaviour
         {
             panel.SetActive(false);
         }
-        // Explicitly hide child elements on close
         if (nameInputField != null) nameInputField.gameObject.SetActive(false);
         if (submitButton != null) submitButton.gameObject.SetActive(false);
         if (skipButton != null) skipButton.gameObject.SetActive(false);
         if (scoreDisplay != null) scoreDisplay.gameObject.SetActive(false);
         if (titleText != null) titleText.gameObject.SetActive(false);
         if (floorDisplay != null) floorDisplay.gameObject.SetActive(false);
-        Time.timeScale = 1f; // Resume game
+        Time.timeScale = 1f;
     }
 
     private void OnSubmitScore()
@@ -152,14 +149,14 @@ public class EndlessScoreInputUI : MonoBehaviour
         if (_isNormalModeCompletion)
         {
             ScoreManager.Instance?.AddNormalModeScore(_currentScore, playerName);
-            SaveManager.DeleteSlot(GameModeManager.CurrentSlot); // Elimina el save al ganar
-            Time.timeScale = 1f; // Restaurar el tiempo antes de cargar la nueva escena
+            SaveManager.DeleteSlot(GameModeManager.CurrentSlot);
+            Time.timeScale = 1f;
             SceneManager.LoadScene("Credits");
         }
         else
         {
             ScoreManager.Instance?.AddEndlessModeScore(_currentFloor, _currentScore, playerName);
-            SaveManager.DeleteSlot(GameModeManager.CurrentSlot); // Elimina el save al morir en infinito
+            SaveManager.DeleteSlot(GameModeManager.CurrentSlot);
             Hide();
             Object.FindFirstObjectByType<GameOver>()?.ShowGameOver();
         }
@@ -169,13 +166,13 @@ public class EndlessScoreInputUI : MonoBehaviour
     {
         if (_isNormalModeCompletion)
         {
-            SaveManager.DeleteSlot(GameModeManager.CurrentSlot); // Elimina el save al ganar (sin registrar)
-            Time.timeScale = 1f; // Restaurar el tiempo antes de cargar la nueva escena
+            SaveManager.DeleteSlot(GameModeManager.CurrentSlot);
+            Time.timeScale = 1f;
             SceneManager.LoadScene("Credits");
         }
         else
         {
-            SaveManager.DeleteSlot(GameModeManager.CurrentSlot); // Elimina el save al morir en infinito (sin registrar)
+            SaveManager.DeleteSlot(GameModeManager.CurrentSlot);
             Hide();
             Object.FindFirstObjectByType<GameOver>()?.ShowGameOver();
         }

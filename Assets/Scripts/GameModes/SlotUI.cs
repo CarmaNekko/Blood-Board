@@ -46,7 +46,6 @@ public class SlotUI : MonoBehaviour
         if (SaveManager.IsSlotEmpty(slot))
         {
             selectedSlot = slot;
-            // Show mode selector (notify TitleScreen or directly)
             TitleScreen.Instance.ShowModeSelector();
         }
         else

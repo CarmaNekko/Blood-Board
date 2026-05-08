@@ -4,7 +4,7 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 using BloodBoard.GameManagement;
 
-namespace BloodBoard.UI // Added namespace
+namespace BloodBoard.UI
 {
 
 public class LeaderboardUI : MonoBehaviour
@@ -20,12 +20,12 @@ public class LeaderboardUI : MonoBehaviour
     [SerializeField] private Button endlessTabButton;
 
     [Header("Normal Mode Leaderboard")]
-    [SerializeField] private Transform normalScoresParent; // Parent for normal score entries
-    [SerializeField] private GameObject normalScoreEntryPrefab; // Prefab for a single score entry (Text or custom UI)
+    [SerializeField] private Transform normalScoresParent;
+    [SerializeField] private GameObject normalScoreEntryPrefab;
 
     [Header("Endless Mode Leaderboard")]
-    [SerializeField] private Transform endlessScoresParent; // Parent for endless score entries
-    [SerializeField] private GameObject endlessScoreEntryPrefab; // Prefab for a single score entry (Text or custom UI)
+    [SerializeField] private Transform endlessScoresParent;
+    [SerializeField] private GameObject endlessScoreEntryPrefab;
 
     private void Awake()
     {
@@ -41,14 +41,12 @@ public class LeaderboardUI : MonoBehaviour
         {
             panel.SetActive(false);
         }
-        // Asegurarse de que todos los elementos de la UI estén ocultos al inicio
         if (backButton != null) backButton.gameObject.SetActive(false);
         if (normalTabButton != null) normalTabButton.gameObject.SetActive(false);
         if (endlessTabButton != null) endlessTabButton.gameObject.SetActive(false);
         if (normalScoresParent != null) normalScoresParent.gameObject.SetActive(false);
         if (endlessScoresParent != null) endlessScoresParent.gameObject.SetActive(false);
 
-        // Limpiar cualquier entrada de puntuación residual que pudiera haber quedado en el editor
         if (normalScoresParent != null) foreach (Transform child in normalScoresParent) Destroy(child.gameObject);
         if (endlessScoresParent != null) foreach (Transform child in endlessScoresParent) Destroy(child.gameObject);
     }
@@ -75,18 +73,17 @@ public class LeaderboardUI : MonoBehaviour
         {
             panel.SetActive(true);
         }
-        // Asegurarse de que los botones de navegación también sean visibles
         if (backButton != null) backButton.gameObject.SetActive(true);
         if (normalTabButton != null) normalTabButton.gameObject.SetActive(true);
         if (endlessTabButton != null) endlessTabButton.gameObject.SetActive(true);
 
-        Time.timeScale = 0f; // Pause game if called mid-game (though usually from title)
+        Time.timeScale = 0f;
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
 
         DisplayNormalScores();
         DisplayEndlessScores();
-        ShowTab(true); // Show normal tab by default
+        ShowTab(true);
         Debug.Log("Showing Leaderboards.");
     }
 
@@ -111,7 +108,6 @@ public class LeaderboardUI : MonoBehaviour
             panel.SetActive(false);
         }
 
-        // Limpiar las entradas de puntuación al salir para que no queden en la escena
         if (normalScoresParent != null)
         {
             normalScoresParent.gameObject.SetActive(false);
@@ -123,13 +119,12 @@ public class LeaderboardUI : MonoBehaviour
             foreach (Transform child in endlessScoresParent) Destroy(child.gameObject);
         }
 
-        // Ocultar explícitamente los botones para asegurar que desaparezcan
         if (backButton != null) backButton.gameObject.SetActive(false);
         if (normalTabButton != null) normalTabButton.gameObject.SetActive(false);
         if (endlessTabButton != null) endlessTabButton.gameObject.SetActive(false);
 
-        Time.timeScale = 1f; // Resume game
-        TitleScreen.Instance?.OnBackToMenu(); // Use existing TitleScreen method to restore main menu
+        Time.timeScale = 1f;
+        TitleScreen.Instance?.OnBackToMenu();
     }
 
     private void OnBack()
@@ -180,7 +175,6 @@ public class LeaderboardUI : MonoBehaviour
     }
     private void CreateScoreEntry(Transform parent, string rankName, string scoreText, string floorText)
     {
-        // Usamos el prefab correspondiente al padre
         GameObject prefab = (parent == normalScoresParent) ? normalScoreEntryPrefab : endlessScoreEntryPrefab;
         if (prefab == null) { Debug.LogError("Score Entry Prefab no está asignado en LeaderboardUI."); return; }
 

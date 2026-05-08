@@ -1,6 +1,6 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using BloodBoard.GameManagement; // Added for ScoreManager
+using BloodBoard.GameManagement;
 
 public class LevelExit : MonoBehaviour
 {
@@ -21,9 +21,6 @@ public class LevelExit : MonoBehaviour
             SaveManager.SaveToSlot(GameModeManager.CurrentSlot, currentFloor, currentScore, playerHealth, GameModeManager.CurrentMode.GetModeName());
             Debug.Log($"Guardando en piso: {currentFloor}, Score: {currentScore}");
 
-            // La lógica de avance de nivel ahora está centralizada en Finish_Level.cs
-            // para evitar el doble incremento de pisos. Se ha eliminado de este script
-            // para corregir el bug.
         }
     }
 }

@@ -1,8 +1,8 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using BloodBoard.GameManagement; // Added for ScoreManager
-using BloodBoard.UI; // Added for EndlessScoreInputUI
+using BloodBoard.GameManagement;
+using BloodBoard.UI;
 
 public class PlayerHealth : MonoBehaviour
 {
@@ -31,14 +31,12 @@ public class PlayerHealth : MonoBehaviour
 
         if (currentHealth <= 0)
         {
-            // Save on death
-            int currentFloor = LevelManager.currentLevel; // Get current floor before potential scene load
-            float finalHealth = currentHealth; // Use currentHealth as final health
+            int currentFloor = LevelManager.currentLevel;
+            float finalHealth = currentHealth;
             int finalScore = ScoreManager.Instance != null ? ScoreManager.Instance.GetCurrentScore() : 0;
 
             if (GameModeManager.CurrentMode is EndlessMode)
             {
-                // For Endless mode, prompt for name before showing game over
                 EndlessScoreInputUI.Instance?.Show(currentFloor, finalScore, finalHealth);
             }
             else

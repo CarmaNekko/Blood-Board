@@ -13,7 +13,6 @@ public class FPSManager : MonoBehaviour
     [RuntimeInitializeOnLoadMethod]
     private static void InitializeOnLoad()
     {
-        // Crear el FPSManager automáticamente al cargar la escena
         if (Instance == null)
         {
             GameObject fpsManagerObj = new GameObject("FPSManager");
@@ -31,7 +30,6 @@ public class FPSManager : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
         
-        // Escuchar cambios de escena
         SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
@@ -42,7 +40,6 @@ public class FPSManager : MonoBehaviour
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        // Reinicializar cuando cambia de escena
         initialized = false;
         fpsText = null;
         Debug.Log($"FPSManager: Escena '{scene.name}' cargada. Reintentando búsqueda de FPS...");
@@ -55,7 +52,6 @@ public class FPSManager : MonoBehaviour
 
     private void Update()
     {
-        // Si aún no está inicializado, intentar de nuevo
         if (!initialized)
         {
             InitializeFPS();
@@ -70,7 +66,6 @@ public class FPSManager : MonoBehaviour
 
     private void InitializeFPS()
     {
-        // Buscar el objeto FPS en la jerarquía
         Transform fpsTransform = FindFPSTextInHierarchy();
         if (fpsTransform != null)
         {
@@ -90,7 +85,6 @@ public class FPSManager : MonoBehaviour
 
     private Transform FindFPSTextInHierarchy()
     {
-        // Buscar en el Canvas principal
         Canvas[] canvases = FindObjectsByType<Canvas>(FindObjectsSortMode.None);
         foreach (Canvas canvas in canvases)
         {
@@ -100,7 +94,6 @@ public class FPSManager : MonoBehaviour
                 return fpsTransform;
             }
 
-            // Buscar en todos los hijos recursivamente
             fpsTransform = RecursiveFind(canvas.transform, "FPS");
             if (fpsTransform != null)
             {

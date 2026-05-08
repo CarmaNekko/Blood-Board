@@ -3,8 +3,8 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
-using BloodBoard.GameManagement; // Added for ScoreManager
-using BloodBoard.UI; // Added for LeaderboardUI
+using BloodBoard.GameManagement;
+using BloodBoard.UI;
 
 public enum SlotAction
 {
@@ -21,17 +21,17 @@ public class TitleScreen : MonoBehaviour
     [SerializeField] private GameObject titleBackground;
     [SerializeField] private TMP_Text titleText;
     [SerializeField] private GameObject modeSelectorPanel;
-    [SerializeField] private GameObject modeSelectorContent; // Grupo para contenido del selector
+    [SerializeField] private GameObject modeSelectorContent;
     [SerializeField] private Button normalButton;
     [SerializeField] private Button endlessButton;
     [SerializeField] private Button continueButton;
-    [SerializeField] private TMP_Text descriptionText; // Para descripciones de modos
-    [SerializeField] private Button backButton; // Para volver del selector
-    [SerializeField] private Button newGameButton; // Para mostrar selector de modos
-    [SerializeField] private SlotsUI slotsUI; // Referencia al script de slots
-    [SerializeField] private GameObject slotsPanel; // Panel padre de slots
+    [SerializeField] private TMP_Text descriptionText;
+    [SerializeField] private Button backButton;
+    [SerializeField] private Button newGameButton;
+    [SerializeField] private SlotsUI slotsUI;
+    [SerializeField] private GameObject slotsPanel;
     [SerializeField] private Button optionsButton;
-    [SerializeField] private Button leaderboardButton; // New button for leaderboards
+    [SerializeField] private Button leaderboardButton;
     [SerializeField] private Button creditsButton;
 
     private void Awake()
@@ -49,7 +49,7 @@ public class TitleScreen : MonoBehaviour
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
 
-        currentSlotAction = SlotAction.None; // Initialize
+        currentSlotAction = SlotAction.None;
     }
 
     private void Start()
@@ -61,7 +61,7 @@ public class TitleScreen : MonoBehaviour
 
         if (modeSelectorContent != null)
         {
-            modeSelectorContent.SetActive(false); // Oculto hasta New Game
+            modeSelectorContent.SetActive(false);
         }
         else
         {
@@ -78,7 +78,6 @@ public class TitleScreen : MonoBehaviour
             continueButton.gameObject.SetActive(saves.Count > 0);
             if (saves.Count > 0)
             {
-                // Continue button now just opens the slot selection screen
                 continueButton.onClick.AddListener(() => ShowSlotsScreen(SlotAction.ContinueGame));
             }
             else
@@ -100,7 +99,7 @@ public class TitleScreen : MonoBehaviour
         }
 
         if (newGameButton != null)
-        { // Changed to pass SlotAction
+        {
             newGameButton.onClick.AddListener(() => ShowSlotsScreen(SlotAction.NewGame));
         }
 
@@ -137,13 +136,13 @@ public class TitleScreen : MonoBehaviour
         }
         if (slotsPanel != null)
         {
-            slotsPanel.SetActive(false); // Hide slots when selecting mode
+            slotsPanel.SetActive(false);
         }
     }
 
-    private SlotAction currentSlotAction = SlotAction.None; // New field
+    private SlotAction currentSlotAction = SlotAction.None;
 
-    public void ShowSlotsScreen(SlotAction action) // Modified to accept action
+    public void ShowSlotsScreen(SlotAction action)
     {
         currentSlotAction = action;
 
@@ -171,7 +170,7 @@ public class TitleScreen : MonoBehaviour
         {
             creditsButton.gameObject.SetActive(false);
         }
-        if (leaderboardButton != null) { // Hide leaderboard button too
+        if (leaderboardButton != null) {
             leaderboardButton.gameObject.SetActive(false);
         }
     }
@@ -179,13 +178,12 @@ public class TitleScreen : MonoBehaviour
     public void OnNormalButton()
     {
         int selectedSlot = slotsUI.GetSelectedSlot();
-        if (selectedSlot == -1) return; // Should not happen
+        if (selectedSlot == -1) return;
 
         GameModeManager.SetSlot(selectedSlot);
-        ScoreManager.Instance?.ResetCurrentScore(); // Reset score for new game
+        ScoreManager.Instance?.ResetCurrentScore();
         GameModeManager.SetMode(GameModeManager.CreateNormalMode());
-        // Perform initial save for a new game starting in tutorial
-        SaveManager.SaveToSlot(selectedSlot, 0, 0, 100f, GameModeManager.CurrentMode.GetModeName()); // Floor 0 for tutorial
+        SaveManager.SaveToSlot(selectedSlot, 0, 0, 100f, GameModeManager.CurrentMode.GetModeName());
         Debug.Log($"Nueva partida Normal iniciada en slot {selectedSlot}. Guardado inicial en tutorial (piso 0).");
         SceneManager.LoadScene("Level_Tuto");
     }
@@ -193,10 +191,10 @@ public class TitleScreen : MonoBehaviour
     public void OnEndlessButton()
     {
         int selectedSlot = slotsUI.GetSelectedSlot();
-        if (selectedSlot == -1) return; // Should not happen
+        if (selectedSlot == -1) return;
 
         GameModeManager.SetSlot(selectedSlot);
-        ScoreManager.Instance?.ResetCurrentScore(); // Reset score for new game
+        ScoreManager.Instance?.ResetCurrentScore();
         GameModeManager.SetMode(GameModeManager.CreateEndlessMode());
         LevelManager.currentLevel = 1;
         SaveManager.SaveToSlot(selectedSlot, 1, 0, 100f, GameModeManager.CurrentMode.GetModeName());
@@ -206,7 +204,6 @@ public class TitleScreen : MonoBehaviour
 
     public void OnPlayButton()
     {
-        // Sin modo, tutorial
         SceneManager.LoadScene("Level_Tuto");
     }
 
@@ -224,7 +221,6 @@ public class TitleScreen : MonoBehaviour
 
     public void OnLeaderboardButton()
     {
-        // Assuming LeaderboardUI is a separate panel
         LeaderboardUI.Instance?.ShowLeaderboards();
 
         if (titleBackground != null)
@@ -232,7 +228,6 @@ public class TitleScreen : MonoBehaviour
             titleBackground.SetActive(false);
         }
 
-        // Hide main menu buttons
         if (newGameButton != null) newGameButton.gameObject.SetActive(false);
         if (continueButton != null) continueButton.gameObject.SetActive(false);
         if (optionsButton != null) optionsButton.gameObject.SetActive(false);
@@ -340,7 +335,7 @@ public class TitleScreen : MonoBehaviour
         }
     }
 
-    public SlotAction GetCurrentSlotAction() { return currentSlotAction; } // New public getter
+    public SlotAction GetCurrentSlotAction() { return currentSlotAction; }
 
     public void OnCreditsButton()
     {

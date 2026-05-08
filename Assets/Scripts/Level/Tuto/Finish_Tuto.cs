@@ -1,6 +1,6 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using BloodBoard.GameManagement; // Added for ScoreManager
+using BloodBoard.GameManagement;
 
 public class Finish_Tuto : MonoBehaviour
 {
@@ -16,10 +16,9 @@ public class Finish_Tuto : MonoBehaviour
         {
             isLoading = true;
 
-            // Guardar progreso al completar tutorial
             int currentScore = ScoreManager.Instance != null ? ScoreManager.Instance.GetCurrentScore() : 0;
-            ScoreManager.Instance?.ResetCurrentScore(); // Reset score after tutorial completion
-            SaveManager.SaveGame(1, currentScore, 100f); // Piso 1 completado, score, health 100
+            ScoreManager.Instance?.ResetCurrentScore();
+            SaveManager.SaveGame(1, currentScore, 100f);
 
             SceneManager.LoadScene(nombreNivel1);
         }

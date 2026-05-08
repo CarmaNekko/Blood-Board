@@ -6,6 +6,19 @@ public class Options : MonoBehaviour
 {
     public static Options Instance { get; private set; }
     public bool IsOpen { get; private set; }
+    private const int WindowedWidth = 1280;
+    private const int WindowedHeight = 720;
+    private static bool SupportsScreenModeOptions
+    {
+        get
+        {
+#if UNITY_WEBGL
+            return false;
+#else
+            return true;
+#endif
+        }
+    }
 
     [Header("Referencias")]
     [SerializeField] private GameObject optionsBackground;
@@ -76,7 +89,6 @@ public class Options : MonoBehaviour
             backButton.gameObject.SetActive(false);
         }
 
-        // FPS
         if (fpsTitleText != null)
         {
             fpsTitleText.gameObject.SetActive(false);
@@ -88,7 +100,6 @@ public class Options : MonoBehaviour
             fpsToggle.gameObject.SetActive(false);
         }
 
-        // Fullscreen
         if (fullscreenTitleText != null)
         {
             fullscreenTitleText.gameObject.SetActive(false);
@@ -96,13 +107,19 @@ public class Options : MonoBehaviour
 
         if (fullscreenButtonOn != null)
         {
-            fullscreenButtonOn.onClick.AddListener(SetFullscreen);
+            if (SupportsScreenModeOptions)
+            {
+                fullscreenButtonOn.onClick.AddListener(SetFullscreen);
+            }
             fullscreenButtonOn.gameObject.SetActive(false);
         }
 
         if (fullscreenButtonWindowed != null)
         {
-            fullscreenButtonWindowed.onClick.AddListener(SetWindowed);
+            if (SupportsScreenModeOptions)
+            {
+                fullscreenButtonWindowed.onClick.AddListener(SetWindowed);
+            }
             fullscreenButtonWindowed.gameObject.SetActive(false);
         }
     }
@@ -124,36 +141,26 @@ public class Options : MonoBehaviour
 
         UpdateSensitivityLabel(savedSensitivity);
 
-        // FPS - Keep object active so FPSDisplay script initializes, but toggle visibility
-        bool showFPS = PlayerPrefs.GetInt("ShowFPS", 0) == 1;
-        if (fpsDisplay != null)
-        {
-            // Always keep active for script initialization
-            fpsDisplay.SetActive(true);
-            // Control visibility through CanvasGroup
-            CanvasGroup canvasGroup = fpsDisplay.GetComponent<CanvasGroup>();
-            if (canvasGroup == null)
-            {
-                canvasGroup = fpsDisplay.AddComponent<CanvasGroup>();
-            }
-            canvasGroup.alpha = showFPS ? 1f : 0f;
-            canvasGroup.blocksRaycasts = showFPS;
-        }
+        bool showFPS = PlayerPrefs.GetInt("ShowFPS", 1) == 1;
+        SetFPSVisibility(showFPS);
         if (fpsToggle != null)
         {
-            fpsToggle.isOn = showFPS;
+            fpsToggle.SetIsOnWithoutNotify(showFPS);
         }
         if (fpsTitleText != null)
         {
             fpsTitleText.text = "Mostrar FPS";
         }
 
-        // Fullscreen
-        bool isFullscreen = PlayerPrefs.GetInt("Fullscreen", 1) == 1; // Default to fullscreen
-        Screen.fullScreen = isFullscreen;
+        if (SupportsScreenModeOptions)
+        {
+            bool isFullscreen = PlayerPrefs.GetInt("Fullscreen", 1) == 1;
+            ApplyScreenMode(isFullscreen);
+        }
+
         if (fullscreenTitleText != null)
         {
-            fullscreenTitleText.text = "Pantalla Completa";
+            fullscreenTitleText.text = "MODO DE PANTALLA";
         }
     }
 
@@ -165,7 +172,11 @@ public class Options : MonoBehaviour
             return;
         }
 
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+
         optionsBackground.SetActive(true);
+        optionsBackground.transform.SetAsFirstSibling();
 
         if (titleText != null)
         {
@@ -192,7 +203,6 @@ public class Options : MonoBehaviour
             backButton.gameObject.SetActive(true);
         }
 
-        // FPS
         if (fpsTitleText != null)
         {
             fpsTitleText.gameObject.SetActive(true);
@@ -200,23 +210,22 @@ public class Options : MonoBehaviour
 
         if (fpsToggle != null)
         {
-            fpsToggle.gameObject.SetActive(true);
+            ShowToggle(fpsToggle);
         }
 
-        // Fullscreen
         if (fullscreenTitleText != null)
         {
-            fullscreenTitleText.gameObject.SetActive(true);
+            fullscreenTitleText.gameObject.SetActive(SupportsScreenModeOptions);
         }
 
         if (fullscreenButtonOn != null)
         {
-            fullscreenButtonOn.gameObject.SetActive(true);
+            fullscreenButtonOn.gameObject.SetActive(SupportsScreenModeOptions);
         }
 
         if (fullscreenButtonWindowed != null)
         {
-            fullscreenButtonWindowed.gameObject.SetActive(true);
+            fullscreenButtonWindowed.gameObject.SetActive(SupportsScreenModeOptions);
         }
 
         IsOpen = true;
@@ -254,7 +263,6 @@ public class Options : MonoBehaviour
             backButton.gameObject.SetActive(false);
         }
 
-        // FPS
         if (fpsTitleText != null)
         {
             fpsTitleText.gameObject.SetActive(false);
@@ -265,7 +273,6 @@ public class Options : MonoBehaviour
             fpsToggle.gameObject.SetActive(false);
         }
 
-        // Fullscreen
         if (fullscreenTitleText != null)
         {
             fullscreenTitleText.gameObject.SetActive(false);
@@ -302,29 +309,106 @@ public class Options : MonoBehaviour
     public void OnFPSToggleChanged(bool isOn)
     {
         PlayerPrefs.SetInt("ShowFPS", isOn ? 1 : 0);
+        PlayerPrefs.Save();
+        SetFPSVisibility(isOn);
+    }
+
+    private void SetFPSVisibility(bool isVisible)
+    {
+        GameObject target = GetFPSDisplayObject();
+        if (target == null)
+        {
+            return;
+        }
+
+        target.SetActive(true);
+
+        FPSDisplay display = target.GetComponent<FPSDisplay>();
+        if (display == null)
+        {
+            display = target.AddComponent<FPSDisplay>();
+        }
+
+        display.SetVisible(isVisible);
+    }
+
+    private GameObject GetFPSDisplayObject()
+    {
         if (fpsDisplay != null)
         {
-            // Keep object active but control visibility
-            fpsDisplay.SetActive(true);
-            CanvasGroup canvasGroup = fpsDisplay.GetComponent<CanvasGroup>();
-            if (canvasGroup == null)
-            {
-                canvasGroup = fpsDisplay.AddComponent<CanvasGroup>();
-            }
-            canvasGroup.alpha = isOn ? 1f : 0f;
-            canvasGroup.blocksRaycasts = isOn;
+            return fpsDisplay;
+        }
+
+        if (FPSDisplay.Instance != null)
+        {
+            return FPSDisplay.Instance.gameObject;
+        }
+
+        GameObject foundFPS = GameObject.Find("FPS");
+        if (foundFPS != null)
+        {
+            fpsDisplay = foundFPS;
+            return fpsDisplay;
+        }
+
+        return null;
+    }
+
+    private void ShowToggle(Toggle toggle)
+    {
+        toggle.gameObject.SetActive(true);
+        toggle.interactable = true;
+        toggle.transform.SetAsLastSibling();
+
+        CanvasGroup canvasGroup = toggle.GetComponent<CanvasGroup>();
+        if (canvasGroup != null)
+        {
+            canvasGroup.alpha = 1f;
+            canvasGroup.interactable = true;
+            canvasGroup.blocksRaycasts = true;
+        }
+
+        if (toggle.targetGraphic != null)
+        {
+            toggle.targetGraphic.raycastTarget = true;
+        }
+
+        if (toggle.graphic != null)
+        {
+            toggle.graphic.raycastTarget = true;
         }
     }
 
     public void SetFullscreen()
     {
+        if (!SupportsScreenModeOptions)
+        {
+            return;
+        }
+
         PlayerPrefs.SetInt("Fullscreen", 1);
-        Screen.fullScreen = true;
+        ApplyScreenMode(true);
     }
 
     public void SetWindowed()
     {
+        if (!SupportsScreenModeOptions)
+        {
+            return;
+        }
+
         PlayerPrefs.SetInt("Fullscreen", 0);
-        Screen.fullScreen = false;
+        ApplyScreenMode(false);
+    }
+
+    private void ApplyScreenMode(bool fullscreen)
+    {
+        if (fullscreen)
+        {
+            Screen.SetResolution(Screen.currentResolution.width, Screen.currentResolution.height, FullScreenMode.FullScreenWindow);
+            return;
+        }
+
+        Screen.SetResolution(WindowedWidth, WindowedHeight, FullScreenMode.Windowed);
     }
 }

@@ -34,7 +34,7 @@ public class EndlessMode : GameMode
 
     public override bool IsFinalFloor(int level)
     {
-        return false; // Endless mode has no final floor.
+        return false;
     }
 
     public override string GetModeName()

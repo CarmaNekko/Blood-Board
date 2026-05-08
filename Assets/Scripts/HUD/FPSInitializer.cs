@@ -4,7 +4,6 @@ public class FPSInitializer : MonoBehaviour
 {
     private void Awake()
     {
-        // Buscar el objeto FPS en los hijos
         Transform fpsTransform = transform.Find("FPS");
         if (fpsTransform == null)
         {
@@ -14,7 +13,6 @@ public class FPSInitializer : MonoBehaviour
 
         GameObject fpsObject = fpsTransform.gameObject;
 
-        // Si no tiene FPSDisplay, agregarlo
         if (fpsObject.GetComponent<FPSDisplay>() == null)
         {
             FPSDisplay fpsDisplay = fpsObject.AddComponent<FPSDisplay>();
