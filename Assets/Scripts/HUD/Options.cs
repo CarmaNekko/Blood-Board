@@ -15,6 +15,16 @@ public class Options : MonoBehaviour
     [SerializeField] private TMP_Text sensitivityLabel;
     [SerializeField] private Button backButton;
 
+    [Header("FPS")]
+    [SerializeField] private TMP_Text fpsTitleText;
+    [SerializeField] private Toggle fpsToggle;
+    [SerializeField] private GameObject fpsDisplay;
+
+    [Header("Pantalla Completa")]
+    [SerializeField] private TMP_Text fullscreenTitleText;
+    [SerializeField] private Button fullscreenButtonOn;
+    [SerializeField] private Button fullscreenButtonWindowed;
+
     [Header("Sensibilidad")]
     [SerializeField] private float minSensitivity = 50f;
     [SerializeField] private float maxSensitivity = 400f;
@@ -65,6 +75,36 @@ public class Options : MonoBehaviour
             backButton.onClick.AddListener(HideOptions);
             backButton.gameObject.SetActive(false);
         }
+
+        // FPS
+        if (fpsTitleText != null)
+        {
+            fpsTitleText.gameObject.SetActive(false);
+        }
+
+        if (fpsToggle != null)
+        {
+            fpsToggle.onValueChanged.AddListener(OnFPSToggleChanged);
+            fpsToggle.gameObject.SetActive(false);
+        }
+
+        // Fullscreen
+        if (fullscreenTitleText != null)
+        {
+            fullscreenTitleText.gameObject.SetActive(false);
+        }
+
+        if (fullscreenButtonOn != null)
+        {
+            fullscreenButtonOn.onClick.AddListener(SetFullscreen);
+            fullscreenButtonOn.gameObject.SetActive(false);
+        }
+
+        if (fullscreenButtonWindowed != null)
+        {
+            fullscreenButtonWindowed.onClick.AddListener(SetWindowed);
+            fullscreenButtonWindowed.gameObject.SetActive(false);
+        }
     }
 
     private void Start()
@@ -83,6 +123,38 @@ public class Options : MonoBehaviour
         }
 
         UpdateSensitivityLabel(savedSensitivity);
+
+        // FPS - Keep object active so FPSDisplay script initializes, but toggle visibility
+        bool showFPS = PlayerPrefs.GetInt("ShowFPS", 0) == 1;
+        if (fpsDisplay != null)
+        {
+            // Always keep active for script initialization
+            fpsDisplay.SetActive(true);
+            // Control visibility through CanvasGroup
+            CanvasGroup canvasGroup = fpsDisplay.GetComponent<CanvasGroup>();
+            if (canvasGroup == null)
+            {
+                canvasGroup = fpsDisplay.AddComponent<CanvasGroup>();
+            }
+            canvasGroup.alpha = showFPS ? 1f : 0f;
+            canvasGroup.blocksRaycasts = showFPS;
+        }
+        if (fpsToggle != null)
+        {
+            fpsToggle.isOn = showFPS;
+        }
+        if (fpsTitleText != null)
+        {
+            fpsTitleText.text = "Mostrar FPS";
+        }
+
+        // Fullscreen
+        bool isFullscreen = PlayerPrefs.GetInt("Fullscreen", 1) == 1; // Default to fullscreen
+        Screen.fullScreen = isFullscreen;
+        if (fullscreenTitleText != null)
+        {
+            fullscreenTitleText.text = "Pantalla Completa";
+        }
     }
 
     public void ShowOptions()
@@ -120,6 +192,33 @@ public class Options : MonoBehaviour
             backButton.gameObject.SetActive(true);
         }
 
+        // FPS
+        if (fpsTitleText != null)
+        {
+            fpsTitleText.gameObject.SetActive(true);
+        }
+
+        if (fpsToggle != null)
+        {
+            fpsToggle.gameObject.SetActive(true);
+        }
+
+        // Fullscreen
+        if (fullscreenTitleText != null)
+        {
+            fullscreenTitleText.gameObject.SetActive(true);
+        }
+
+        if (fullscreenButtonOn != null)
+        {
+            fullscreenButtonOn.gameObject.SetActive(true);
+        }
+
+        if (fullscreenButtonWindowed != null)
+        {
+            fullscreenButtonWindowed.gameObject.SetActive(true);
+        }
+
         IsOpen = true;
     }
 
@@ -155,6 +254,33 @@ public class Options : MonoBehaviour
             backButton.gameObject.SetActive(false);
         }
 
+        // FPS
+        if (fpsTitleText != null)
+        {
+            fpsTitleText.gameObject.SetActive(false);
+        }
+
+        if (fpsToggle != null)
+        {
+            fpsToggle.gameObject.SetActive(false);
+        }
+
+        // Fullscreen
+        if (fullscreenTitleText != null)
+        {
+            fullscreenTitleText.gameObject.SetActive(false);
+        }
+
+        if (fullscreenButtonOn != null)
+        {
+            fullscreenButtonOn.gameObject.SetActive(false);
+        }
+
+        if (fullscreenButtonWindowed != null)
+        {
+            fullscreenButtonWindowed.gameObject.SetActive(false);
+        }
+
         IsOpen = false;
     }
 
@@ -171,5 +297,34 @@ public class Options : MonoBehaviour
         {
             sensitivityLabel.text = $"{value:0}";
         }
+    }
+
+    public void OnFPSToggleChanged(bool isOn)
+    {
+        PlayerPrefs.SetInt("ShowFPS", isOn ? 1 : 0);
+        if (fpsDisplay != null)
+        {
+            // Keep object active but control visibility
+            fpsDisplay.SetActive(true);
+            CanvasGroup canvasGroup = fpsDisplay.GetComponent<CanvasGroup>();
+            if (canvasGroup == null)
+            {
+                canvasGroup = fpsDisplay.AddComponent<CanvasGroup>();
+            }
+            canvasGroup.alpha = isOn ? 1f : 0f;
+            canvasGroup.blocksRaycasts = isOn;
+        }
+    }
+
+    public void SetFullscreen()
+    {
+        PlayerPrefs.SetInt("Fullscreen", 1);
+        Screen.fullScreen = true;
+    }
+
+    public void SetWindowed()
+    {
+        PlayerPrefs.SetInt("Fullscreen", 0);
+        Screen.fullScreen = false;
     }
 }

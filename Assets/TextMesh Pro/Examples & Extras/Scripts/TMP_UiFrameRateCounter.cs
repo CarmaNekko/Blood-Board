@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+﻿﻿using UnityEngine;
 using System.Collections;
 
 
@@ -47,7 +47,6 @@ namespace TMPro.Examples
             Set_FrameCounter_Position(AnchorPosition);
             last_AnchorPosition = AnchorPosition;
         }
-
 
         void Start()
         {
