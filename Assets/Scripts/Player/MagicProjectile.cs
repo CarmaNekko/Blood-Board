@@ -9,8 +9,17 @@ public class MagicProjectile : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        EnemyHealth enemy = other.GetComponent<EnemyHealth>();
+        if (other.CompareTag("Player"))
+        {
+            return;
+        }
 
+        if (other.gameObject.layer == LayerMask.NameToLayer("Rooms"))
+        {
+            return;
+        }
+
+        EnemyHealth enemy = other.GetComponent<EnemyHealth>();
         if (enemy != null)
         {
             enemy.TakeDamage(damage, projectileColor);

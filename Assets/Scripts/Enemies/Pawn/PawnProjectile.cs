@@ -31,6 +31,16 @@ public class PawnProjectile : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        if (other.CompareTag("Enemy"))
+        {
+            return;
+        }
+
+        if (other.gameObject.layer == LayerMask.NameToLayer("Rooms"))
+        {
+            return;
+        }
+
         if (other.CompareTag("Player"))
         {
             PlayerHealth playerHealth = other.GetComponent<PlayerHealth>();
@@ -38,11 +48,7 @@ public class PawnProjectile : MonoBehaviour
             {
                 playerHealth.TakeDamage(damage);
             }
-            Destroy(gameObject);
         }
-        else if (!other.CompareTag("Enemy"))
-        {
-            Destroy(gameObject);
-        }
+        Destroy(gameObject);
     }
 }

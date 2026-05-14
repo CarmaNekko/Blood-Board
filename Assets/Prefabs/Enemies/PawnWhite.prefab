@@ -5040,7 +5040,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyPawn
   playerTarget: {fileID: 0}
-  detectionRange: 19
   attackRange: 19
   attackCooldown: 1
   baseSpeed: 4
@@ -5059,7 +5058,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth
   myColor: 0
-  maxHealth: 10
+  maxHealth: 15
   scoreValue: 100
   frenzyParticles: {fileID: 2142880900780310640}
 --- !u!4 &1748540835242690611 stripped

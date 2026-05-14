@@ -10,7 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 7496578126041148700}
   - component: {fileID: 2132932844157827426}
-  m_Layer: 0
+  - component: {fileID: 4888103009212671369}
+  m_Layer: 7
   m_Name: DeadEnd_Muro
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -47,6 +48,29 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DoorConnector
   isConnected: 0
   doorHeightOffset: 0
+  owningRoomNodeId: -1
+  sourceRoomNodeId: -1
+--- !u!65 &4888103009212671369
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6291659561367954977}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 5, y: 5, z: 0.5}
+  m_Center: {x: 0, y: 1.5, z: 0.25}
 --- !u!1 &6373294753829430864
 GameObject:
   m_ObjectHideFlags: 0
@@ -59,7 +83,7 @@ GameObject:
   - component: {fileID: 860354389788647242}
   - component: {fileID: 5896058358640437894}
   - component: {fileID: 2773574105037114366}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -75,8 +99,8 @@ Transform:
   m_GameObject: {fileID: 6373294753829430864}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: 0.25}
-  m_LocalScale: {x: 5, y: 4, z: 0.5}
+  m_LocalPosition: {x: 0, y: 1.5, z: 0.25}
+  m_LocalScale: {x: 5, y: 5, z: 0.5}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 7496578126041148700}
