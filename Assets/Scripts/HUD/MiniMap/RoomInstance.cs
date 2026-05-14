@@ -129,6 +129,8 @@ public class RoomInstance : MonoBehaviour
         if (MarkDiscovered())
         {
             changed = true;
+            RoomEnemySpawner spawner = GetComponent<RoomEnemySpawner>();
+            if (spawner != null) spawner.TriggerRoomEvent();
         }
 
         if (SetAsCurrentArea())

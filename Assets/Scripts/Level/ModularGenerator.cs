@@ -154,49 +154,60 @@ public class ModularGenerator : MonoBehaviour
 
     private void PlaceFinalRoom()
     {
-        List<DoorConnector> candidates = new List<DoorConnector>(pendingCorridorDoors);
-        candidates.AddRange(pendingRoomDoors);
-
-        for (int i = candidates.Count - 1; i >= 0; i--)
+        for (int i = pendingCorridorDoors.Count - 1; i >= 0; i--)
         {
-            DoorConnector targetDoor = candidates[i];
-            if (targetDoor == null || targetDoor.isConnected)
+            if (TryPlaceFinalRoomAtDoor(pendingCorridorDoors[i])) return;
+        }
+
+        for (int i = pendingRoomDoors.Count - 1; i >= 0; i--)
+        {
+            DoorConnector roomDoor = pendingRoomDoors[i];
+            if (roomDoor == null || roomDoor.isConnected) continue;
+
+            foreach (GameObject corridorPrefab in corridorPrefabs)
             {
-                continue;
+                GameObject newCorridor = Instantiate(corridorPrefab);
+                DoorConnector[] corridorDoors = newCorridor.GetComponentsInChildren<DoorConnector>();
+
+                AlignPiece(roomDoor, corridorDoors[0], newCorridor);
+
+                if (!HasOverlap(newCorridor))
+                {
+                    allSpawnedPieces.Add(newCorridor);
+                    roomDoor.isConnected = true;
+                    corridorDoors[0].isConnected = true;
+                    RegisterStandaloneArea(newCorridor, MapAreaShape.Corridor, false);
+
+                    if (TryPlaceFinalRoomAtDoor(corridorDoors[1])) return;
+                }
+                else
+                {
+                    Destroy(newCorridor);
+                }
             }
+        }
+    }
 
-            GameObject finalRoom = Instantiate(finalRoomPrefab);
-            DoorConnector finalDoor = finalRoom.GetComponentInChildren<DoorConnector>();
+    private bool TryPlaceFinalRoomAtDoor(DoorConnector targetDoor)
+    {
+        if (targetDoor == null || targetDoor.isConnected) return false;
 
-            if (finalDoor.doorHeightOffset != targetDoor.doorHeightOffset)
-            {
-                finalRoom.SetActive(false);
-                Destroy(finalRoom);
-                continue;
-            }
+        GameObject finalRoom = Instantiate(finalRoomPrefab);
+        DoorConnector finalDoor = finalRoom.GetComponentInChildren<DoorConnector>();
 
-            AlignPiece(targetDoor, finalDoor, finalRoom);
+        AlignPiece(targetDoor, finalDoor, finalRoom);
 
-            if (HasOverlap(finalRoom))
-            {
-                finalRoom.SetActive(false);
-                Destroy(finalRoom);
-                continue;
-            }
-
+        if (!HasOverlap(finalRoom))
+        {
             allSpawnedPieces.Add(finalRoom);
             targetDoor.isConnected = true;
             finalDoor.isConnected = true;
-
-            int finalRoomId = RegisterRoom(finalRoom, DungeonRoomType.Final, false);
-            int parentRoomId = targetDoor.GetSourceRoomNodeId();
-            if (parentRoomId >= 0)
-            {
-                generatedLayout.ConnectRooms(parentRoomId, finalRoomId);
-            }
-
-            return;
+            RegisterRoom(finalRoom, DungeonRoomType.Final, false);
+            return true;
         }
+
+        Destroy(finalRoom);
+        return false;
     }
 
     private void SealOpenDoors()
@@ -291,23 +302,35 @@ public class ModularGenerator : MonoBehaviour
 
     private bool HasOverlap(GameObject piece)
     {
-        Vector3 checkCenter = piece.transform.position + new Vector3(0f, 2f, 0f);
-        Collider[] hitColliders = Physics.OverlapBox(
-            checkCenter,
-            new Vector3(14.5f, 4f, 14.5f),
-            piece.transform.rotation,
-            collisionMask
-        );
+        BoxCollider roomCollider = piece.GetComponent<BoxCollider>();
 
-        foreach (Collider hit in hitColliders)
+        if (roomCollider != null)
         {
-            if (hit.transform.root != piece.transform)
-            {
-                return true;
-            }
-        }
+            Vector3 dynamicSize = roomCollider.size / 2f * 0.95f;
 
-        return false;
+            Vector3 checkCenter = piece.transform.TransformPoint(roomCollider.center);
+
+            Collider[] hitColliders = Physics.OverlapBox(
+                checkCenter,
+                dynamicSize,
+                piece.transform.rotation,
+                collisionMask
+            );
+
+            foreach (Collider hit in hitColliders)
+            {
+                if (hit.transform.root != piece.transform.root)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+        else
+        {
+            return true;
+        }
     }
 
     private void AddDoorsToList(GameObject piece, bool isCorridor, int owningRoomId, int sourceRoomId)

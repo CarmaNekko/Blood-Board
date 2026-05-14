@@ -450,24 +450,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e768768fad74e504e8dbf4a2d8b8e227, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ModularGenerator
-  startRoomPrefab: {fileID: 207810322930416390, guid: 90b4574101b57ad46911056919dee0e9, type: 3}
-  finalRoomPrefab: {fileID: 4518203132669229106, guid: 2e970fd7e30d5464a861f6d40a3903d6, type: 3}
+  startRoomPrefab: {fileID: 9215206470418219887, guid: ab716a295d34c3347bab88ef4803a2a5, type: 3}
+  finalRoomPrefab: {fileID: 3206246361914026675, guid: 37371f21f037fd04880b88901e668373, type: 3}
   roomPrefabs:
-  - {fileID: 8789302996761892395, guid: 00dc3e2c9726ccd4489a2d190436638d, type: 3}
-  - {fileID: 3929290623506828428, guid: 4f7d0c768d73024478e15ed0b4b46da8, type: 3}
-  - {fileID: 266042095687304172, guid: 136463c64eb6e684a8cb2f33de89049f, type: 3}
+  - {fileID: 1133307281766849744, guid: d5a8ff85eb433da4bbac76b365d127e6, type: 3}
+  - {fileID: 1133307281766849744, guid: d5a8ff85eb433da4bbac76b365d127e6, type: 3}
+  - {fileID: 6045825802650325582, guid: f691004411479bb4c8c9a758650aa775, type: 3}
+  - {fileID: 6045825802650325582, guid: f691004411479bb4c8c9a758650aa775, type: 3}
+  - {fileID: 1059234749075372331, guid: 4942a9f1aca1d8543b410a8a3b94fca5, type: 3}
+  - {fileID: 1059234749075372331, guid: 4942a9f1aca1d8543b410a8a3b94fca5, type: 3}
   corridorPrefabs:
-  - {fileID: 129632448362685852, guid: d69567be97f57e649b06100f9d51423d, type: 3}
-  - {fileID: 4611758441870340418, guid: 788be201ac7317d48ab6b0afa0ad711b, type: 3}
-  - {fileID: 3682447688361108157, guid: 6c712c81a5af90342bc24736772cb475, type: 3}
+  - {fileID: 4158632963112747052, guid: 1e3689983ac3d534197e07eb1e178728, type: 3}
   deadEndPrefabs:
   - {fileID: 6291659561367954977, guid: c5a74124a8fa41e4784ac8278f4665dd, type: 3}
   maxRooms: 6
   collisionMask:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 128
   navMesh: {fileID: 999563471}
-  mapGridWorldSize: 30
+  mapGridWorldSize: 50
 --- !u!114 &999563471
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -530,7 +531,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LevelManager
   baseRooms: 6
-  baseEnemiesPerRoom: 4
+  baseEnemiesPerRoom: 6
   extraRoomsPerLevel: 2
   extraEnemiesPerLevel: 2
 --- !u!4 &1996999801

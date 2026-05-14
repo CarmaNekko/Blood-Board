@@ -4,7 +4,7 @@ public class EnemyPawn : MonoBehaviour
 {
     [Header("Targeting")]
     [SerializeField] private Transform playerTarget;
-    [SerializeField] private float detectionRange = 18f;
+    // ¡Adiós al detectionRange!
 
     [Header("Combat Stats Base")]
     [SerializeField] private float attackRange = 10f;
@@ -17,8 +17,6 @@ public class EnemyPawn : MonoBehaviour
 
     private NavMeshAgent agent;
     private float lastAttackTime;
-    private bool isAwake = false;
-
     private EnemyHealth healthScript;
 
     void Start()
@@ -31,7 +29,7 @@ public class EnemyPawn : MonoBehaviour
 
         if (playerTarget == null)
         {
-            GameObject playerObj = GameObject.Find("Player");
+            GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
             if (playerObj != null)
             {
                 playerTarget = playerObj.transform;
@@ -41,35 +39,26 @@ public class EnemyPawn : MonoBehaviour
 
     void Update()
     {
-
         agent.speed = healthScript.isBuffed ? baseSpeed + 2.5f : baseSpeed;
 
         if (playerTarget != null)
         {
             float distanceToPlayer = Vector3.Distance(transform.position, playerTarget.position);
 
-            if (!isAwake && distanceToPlayer <= detectionRange)
+            if (distanceToPlayer > attackRange)
             {
-                isAwake = true;
+                agent.SetDestination(playerTarget.position);
+                agent.isStopped = false;
             }
-
-            if (isAwake)
+            else
             {
-                if (distanceToPlayer > attackRange)
-                {
-                    agent.SetDestination(playerTarget.position);
-                    agent.isStopped = false;
-                }
-                else
-                {
-                    agent.isStopped = true;
+                agent.isStopped = true;
 
-                    Vector3 lookDirection = (playerTarget.position - transform.position).normalized;
-                    lookDirection.y = 0;
-                    transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(lookDirection), Time.deltaTime * 5f);
+                Vector3 lookDirection = (playerTarget.position - transform.position).normalized;
+                lookDirection.y = 0;
+                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(lookDirection), Time.deltaTime * 5f);
 
-                    TryAttack();
-                }
+                TryAttack();
             }
         }
     }
@@ -88,7 +77,7 @@ public class EnemyPawn : MonoBehaviour
                 if (projectileScript != null)
                 {
                     Vector3 targetLastPosition = playerTarget.position;
-                    
+
                     float damage = healthScript.isBuffed ? 20f : 10f;
                     float size = healthScript.isBuffed ? 1.5f : 1f;
 
