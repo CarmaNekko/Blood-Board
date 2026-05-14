@@ -56,10 +56,8 @@ public class RoomEnemySpawner : MonoBehaviour
 
     private void Update()
     {
-        // === FASE DE ACECHO ===
         if (isWaitingForPlayer && playerTransform != null)
         {
-            // 1. Buscamos las referencias AHORA (Esto soluciona el error de ejecución)
             if (myRoom == null) myRoom = GetComponent<RoomInstance>();
             if (myDoors == null || myDoors.Length == 0) myDoors = GetComponentsInChildren<DoorConnector>();
 
@@ -71,7 +69,6 @@ public class RoomEnemySpawner : MonoBehaviour
                 {
                     if (door.isConnected)
                     {
-                        // 2. Medimos la distancia en 2D (Ignorando la altura Y)
                         Vector2 playerPos2D = new Vector2(playerTransform.position.x, playerTransform.position.z);
                         Vector2 doorPos2D = new Vector2(door.transform.position.x, door.transform.position.z);
 
@@ -83,7 +80,6 @@ public class RoomEnemySpawner : MonoBehaviour
                     }
                 }
 
-                // 3. ¡CAYÓ EN LA TRAMPA!
                 if (isFarFromAllDoors)
                 {
                     isWaitingForPlayer = false;
@@ -101,13 +97,10 @@ public class RoomEnemySpawner : MonoBehaviour
             }
         }
 
-        // === FASE DE COMBATE ===
         if (hasTriggered && !roomCleared && !isWaitingForPlayer)
         {
-            // Limpiamos los enemigos que ya destruiste con tus balas mágicas
             activeEnemiesList.RemoveAll(enemy => enemy == null);
 
-            // Si ya no queda ninguno vivo...
             if (activeEnemiesList.Count == 0)
             {
                 roomCleared = true;

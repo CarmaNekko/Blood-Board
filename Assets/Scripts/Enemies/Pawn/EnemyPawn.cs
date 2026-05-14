@@ -29,7 +29,6 @@ public class EnemyPawn : MonoBehaviour
 
         if (playerTarget == null)
         {
-            // Usamos el Tag en lugar del nombre, es más seguro y rápido
             GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
             if (playerObj != null)
             {
@@ -40,14 +39,12 @@ public class EnemyPawn : MonoBehaviour
 
     void Update()
     {
-        // Actualizamos la velocidad por si recibe un buff
         agent.speed = healthScript.isBuffed ? baseSpeed + 2.5f : baseSpeed;
 
         if (playerTarget != null)
         {
             float distanceToPlayer = Vector3.Distance(transform.position, playerTarget.position);
 
-            // ¡Ya no hay fase de sueño! Si están lejos, corren; si están cerca, disparan.
             if (distanceToPlayer > attackRange)
             {
                 agent.SetDestination(playerTarget.position);
@@ -57,7 +54,6 @@ public class EnemyPawn : MonoBehaviour
             {
                 agent.isStopped = true;
 
-                // Mirar fijamente al jugador
                 Vector3 lookDirection = (playerTarget.position - transform.position).normalized;
                 lookDirection.y = 0;
                 transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(lookDirection), Time.deltaTime * 5f);
