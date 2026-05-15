@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: -8764795551053696983}
   m_Layer: 0
   m_Name: White Magic
-  m_TagString: MagiaBlanca
+  m_TagString: WhiteMagic
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
