@@ -21,7 +21,6 @@ public class Options : MonoBehaviour
     }
 
     [Header("Referencias")]
-    [SerializeField] private GameObject optionsBackground;
     [SerializeField] private TMP_Text titleText;
     [SerializeField] private TMP_Text sensitivityTitleText;
     [SerializeField] private Slider sensitivitySlider;
@@ -55,10 +54,7 @@ public class Options : MonoBehaviour
             return;
         }
 
-        if (optionsBackground != null)
-        {
-            optionsBackground.SetActive(false);
-        }
+        gameObject.SetActive(false);
 
         if (titleText != null)
         {
@@ -166,17 +162,11 @@ public class Options : MonoBehaviour
 
     public void ShowOptions()
     {
-        if (optionsBackground == null)
-        {
-            Debug.LogError("Options: no se ha asignado optionsBackground.");
-            return;
-        }
-
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
 
-        optionsBackground.SetActive(true);
-        optionsBackground.transform.SetAsFirstSibling();
+        gameObject.SetActive(true);
+        transform.SetAsFirstSibling();
 
         if (titleText != null)
         {
@@ -233,61 +223,9 @@ public class Options : MonoBehaviour
 
     public void HideOptions()
     {
-        if (optionsBackground != null)
-        {
-            optionsBackground.SetActive(false);
-        }
-
-        if (titleText != null)
-        {
-            titleText.gameObject.SetActive(false);
-        }
-
-        if (sensitivityTitleText != null)
-        {
-            sensitivityTitleText.gameObject.SetActive(false);
-        }
-
-        if (sensitivitySlider != null)
-        {
-            sensitivitySlider.gameObject.SetActive(false);
-        }
-
-        if (sensitivityLabel != null)
-        {
-            sensitivityLabel.gameObject.SetActive(false);
-        }
-
-        if (backButton != null)
-        {
-            backButton.gameObject.SetActive(false);
-        }
-
-        if (fpsTitleText != null)
-        {
-            fpsTitleText.gameObject.SetActive(false);
-        }
-
-        if (fpsToggle != null)
-        {
-            fpsToggle.gameObject.SetActive(false);
-        }
-
-        if (fullscreenTitleText != null)
-        {
-            fullscreenTitleText.gameObject.SetActive(false);
-        }
-
-        if (fullscreenButtonOn != null)
-        {
-            fullscreenButtonOn.gameObject.SetActive(false);
-        }
-
-        if (fullscreenButtonWindowed != null)
-        {
-            fullscreenButtonWindowed.gameObject.SetActive(false);
-        }
-
+        // Since this script is on the options panel itself, we just deactivate the whole GameObject.
+        // This also deactivates all its children, so individual calls are not needed.
+        gameObject.SetActive(false);
         IsOpen = false;
     }
 

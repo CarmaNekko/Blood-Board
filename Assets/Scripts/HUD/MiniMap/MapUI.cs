@@ -144,6 +144,16 @@ public class MapUI : MonoBehaviour
         if (activeLayout != null)
         {
             activeLayout.LayoutChanged += Redraw;
+
+            // In tutorial scene, discover all rooms so the minimap is fully drawn from the start
+            bool isTutorial = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name == "Level_Tuto";
+            if (isTutorial)
+            {
+                for (int i = 0; i < activeLayout.Rooms.Count; i++)
+                {
+                    activeLayout.DiscoverRoom(i);
+                }
+            }
         }
 
         Redraw();

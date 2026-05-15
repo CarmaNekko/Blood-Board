@@ -66,6 +66,13 @@ public class FPSManager : MonoBehaviour
 
     private void InitializeFPS()
     {
+        // No buscar FPS en escenas de título
+        if (SceneManager.GetActiveScene().name.Contains("Title"))
+        {
+            initialized = true; // Marcar como inicializado para no buscar más
+            return;
+        }
+
         Transform fpsTransform = FindFPSTextInHierarchy();
         if (fpsTransform != null)
         {
@@ -74,12 +81,14 @@ public class FPSManager : MonoBehaviour
             {
                 initialized = true;
                 Debug.Log("FPSManager: FPS Text encontrado e inicializado.");
+                fpsText.enabled = true;
             }
         }
 
         if (!initialized)
         {
             Debug.LogWarning("FPSManager: No se encontró el objeto FPS o su componente TMP_Text en esta escena.");
+            initialized = true; // Evitar spam de warnings
         }
     }
 

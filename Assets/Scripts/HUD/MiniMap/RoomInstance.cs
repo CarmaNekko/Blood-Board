@@ -109,6 +109,13 @@ public class RoomInstance : MonoBehaviour
 
     private void Update()
     {
+        // Check if room should be discovered based on layout
+        if (!IsDiscovered && layout != null && RoomId >= 0 && layout.IsDiscovered(RoomId))
+        {
+            MarkDiscovered();
+            AreasChanged?.Invoke();
+        }
+
         if (playerTransform == null)
         {
             ResolvePlayer();
