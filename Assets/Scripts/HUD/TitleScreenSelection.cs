@@ -41,6 +41,15 @@ public class TitleScreenSelection : MonoBehaviour
             Destroy(gameObject);
             return;
         }
+
+        RectTransform rect = GetComponent<RectTransform>();
+        if (rect != null)
+        {
+            rect.anchorMin = Vector2.zero;
+            rect.anchorMax = Vector2.one;
+            rect.offsetMin = Vector2.zero;
+            rect.offsetMax = Vector2.zero;
+        }
     }
 
     public void SetupMainMenu()
@@ -110,8 +119,6 @@ public class TitleScreenSelection : MonoBehaviour
             creditsButton.onClick.AddListener(OnCreditsButton);
             AddHoverListeners(creditsButton);
         }
-
-        ReorganizeUI();
     }
 
     public void HideMainMenu()
@@ -127,6 +134,7 @@ public class TitleScreenSelection : MonoBehaviour
     public void ShowMainMenu()
     {
         if (titleBackground != null) titleBackground.SetActive(true);
+
         var saves = SaveManager.GetAvailableSaves();
         if (newGameButton != null)
         {
@@ -153,9 +161,7 @@ public class TitleScreenSelection : MonoBehaviour
             creditsButton.gameObject.SetActive(true);
             SetButtonDimmed(creditsButton);
         }
-        ReorganizeUI();
     }
-
     public void ShowModeSelector()
     {
         if (modeSelectorContent != null)
@@ -202,50 +208,6 @@ public class TitleScreenSelection : MonoBehaviour
     public void OnCreditsButton()
     {
         CheckerboardTransition.LoadScene("Credits");
-    }
-
-    private void ReorganizeUI()
-    {
-        float currentY = 0f;
-        float spacing = 60f;
-
-        if (newGameButton != null)
-        {
-            SetButtonPosition(newGameButton, currentY);
-            currentY -= spacing;
-        }
-
-        if (continueButton != null && continueButton.gameObject.activeSelf)
-        {
-            SetButtonPosition(continueButton, currentY);
-            currentY -= spacing;
-        }
-
-        if (optionsButton != null)
-        {
-            SetButtonPosition(optionsButton, currentY);
-            currentY -= spacing;
-        }
-
-        if (leaderboardButton != null)
-        {
-            SetButtonPosition(leaderboardButton, currentY);
-            currentY -= spacing;
-        }
-
-        if (creditsButton != null)
-        {
-            SetButtonPosition(creditsButton, currentY);
-        }
-    }
-
-    private void SetButtonPosition(Button button, float yPosition)
-    {
-        RectTransform rect = button.GetComponent<RectTransform>();
-        if (rect != null)
-        {
-            rect.anchoredPosition = new Vector2(rect.anchoredPosition.x, yPosition);
-        }
     }
 
     private void AddHoverListeners(Button button, string description = null)

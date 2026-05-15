@@ -11,6 +11,7 @@ using UnityEditor;
 public class CheckerboardTransition : MonoBehaviour
 {
     public static CheckerboardTransition Instance { get; private set; }
+    public static bool directToMenu = false;
 
     [SerializeField] private List<Image> squares = new List<Image>();
     [SerializeField] private GameObject squarePrefab;
@@ -22,15 +23,16 @@ public class CheckerboardTransition : MonoBehaviour
     private int columns;
     private int rows;
 
-    private bool isTransitioning = false;
-    private bool startFadeOutOnLoad = false;
+    public bool IsTransitioning { get; private set; } = false;
     private Action onComplete;
+    private Image raycastBlocker;
 
     private void Awake()
     {
         if (Instance == null)
         {
             Instance = this;
+            transform.SetParent(null);
             DontDestroyOnLoad(gameObject);
             SceneManager.sceneLoaded += OnSceneLoaded;
         }
@@ -63,6 +65,12 @@ public class CheckerboardTransition : MonoBehaviour
             rect.offsetMin = Vector2.zero;
             rect.offsetMax = Vector2.zero;
         }
+
+        raycastBlocker = GetComponent<Image>();
+        if (raycastBlocker == null) { raycastBlocker = gameObject.AddComponent<Image>(); }
+        raycastBlocker.color = Color.clear;
+        raycastBlocker.raycastTarget = false;
+        IsTransitioning = false;
     }
 
     private void OnDestroy()
@@ -75,16 +83,19 @@ public class CheckerboardTransition : MonoBehaviour
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        if (startFadeOutOnLoad)
+        if (!IsTransitioning)
         {
-            startFadeOutOnLoad = false;
-            UpdateGrid(true);
-            StartCoroutine(AnimateFadeOut());
+            IsTransitioning = true;
         }
-        else if (!isTransitioning)
+
+        if (raycastBlocker != null) raycastBlocker.raycastTarget = true;
+        UpdateGrid(true);
+        if (IsLevelScene(scene.name))
         {
-            isTransitioning = true;
-            UpdateGrid(true);
+            StartCoroutine(FadeOutAfterFloorSign());
+        }
+        else
+        {
             StartCoroutine(AnimateFadeOut());
         }
     }
@@ -187,12 +198,13 @@ public class CheckerboardTransition : MonoBehaviour
 
     public void StartTransition(Action onCompleteCallback, bool isSceneLoad = true)
     {
-        if (isTransitioning)
+        if (IsTransitioning)
         {
             Debug.LogWarning("Ya hay una transición en curso. Se ignora la nueva solicitud.");
             return;
         }
-        isTransitioning = true;
+        IsTransitioning = true;
+        if (raycastBlocker != null) raycastBlocker.raycastTarget = true;
         UpdateGrid();
         onComplete = onCompleteCallback;
         StartCoroutine(AnimateTransitionFlow(isSceneLoad));
@@ -266,7 +278,6 @@ public class CheckerboardTransition : MonoBehaviour
 
         if (isSceneLoad)
         {
-            startFadeOutOnLoad = true;
             onComplete?.Invoke();
         }
         else
@@ -274,6 +285,18 @@ public class CheckerboardTransition : MonoBehaviour
             onComplete?.Invoke();
             yield return StartCoroutine(AnimateFadeOut());
         }
+    }
+
+    private IEnumerator FadeOutAfterFloorSign()
+    {
+        // Espera hasta que el cartel del piso haya desaparecido
+        yield return new WaitUntil(() => !PauseScreen.IsFloorSignActive);
+        yield return StartCoroutine(AnimateFadeOut());
+    }
+
+    private bool IsLevelScene(string sceneName)
+    {
+        return sceneName.StartsWith("Level_");
     }
 
     private IEnumerator AnimateFadeOut()
@@ -328,7 +351,8 @@ public class CheckerboardTransition : MonoBehaviour
         yield return new WaitForSecondsRealtime(adjustedDuration);
 
         foreach (Image square in squares) { square.color = Color.clear; }
-        isTransitioning = false;
+        IsTransitioning = false;
+        if (raycastBlocker != null) raycastBlocker.raycastTarget = false;
     }
 
     private IEnumerator FadeIn(Image image, float duration)
