@@ -14,7 +14,7 @@ public class PlayerHealth : MonoBehaviour
     [Header("Damage Feedback")]
     public Image damageFlashImage;
     public float flashSpeed = 5f;
-    public Color flashColor = new Color(1f, 0f, 0f, 0.4f); // Rojo al 40% de opacidad
+    public Color flashColor = new Color(1f, 0f, 0f, 0.4f);
 
     void Start()
     {
@@ -27,13 +27,12 @@ public class PlayerHealth : MonoBehaviour
 
         if (damageFlashImage != null)
         {
-            damageFlashImage.color = Color.clear; // Empieza transparente
+            damageFlashImage.color = Color.clear;
         }
     }
 
     void Update()
     {
-        // Si la pantalla está roja, la vamos aclarando poco a poco
         if (damageFlashImage != null && damageFlashImage.color != Color.clear)
         {
             damageFlashImage.color = Color.Lerp(damageFlashImage.color, Color.clear, flashSpeed * Time.deltaTime);
@@ -49,7 +48,6 @@ public class PlayerHealth : MonoBehaviour
             healthBarUI.value = currentHealth;
         }
 
-        // === ¡EL FLASH DE DAÑO! ===
         if (damageFlashImage != null)
         {
             damageFlashImage.color = flashColor;

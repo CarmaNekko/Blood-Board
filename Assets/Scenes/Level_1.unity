@@ -576,6 +576,17 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1210542690}
   m_CullTransparentMesh: 1
+--- !u!114 &1776039908 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3347385784729216109, guid: d9fad25a5ba93d54da34f557342663f8, type: 3}
+  m_PrefabInstance: {fileID: 2483767973135500894}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
 --- !u!1 &1974925213 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2317271256402923216, guid: 5e95e756df1eba343ba25da4ed081cbb, type: 3}
@@ -655,6 +666,17 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2057032663 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6449170959756080923, guid: d9fad25a5ba93d54da34f557342663f8, type: 3}
+  m_PrefabInstance: {fileID: 2483767973135500894}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
 --- !u!114 &2078342359 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5394803261205600067, guid: 5e95e756df1eba343ba25da4ed081cbb, type: 3}
@@ -1054,23 +1076,31 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1156367064293503880, guid: 5e95e756df1eba343ba25da4ed081cbb, type: 3}
       propertyPath: blackManaCost
-      value: 10
+      value: 9
       objectReference: {fileID: 0}
+    - target: {fileID: 1156367064293503880, guid: 5e95e756df1eba343ba25da4ed081cbb, type: 3}
+      propertyPath: blackManaFill
+      value: 
+      objectReference: {fileID: 1776039908}
     - target: {fileID: 1156367064293503880, guid: 5e95e756df1eba343ba25da4ed081cbb, type: 3}
       propertyPath: cameraEffects
       value: 
       objectReference: {fileID: 1974925215}
     - target: {fileID: 1156367064293503880, guid: 5e95e756df1eba343ba25da4ed081cbb, type: 3}
       propertyPath: whiteManaCost
-      value: 10
+      value: 9
       objectReference: {fileID: 0}
+    - target: {fileID: 1156367064293503880, guid: 5e95e756df1eba343ba25da4ed081cbb, type: 3}
+      propertyPath: whiteManaFill
+      value: 
+      objectReference: {fileID: 2057032663}
     - target: {fileID: 1156367064293503880, guid: 5e95e756df1eba343ba25da4ed081cbb, type: 3}
       propertyPath: blackManaBarUI
       value: 
       objectReference: {fileID: 318682328}
     - target: {fileID: 1156367064293503880, guid: 5e95e756df1eba343ba25da4ed081cbb, type: 3}
       propertyPath: blackManaRegen
-      value: 16
+      value: 18
       objectReference: {fileID: 0}
     - target: {fileID: 1156367064293503880, guid: 5e95e756df1eba343ba25da4ed081cbb, type: 3}
       propertyPath: whiteManaBarUI
@@ -1078,7 +1108,7 @@ PrefabInstance:
       objectReference: {fileID: 857786599}
     - target: {fileID: 1156367064293503880, guid: 5e95e756df1eba343ba25da4ed081cbb, type: 3}
       propertyPath: whiteManaRegen
-      value: 16
+      value: 18
       objectReference: {fileID: 0}
     - target: {fileID: 3012492991059933004, guid: 5e95e756df1eba343ba25da4ed081cbb, type: 3}
       propertyPath: m_LocalPosition.x

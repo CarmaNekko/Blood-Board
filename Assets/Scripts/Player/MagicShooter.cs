@@ -10,9 +10,15 @@ public class MagicShooter : MonoBehaviour
     [Header("Shooting Setup")]
     [SerializeField] private Transform firePoint;
     [SerializeField] private float shootForce = 30f;
-
-    // === NUEVO: Referencia a la cámara para el culatazo ===
     [SerializeField] private PlayerCameraEffects cameraEffects;
+
+    [Header("UI Colors")]
+    [SerializeField] private Image whiteManaFill;
+    [SerializeField] private Image blackManaFill;
+    [SerializeField] private Color normalWhiteColor = Color.white;
+    [SerializeField] private Color normalBlackColor = new Color(0.3f, 0f, 0.5f);
+    [SerializeField] private Color warningColor = new Color(1f, 0.5f, 0f);
+    [SerializeField] private Color overheatedColor = Color.red;
 
     [Header("White Magic System")]
     [SerializeField] private float maxWhiteMana = 100f;
@@ -20,8 +26,6 @@ public class MagicShooter : MonoBehaviour
     [SerializeField] private float whiteManaRegen = 20f;
     [SerializeField] private Slider whiteManaBarUI;
     private float currentWhiteMana;
-
-    // === NUEVO: Estado de Castigo ===
     private bool isWhiteOverheated = false;
 
     [Header("Black Magic System")]
@@ -52,7 +56,6 @@ public class MagicShooter : MonoBehaviour
 
         playerHealth = GetComponent<PlayerHealth>();
 
-        // Autocompletar la cámara si se nos olvidó en el inspector
         if (cameraEffects == null) cameraEffects = GetComponentInChildren<PlayerCameraEffects>();
     }
 
@@ -62,13 +65,11 @@ public class MagicShooter : MonoBehaviour
 
         RegenerateMana();
 
-        // Solo disparamos si NO estamos castigados y tenemos maná
         if (Input.GetButtonDown("Fire1") && !isWhiteOverheated && currentWhiteMana >= whiteManaCost)
         {
             Shoot(whiteMagicPrefab);
             currentWhiteMana -= whiteManaCost;
 
-            // EL CASTIGO: Si te quedaste sin maná para otro tiro, se sobrecalienta
             if (currentWhiteMana < whiteManaCost) isWhiteOverheated = true;
 
             UpdateUI();
@@ -94,7 +95,7 @@ public class MagicShooter : MonoBehaviour
             if (currentWhiteMana >= maxWhiteMana)
             {
                 currentWhiteMana = maxWhiteMana;
-                isWhiteOverheated = false; // FIN DEL CASTIGO
+                isWhiteOverheated = false;
             }
         }
 
@@ -104,7 +105,7 @@ public class MagicShooter : MonoBehaviour
             if (currentBlackMana >= maxBlackMana)
             {
                 currentBlackMana = maxBlackMana;
-                isBlackOverheated = false; // FIN DEL CASTIGO
+                isBlackOverheated = false;
             }
         }
         UpdateUI();
@@ -123,19 +124,49 @@ public class MagicShooter : MonoBehaviour
     {
         if (whiteManaBarUI != null) whiteManaBarUI.value = currentWhiteMana;
         if (blackManaBarUI != null) blackManaBarUI.value = currentBlackMana;
+
+        if (whiteManaFill != null)
+        {
+            if (isWhiteOverheated)
+            {
+                whiteManaFill.color = overheatedColor;
+            }
+            else if (currentWhiteMana <= (whiteManaCost * 1.5f))
+            {
+                whiteManaFill.color = warningColor;
+            }
+            else
+            {
+                whiteManaFill.color = normalWhiteColor;
+            }
+        }
+
+        if (blackManaFill != null)
+        {
+            if (isBlackOverheated)
+            {
+                blackManaFill.color = overheatedColor;
+            }
+            else if (currentBlackMana <= (blackManaCost * 1.5f))
+            {
+                blackManaFill.color = warningColor;
+            }
+            else
+            {
+                blackManaFill.color = normalBlackColor;
+            }
+        }
     }
 
     private void Shoot(GameObject magicPrefab)
     {
         if (magicPrefab != null)
         {
-            // Disparar el proyectil
             GameObject projectile = Instantiate(magicPrefab, firePoint.position, firePoint.rotation);
             Rigidbody rb = projectile.GetComponent<Rigidbody>();
             if (rb != null) rb.linearVelocity = firePoint.forward * shootForce;
             Destroy(projectile, 2f);
 
-            // Darle el culatazo a la cámara
             if (cameraEffects != null) cameraEffects.ApplyShootRecoil();
         }
     }
