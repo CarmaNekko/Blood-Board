@@ -3,10 +3,10 @@ using UnityEngine.SceneManagement;
 
 public class BackTitleButton : MonoBehaviour
 {
-    [SerializeField] private string titleSceneName = "TitleScreen";
+    [SerializeField] private string titleSceneName = "NewTitleScreen";
 
     public void BackTitle()
     {
-        SceneManager.LoadScene(titleSceneName);
+        CheckerboardTransition.LoadScene(titleSceneName);
     }
 }

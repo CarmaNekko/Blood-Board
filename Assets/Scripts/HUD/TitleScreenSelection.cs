@@ -63,25 +63,22 @@ public class TitleScreenSelection : MonoBehaviour
             if (backButton != null) backButton.gameObject.SetActive(false);
         }
 
-        var saves = SaveManager.GetAvailableSaves();
-        if (continueButton != null)
-        {
-            continueButton.gameObject.SetActive(false); 
-            if (saves.Count > 0)
-            {
-                continueButton.onClick.AddListener(() => ShowSlotsScreen(SlotAction.ContinueGame));
-            }
-        }
-
         if (newGameButton != null)
         {
             newGameButton.onClick.AddListener(() => { Debug.Log("NewGame button pressed"); ShowSlotsScreen(SlotAction.NewGame); });
+            AddHoverListeners(newGameButton);
         }
 
         if (normalButton != null)
         {
             AddHoverListeners(normalButton, "El modo normal es una experiencia curada con un final definido. Supera los pisos para enfrentarte a los jefes finales.");
             normalButton.onClick.AddListener(OnNormalButton);
+        }
+
+        if (continueButton != null)
+        {
+            continueButton.onClick.AddListener(() => ShowSlotsScreen(SlotAction.ContinueGame));
+            AddHoverListeners(continueButton);
         }
 
         if (endlessButton != null)
@@ -93,21 +90,25 @@ public class TitleScreenSelection : MonoBehaviour
         if (backButton != null)
         {
             backButton.onClick.AddListener(OnBackButton);
+            AddHoverListeners(backButton);
         }
 
         if (optionsButton != null)
         {
             optionsButton.onClick.AddListener(OnOptionsButton);
+            AddHoverListeners(optionsButton);
         }
 
         if (leaderboardButton != null)
         {
             leaderboardButton.onClick.AddListener(OnLeaderboardButton);
+            AddHoverListeners(leaderboardButton);
         }
 
         if (creditsButton != null)
         {
             creditsButton.onClick.AddListener(OnCreditsButton);
+            AddHoverListeners(creditsButton);
         }
 
         ReorganizeUI();
@@ -127,11 +128,31 @@ public class TitleScreenSelection : MonoBehaviour
     {
         if (titleBackground != null) titleBackground.SetActive(true);
         var saves = SaveManager.GetAvailableSaves();
-        if (newGameButton != null) newGameButton.gameObject.SetActive(true);
-        if (continueButton != null) continueButton.gameObject.SetActive(saves.Count > 0);
-        if (optionsButton != null) optionsButton.gameObject.SetActive(true);
-        if (leaderboardButton != null) leaderboardButton.gameObject.SetActive(true);
-        if (creditsButton != null) creditsButton.gameObject.SetActive(true);
+        if (newGameButton != null)
+        {
+            newGameButton.gameObject.SetActive(true);
+            SetButtonDimmed(newGameButton);
+        }
+        if (continueButton != null)
+        {
+            continueButton.gameObject.SetActive(saves.Count > 0);
+            if (continueButton.gameObject.activeSelf) SetButtonDimmed(continueButton);
+        }
+        if (optionsButton != null)
+        {
+            optionsButton.gameObject.SetActive(true);
+            SetButtonDimmed(optionsButton);
+        }
+        if (leaderboardButton != null)
+        {
+            leaderboardButton.gameObject.SetActive(true);
+            SetButtonDimmed(leaderboardButton);
+        }
+        if (creditsButton != null)
+        {
+            creditsButton.gameObject.SetActive(true);
+            SetButtonDimmed(creditsButton);
+        }
         ReorganizeUI();
     }
 
@@ -140,6 +161,10 @@ public class TitleScreenSelection : MonoBehaviour
         if (modeSelectorContent != null)
         {
             modeSelectorContent.SetActive(true);
+            // Asegurarse de que los botones de modo tengan el estilo inicial correcto
+            if (normalButton != null) SetButtonDimmed(normalButton);
+            if (endlessButton != null) SetButtonDimmed(endlessButton);
+            if (backButton != null) SetButtonDimmed(backButton);
         }
         if (slotsPanel != null)
         {
@@ -173,23 +198,12 @@ public class TitleScreenSelection : MonoBehaviour
         {
             modeSelectorContent.SetActive(false);
         }
-        if (titleBackground != null)
-        {
-            titleBackground.SetActive(true);
-        }
-        var saves = SaveManager.GetAvailableSaves();
-        if (newGameButton != null) newGameButton.gameObject.SetActive(true);
-        if (continueButton != null) continueButton.gameObject.SetActive(saves.Count > 0);
-        if (optionsButton != null) optionsButton.gameObject.SetActive(true);
-        if (leaderboardButton != null) leaderboardButton.gameObject.SetActive(true);
-        if (creditsButton != null) creditsButton.gameObject.SetActive(true);
-
-        ReorganizeUI();
+        ShowMainMenu();
     }
 
     public void OnCreditsButton()
     {
-        SceneManager.LoadScene("Credits");
+        CheckerboardTransition.LoadScene("Credits");
     }
 
     private void ReorganizeUI()
@@ -241,9 +255,17 @@ public class TitleScreenSelection : MonoBehaviour
         }
     }
 
-    private void AddHoverListeners(Button button, string description)
+    private void AddHoverListeners(Button button, string description = null)
     {
-        var trigger = button.gameObject.AddComponent<EventTrigger>();
+        // Al establecer la transición a 'None', evitamos que el componente Button
+        // anule nuestros cambios de color manuales. Esto nos da control total sobre
+        // la apariencia del botón en sus estados normal y de hover.
+        button.transition = Selectable.Transition.None;
+
+        var trigger = button.gameObject.GetComponent<EventTrigger>();
+        if (trigger == null) trigger = button.gameObject.AddComponent<EventTrigger>();
+        trigger.triggers.Clear();
+
         var enterEntry = new EventTrigger.Entry { eventID = EventTriggerType.PointerEnter };
         enterEntry.callback.AddListener((data) => OnHoverEnter(button, description));
         trigger.triggers.Add(enterEntry);
@@ -253,11 +275,11 @@ public class TitleScreenSelection : MonoBehaviour
         trigger.triggers.Add(exitEntry);
     }
 
-    private void OnHoverEnter(Button button, string description)
+    private void OnHoverEnter(Button button, string description = null)
     {
         SetButtonBright(button);
 
-        if (descriptionText != null)
+        if (descriptionText != null && !string.IsNullOrEmpty(description))
         {
             descriptionText.text = description;
             descriptionText.gameObject.SetActive(true);
@@ -299,7 +321,7 @@ public class TitleScreenSelection : MonoBehaviour
         if (image != null)
         {
             Color c = image.color;
-            c.a = 0.6f;
+            c.a = 0.09019608f;
             image.color = c;
         }
 
@@ -307,7 +329,7 @@ public class TitleScreenSelection : MonoBehaviour
         if (text != null)
         {
             Color tc = text.color;
-            tc.a = 0.6f;
+            tc.a = 1f;
             text.color = tc;
         }
     }
@@ -323,6 +345,9 @@ public class TitleScreenSelection : MonoBehaviour
     public void ShowSlotsScreen(SlotAction action)
     {
         currentSlotAction = action;
+
+        // Oculta el texto de descripción por si se quedó activo de la pantalla de selección de modo.
+        HideDescription();
 
         if (slotsPanel != null)
         {
@@ -346,7 +371,7 @@ public class TitleScreenSelection : MonoBehaviour
         GameModeManager.SetMode(GameModeManager.CreateNormalMode());
         SaveManager.SaveToSlot(selectedSlot, 0, 0, 100f, GameModeManager.CurrentMode.GetModeName());
         Debug.Log($"Nueva partida Normal iniciada en slot {selectedSlot}. Guardado inicial en tutorial (piso 0).");
-        SceneManager.LoadScene("Level_Tuto");
+        CheckerboardTransition.LoadScene("Level_Tuto");
     }
 
     public void OnEndlessButton()
@@ -360,12 +385,12 @@ public class TitleScreenSelection : MonoBehaviour
         LevelManager.currentLevel = 1;
         SaveManager.SaveToSlot(selectedSlot, 1, 0, 100f, GameModeManager.CurrentMode.GetModeName());
         Debug.Log($"Nueva partida Infinita iniciada en slot {selectedSlot}. Guardado inicial en piso 1.");
-        SceneManager.LoadScene("Level_1");
+        CheckerboardTransition.LoadScene("Level_1");
     }
 
     public void OnPlayButton()
     {
-        SceneManager.LoadScene("Level_Tuto");
+        CheckerboardTransition.LoadScene("Level_Tuto");
     }
 
     public void OnOptionsButton()

@@ -6,7 +6,7 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/NewTtitleScreen.unity
+    path: Assets/Scenes/NewTitleScreen.unity
     guid: 9e118d056e57a6547ae71575b3889f19
   - enabled: 1
     path: Assets/Scenes/Level_Tuto.unity
@@ -17,9 +17,6 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Credits.unity
     guid: 6807b4da2a5951443af22a2b3e37a4c1
-  - enabled: 1
-    path: Assets/Scenes/TitleScreen.unity
-    guid: 5733db6c2aaca6545b01d61ee45c947e
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0

@@ -2,6 +2,7 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using UnityEngine.EventSystems;
 using BloodBoard.GameManagement;
 
 namespace BloodBoard.UI
@@ -56,6 +57,7 @@ public class LeaderboardUI : MonoBehaviour
         if (backButton != null)
         {
             backButton.onClick.AddListener(OnBack);
+            AddHoverListeners(backButton);
         }
         if (normalTabButton != null)
         {
@@ -73,7 +75,11 @@ public class LeaderboardUI : MonoBehaviour
         {
             panel.SetActive(true);
         }
-        if (backButton != null) backButton.gameObject.SetActive(true);
+        if (backButton != null)
+        {
+            backButton.gameObject.SetActive(true);
+            SetButtonDimmed(backButton);
+        }
         if (normalTabButton != null) normalTabButton.gameObject.SetActive(true);
         if (endlessTabButton != null) endlessTabButton.gameObject.SetActive(true);
 
@@ -97,10 +103,38 @@ public class LeaderboardUI : MonoBehaviour
         {
             endlessScoresParent.gameObject.SetActive(!showNormal);
         }
-        if (normalTabButton != null) normalTabButton.interactable = !showNormal;
-        if (endlessTabButton != null) endlessTabButton.interactable = showNormal;
+
+        if (normalTabButton != null) UpdateTabAppearance(normalTabButton, showNormal);
+        if (endlessTabButton != null) UpdateTabAppearance(endlessTabButton, !showNormal);
     }
 
+    private void UpdateTabAppearance(Button button, bool isActive)
+    {
+        button.transition = Selectable.Transition.None;
+
+        Image image = button.GetComponent<Image>();
+        TMP_Text text = button.GetComponentInChildren<TMP_Text>();
+
+        if (image == null || text == null) return;
+
+        Color imageColor = image.color;
+        Color textColor = text.color;
+
+        if (isActive) // "illuminated"
+        {
+            imageColor.a = 0.09019608f; // Default button alpha
+            textColor.a = 1.0f; // Default text alpha
+        }
+        else // "inactive"
+        {
+            imageColor.a = 0.04313726f;
+            textColor.a = 0.2901961f;
+        }
+
+        image.color = imageColor;
+        text.color = textColor;
+        button.interactable = !isActive;
+    }
     private void Hide()
     {
         if (panel != null)
@@ -130,6 +164,71 @@ public class LeaderboardUI : MonoBehaviour
     private void OnBack()
     {
         Hide();
+    }
+
+    private void AddHoverListeners(Button button)
+    {
+        button.transition = Selectable.Transition.None;
+
+        var trigger = button.gameObject.GetComponent<EventTrigger>();
+        if (trigger == null) trigger = button.gameObject.AddComponent<EventTrigger>();
+        trigger.triggers.Clear();
+
+        var enterEntry = new EventTrigger.Entry { eventID = EventTriggerType.PointerEnter };
+        enterEntry.callback.AddListener((data) => OnHoverEnter(button));
+        trigger.triggers.Add(enterEntry);
+
+        var exitEntry = new EventTrigger.Entry { eventID = EventTriggerType.PointerExit };
+        exitEntry.callback.AddListener((data) => OnHoverExit(button));
+        trigger.triggers.Add(exitEntry);
+    }
+
+    private void OnHoverEnter(Button button)
+    {
+        SetButtonBright(button);
+    }
+
+    private void OnHoverExit(Button button)
+    {
+        SetButtonDimmed(button);
+    }
+
+    private void SetButtonBright(Button button)
+    {
+        var image = button.GetComponent<Image>();
+        if (image != null)
+        {
+            Color c = image.color;
+            c.a = 1f;
+            image.color = c;
+        }
+
+        var text = button.GetComponentInChildren<TMP_Text>();
+        if (text != null)
+        {
+            Color tc = text.color;
+            tc.a = 1f;
+            text.color = tc;
+        }
+    }
+
+    private void SetButtonDimmed(Button button)
+    {
+        var image = button.GetComponent<Image>();
+        if (image != null)
+        {
+            Color c = image.color;
+            c.a = 0.09019608f;
+            image.color = c;
+        }
+
+        var text = button.GetComponentInChildren<TMP_Text>();
+        if (text != null)
+        {
+            Color tc = text.color;
+            tc.a = 1f;
+            text.color = tc;
+        }
     }
 
     private void DisplayNormalScores()
