@@ -144,8 +144,6 @@ public class MapUI : MonoBehaviour
         if (activeLayout != null)
         {
             activeLayout.LayoutChanged += Redraw;
-
-            // In tutorial scene, discover all rooms so the minimap is fully drawn from the start
             bool isTutorial = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name == "Level_Tuto";
             if (isTutorial)
             {
@@ -318,7 +316,6 @@ public class MapUI : MonoBehaviour
 
         if (isTutorial)
         {
-            // 1. Calcular los límites totales (Bounds) de todo el mapa
             Bounds mapBounds = new Bounds();
             bool boundsInitialized = false;
 
@@ -341,15 +338,12 @@ public class MapUI : MonoBehaviour
 
             if (!boundsInitialized) return false;
 
-            // 2. Calcular la escala EXACTA para que el mapa encaje en el panel saltando límites
             Vector2 availableSize = GetCurrentPanelSize() - new Vector2(mapPadding * 2f, mapPadding * 2f);
             float scaleX = availableSize.x / Mathf.Max(0.1f, mapBounds.size.x);
             float scaleZ = availableSize.y / Mathf.Max(0.1f, mapBounds.size.z);
             
-            // Elegir la escala menor para asegurar que todo encaje sin recortarse
             float pixelsPerWorldUnit = Mathf.Min(scaleX, scaleZ);
 
-            // 3. Dibujar las áreas relativas al CENTRO del mapa
             for (int i = 0; i < discoveredAreas.Count; i++)
             {
                 RoomInstance area = discoveredAreas[i];
@@ -363,13 +357,11 @@ public class MapUI : MonoBehaviour
                         (segment.center.z - mapBounds.center.z) * pixelsPerWorldUnit
                     );
 
-                    // Pasamos "true" para evadir los límites que deformaban los pasillos a cuadrados enormes
                     Vector2 visualSize = GetAreaVisualSize(area, segment, pixelsPerWorldUnit, true);
                     CreateMapBlock(localCenter, visualSize, GetAreaColor(area));
                 }
             }
 
-            // 4. Dibujar al jugador relativo al centro del mapa
             Vector2 playerPosLocal = new Vector2(
                 (playerPosition.x - mapBounds.center.x) * pixelsPerWorldUnit,
                 (playerPosition.z - mapBounds.center.z) * pixelsPerWorldUnit
@@ -378,7 +370,6 @@ public class MapUI : MonoBehaviour
         }
         else
         {
-            // --- COMPORTAMIENTO NORMAL DEL ROGUELITE ---
             float collapsedPPU = Mathf.Clamp(collapsedPixelsPerWorldUnit, minPixelsPerWorldUnit, maxPixelsPerWorldUnit);
             float expandedPPU = CalculateExpandedAreaScale(discoveredAreas, playerPosition);
 
@@ -408,7 +399,7 @@ public class MapUI : MonoBehaviour
                 }
             }
 
-            CreatePlayerMarker(Vector2.zero); // En modo normal siempre en el centro de la UI
+            CreatePlayerMarker(Vector2.zero);
         }
 
         return true;
@@ -537,7 +528,6 @@ public class MapUI : MonoBehaviour
     {
         if (bypassLimits)
         {
-            // Evitar distorsiones en el tutorial, usando la escala real estricta.
             return new Vector2(bounds.size.x * pixelsPerWorldUnit, bounds.size.z * pixelsPerWorldUnit);
         }
 

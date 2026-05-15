@@ -41,7 +41,6 @@ public class TitleScreen : MonoBehaviour
             selectionManager.HideMainMenu();
         }
 
-        // Mostrar pantalla inicial
         if (initialScreenPanel != null)
         {
             initialScreenPanel.SetActive(true);
@@ -81,7 +80,7 @@ public class TitleScreen : MonoBehaviour
 
         if (checkerboardTransition != null)
         {
-            checkerboardTransition.StartTransition(() => OnTransitionComplete());
+            checkerboardTransition.StartTransition(() => OnTransitionComplete(), false);
         }
         else
         {

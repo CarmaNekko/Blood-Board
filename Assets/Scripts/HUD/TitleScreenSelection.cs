@@ -161,7 +161,6 @@ public class TitleScreenSelection : MonoBehaviour
         if (modeSelectorContent != null)
         {
             modeSelectorContent.SetActive(true);
-            // Asegurarse de que los botones de modo tengan el estilo inicial correcto
             if (normalButton != null) SetButtonDimmed(normalButton);
             if (endlessButton != null) SetButtonDimmed(endlessButton);
             if (backButton != null) SetButtonDimmed(backButton);
@@ -174,7 +173,6 @@ public class TitleScreenSelection : MonoBehaviour
 
     public void OnBackButton()
     {
-        // Vuelve de la selección de modo a la selección de slot
         if (modeSelectorContent != null)
         {
             modeSelectorContent.SetActive(false);
@@ -208,38 +206,33 @@ public class TitleScreenSelection : MonoBehaviour
 
     private void ReorganizeUI()
     {
-        float currentY = 0f; // Posición inicial para New Game
-        float spacing = 60f; // Espacio entre botones
+        float currentY = 0f;
+        float spacing = 60f;
 
-        // New Game siempre primero
         if (newGameButton != null)
         {
             SetButtonPosition(newGameButton, currentY);
             currentY -= spacing;
         }
 
-        // Continue si está activo
         if (continueButton != null && continueButton.gameObject.activeSelf)
         {
             SetButtonPosition(continueButton, currentY);
             currentY -= spacing;
         }
 
-        // Options
         if (optionsButton != null)
         {
             SetButtonPosition(optionsButton, currentY);
             currentY -= spacing;
         }
 
-        // Leaderboard
         if (leaderboardButton != null)
         {
             SetButtonPosition(leaderboardButton, currentY);
             currentY -= spacing;
         }
 
-        // Credits
         if (creditsButton != null)
         {
             SetButtonPosition(creditsButton, currentY);
@@ -257,9 +250,6 @@ public class TitleScreenSelection : MonoBehaviour
 
     private void AddHoverListeners(Button button, string description = null)
     {
-        // Al establecer la transición a 'None', evitamos que el componente Button
-        // anule nuestros cambios de color manuales. Esto nos da control total sobre
-        // la apariencia del botón en sus estados normal y de hover.
         button.transition = Selectable.Transition.None;
 
         var trigger = button.gameObject.GetComponent<EventTrigger>();
@@ -346,7 +336,6 @@ public class TitleScreenSelection : MonoBehaviour
     {
         currentSlotAction = action;
 
-        // Oculta el texto de descripción por si se quedó activo de la pantalla de selección de modo.
         HideDescription();
 
         if (slotsPanel != null)
@@ -401,7 +390,7 @@ public class TitleScreenSelection : MonoBehaviour
         }
         else
         {
-            Debug.Log("Opciones no disponibles");
+            Debug.Log("Options not available");
         }
     }
 
@@ -409,8 +398,6 @@ public class TitleScreenSelection : MonoBehaviour
     {
         LeaderboardUI.Instance?.ShowLeaderboards();
         
-        // Ocultamos los botones del menú principal para mostrar el leaderboard,
-        // pero mantenemos el panel de fondo visible.
         if (newGameButton != null) newGameButton.gameObject.SetActive(false);
         if (continueButton != null) continueButton.gameObject.SetActive(false);
         if (optionsButton != null) optionsButton.gameObject.SetActive(false);
