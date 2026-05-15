@@ -351,6 +351,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DoorConnector
   isConnected: 0
   doorHeightOffset: 0
+  blockerObject: {fileID: 0}
   owningRoomNodeId: -1
   sourceRoomNodeId: -1
 --- !u!1 &133708795858312671
@@ -1563,7 +1564,7 @@ GameObject:
   - component: {fileID: 1637172585086102427}
   - component: {fileID: 8417772011946462639}
   - component: {fileID: 8725981405878933776}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Wall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2011,7 +2012,7 @@ GameObject:
   - component: {fileID: 8433035966441609324}
   - component: {fileID: 2816629424437295753}
   - component: {fileID: 7462267802726130338}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Wall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5195,7 +5196,7 @@ GameObject:
   - component: {fileID: 5883927276650188165}
   - component: {fileID: 1737749032970348484}
   - component: {fileID: 3816113096554739418}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Wall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6540,7 +6541,7 @@ GameObject:
   - component: {fileID: 9085063280225866085}
   - component: {fileID: 3997108228087894061}
   - component: {fileID: 2643811724329225419}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Wall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9898,7 +9899,7 @@ GameObject:
   - component: {fileID: 3046667418796155085}
   - component: {fileID: 8291335812701781205}
   - component: {fileID: 1206308741615664698}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Wall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10277,7 +10278,7 @@ GameObject:
   - component: {fileID: 5919056154387410371}
   - component: {fileID: 5642087387395869554}
   - component: {fileID: 149681933613565080}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Wall
   m_TagString: Untagged
   m_Icon: {fileID: 0}

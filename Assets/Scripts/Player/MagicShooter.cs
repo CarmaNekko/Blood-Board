@@ -11,13 +11,18 @@ public class MagicShooter : MonoBehaviour
     [SerializeField] private Transform firePoint;
     [SerializeField] private float shootForce = 30f;
 
+    // === NUEVO: Referencia a la cámara para el culatazo ===
+    [SerializeField] private PlayerCameraEffects cameraEffects;
+
     [Header("White Magic System")]
     [SerializeField] private float maxWhiteMana = 100f;
     [SerializeField] private float whiteManaCost = 20f;
     [SerializeField] private float whiteManaRegen = 20f;
     [SerializeField] private Slider whiteManaBarUI;
     private float currentWhiteMana;
-    private bool isWhiteExhausted = false;
+
+    // === NUEVO: Estado de Castigo ===
+    private bool isWhiteOverheated = false;
 
     [Header("Black Magic System")]
     [SerializeField] private float maxBlackMana = 100f;
@@ -25,11 +30,7 @@ public class MagicShooter : MonoBehaviour
     [SerializeField] private float blackManaRegen = 20f;
     [SerializeField] private Slider blackManaBarUI;
     private float currentBlackMana;
-    private bool isBlackExhausted = false;
-
-    [Header("Mecanicas de Adrenalina")]
-    [SerializeField] private float emptyRegenMultiplier = 2.5f;
-    [Range(0f, 1f)][SerializeField] private float exhaustThreshold = 0.05f;
+    private bool isBlackOverheated = false;
 
     private PlayerHealth playerHealth;
 
@@ -50,38 +51,34 @@ public class MagicShooter : MonoBehaviour
         }
 
         playerHealth = GetComponent<PlayerHealth>();
+
+        // Autocompletar la cámara si se nos olvidó en el inspector
+        if (cameraEffects == null) cameraEffects = GetComponentInChildren<PlayerCameraEffects>();
     }
 
     void Update()
     {
-        if (PauseScreen.IsPaused || TutorialMessage.IsTutorialActive)
-        {
-            return;
-        }
+        if (PauseScreen.IsPaused || TutorialMessage.IsTutorialActive) return;
 
         RegenerateMana();
 
-        if (Input.GetButtonDown("Fire1") && currentWhiteMana >= whiteManaCost)
+        // Solo disparamos si NO estamos castigados y tenemos maná
+        if (Input.GetButtonDown("Fire1") && !isWhiteOverheated && currentWhiteMana >= whiteManaCost)
         {
             Shoot(whiteMagicPrefab);
             currentWhiteMana -= whiteManaCost;
 
-            if (currentWhiteMana <= (maxWhiteMana * exhaustThreshold))
-            {
-                isWhiteExhausted = true;
-            }
+            // EL CASTIGO: Si te quedaste sin maná para otro tiro, se sobrecalienta
+            if (currentWhiteMana < whiteManaCost) isWhiteOverheated = true;
 
             UpdateUI();
         }
-        else if (Input.GetButtonDown("Fire2") && currentBlackMana >= blackManaCost)
+        else if (Input.GetButtonDown("Fire2") && !isBlackOverheated && currentBlackMana >= blackManaCost)
         {
             Shoot(blackMagicPrefab);
             currentBlackMana -= blackManaCost;
 
-            if (currentBlackMana <= (maxBlackMana * exhaustThreshold))
-            {
-                isBlackExhausted = true;
-            }
+            if (currentBlackMana < blackManaCost) isBlackOverheated = true;
 
             UpdateUI();
         }
@@ -93,37 +90,30 @@ public class MagicShooter : MonoBehaviour
 
         if (currentWhiteMana < maxWhiteMana)
         {
-            float emptyTurbo = isWhiteExhausted ? emptyRegenMultiplier : 1f;
-            currentWhiteMana += (whiteManaRegen * healthMultiplier * emptyTurbo) * Time.deltaTime;
-
+            currentWhiteMana += (whiteManaRegen * healthMultiplier) * Time.deltaTime;
             if (currentWhiteMana >= maxWhiteMana)
             {
                 currentWhiteMana = maxWhiteMana;
-                isWhiteExhausted = false;
+                isWhiteOverheated = false; // FIN DEL CASTIGO
             }
         }
 
         if (currentBlackMana < maxBlackMana)
         {
-            float emptyTurbo = isBlackExhausted ? emptyRegenMultiplier : 1f;
-            currentBlackMana += (blackManaRegen * healthMultiplier * emptyTurbo) * Time.deltaTime;
-
+            currentBlackMana += (blackManaRegen * healthMultiplier) * Time.deltaTime;
             if (currentBlackMana >= maxBlackMana)
             {
                 currentBlackMana = maxBlackMana;
-                isBlackExhausted = false;
+                isBlackOverheated = false; // FIN DEL CASTIGO
             }
         }
-
         UpdateUI();
     }
 
     private float GetHealthMultiplier()
     {
         if (playerHealth == null) return 1.0f;
-
         float healthPercent = playerHealth.GetHealthPercentage();
-
         if (healthPercent <= 0.20f) return 2.0f;
         if (healthPercent <= 0.50f) return 1.5f;
         return 1.0f;
@@ -139,14 +129,14 @@ public class MagicShooter : MonoBehaviour
     {
         if (magicPrefab != null)
         {
+            // Disparar el proyectil
             GameObject projectile = Instantiate(magicPrefab, firePoint.position, firePoint.rotation);
             Rigidbody rb = projectile.GetComponent<Rigidbody>();
-            if (rb != null)
-            {
-                rb.linearVelocity = firePoint.forward * shootForce;
-            }
-
+            if (rb != null) rb.linearVelocity = firePoint.forward * shootForce;
             Destroy(projectile, 2f);
+
+            // Darle el culatazo a la cámara
+            if (cameraEffects != null) cameraEffects.ApplyShootRecoil();
         }
     }
 }

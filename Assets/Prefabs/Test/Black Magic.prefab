@@ -5001,3 +5001,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MagicProjectile
   projectileColor: 1
   damage: 10
+  explosionParticlesPrefab: {fileID: 2539987683281859403, guid: 32d9df1d79750e447bac2bbc75d61e66, type: 3}

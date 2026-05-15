@@ -6,6 +6,7 @@ public class MagicProjectile : MonoBehaviour
     [Header("Projectile Stats")]
     [SerializeField] private MagicColor projectileColor;
     [SerializeField] private int damage = 10;
+    [SerializeField] private GameObject explosionParticlesPrefab;
 
     private void OnTriggerEnter(Collider other)
     {
@@ -23,6 +24,11 @@ public class MagicProjectile : MonoBehaviour
         if (enemy != null)
         {
             enemy.TakeDamage(damage, projectileColor);
+        }
+        if (explosionParticlesPrefab != null)
+        {
+            GameObject explosion = Instantiate(explosionParticlesPrefab, transform.position, Quaternion.identity);
+            Destroy(explosion, 1.5f);
         }
 
         Destroy(gameObject);

@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 1844500456806903145}
   - component: {fileID: 4585740216499989942}
   - component: {fileID: 7109480255210435974}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Wall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -239,6 +239,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DoorConnector
   isConnected: 0
   doorHeightOffset: 0
+  blockerObject: {fileID: 0}
   owningRoomNodeId: -1
   sourceRoomNodeId: -1
 --- !u!1 &1476665306903367981
@@ -253,7 +254,7 @@ GameObject:
   - component: {fileID: 477149229247398517}
   - component: {fileID: 7062542421983404377}
   - component: {fileID: 1042576136851088872}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Wall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -365,7 +366,7 @@ GameObject:
   - component: {fileID: 5141269605811836437}
   - component: {fileID: 415213533688096104}
   - component: {fileID: 4726478879301335206}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Wall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -510,7 +511,7 @@ GameObject:
   - component: {fileID: 7419340782085492195}
   - component: {fileID: 5595407482854808593}
   - component: {fileID: 7881553681235842634}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Wall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -737,6 +738,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DoorConnector
   isConnected: 0
   doorHeightOffset: 0
+  blockerObject: {fileID: 0}
   owningRoomNodeId: -1
   sourceRoomNodeId: -1
 --- !u!1 &3742360391312701762
@@ -1018,7 +1020,7 @@ GameObject:
   - component: {fileID: 922799759757003408}
   - component: {fileID: 7448896195836016750}
   - component: {fileID: 3939142946805681324}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Wall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1130,7 +1132,7 @@ GameObject:
   - component: {fileID: 2485117104322848716}
   - component: {fileID: 7118148050856657377}
   - component: {fileID: 615914329222822731}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Wallw
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1310,7 +1312,7 @@ GameObject:
   - component: {fileID: 5031495301711193836}
   - component: {fileID: 3086273711297227429}
   - component: {fileID: 8016657085226403239}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Wall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1422,7 +1424,7 @@ GameObject:
   - component: {fileID: 3044328677029217803}
   - component: {fileID: 8618395358621798595}
   - component: {fileID: 5434140880644393454}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Wall
   m_TagString: Untagged
   m_Icon: {fileID: 0}

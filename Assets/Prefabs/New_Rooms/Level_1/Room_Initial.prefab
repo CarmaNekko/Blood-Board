@@ -46,7 +46,7 @@ GameObject:
   - component: {fileID: 2502830406260307721}
   - component: {fileID: 231393857853452715}
   - component: {fileID: 2377831206706029195}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Wall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -190,7 +190,7 @@ GameObject:
   - component: {fileID: 742948207038281855}
   - component: {fileID: 4478994770018251693}
   - component: {fileID: 5197280634122731016}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Wall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -368,7 +368,7 @@ GameObject:
   - component: {fileID: 1714329380614014571}
   - component: {fileID: 1874470210484724566}
   - component: {fileID: 6835616482386221463}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Wall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -515,7 +515,7 @@ GameObject:
   - component: {fileID: 4966937104359680538}
   - component: {fileID: 914919579692363404}
   - component: {fileID: 1518005061016973581}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Wall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -803,7 +803,7 @@ GameObject:
   - component: {fileID: 8960171584323083654}
   - component: {fileID: 6978052543399447830}
   - component: {fileID: 1932802824281129820}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Wall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1030,6 +1030,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DoorConnector
   isConnected: 0
   doorHeightOffset: 0
+  blockerObject: {fileID: 0}
   owningRoomNodeId: -1
   sourceRoomNodeId: -1
 --- !u!1 &8829134740158495871
@@ -1044,7 +1045,7 @@ GameObject:
   - component: {fileID: 2996482550624400009}
   - component: {fileID: 3605309661539130304}
   - component: {fileID: 1543539844991951505}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Wall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
