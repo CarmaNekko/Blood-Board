@@ -54,51 +54,36 @@ public class Options : MonoBehaviour
             return;
         }
 
-        gameObject.SetActive(false);
-
-        if (titleText != null)
-        {
-            titleText.gameObject.SetActive(false);
-        }
-
-        if (sensitivityTitleText != null)
-        {
-            sensitivityTitleText.gameObject.SetActive(false);
-        }
+#if UNITY_EDITOR
+        // Añadido para diagnosticar referencias faltantes en el Inspector.
+        // Si ves un warning en la consola al iniciar, hazle clic para ver qué referencia falta.
+        if (titleText == null) Debug.LogWarning("Options: 'titleText' no está asignado en el Inspector.", this);
+        if (sensitivityTitleText == null) Debug.LogWarning("Options: 'sensitivityTitleText' no está asignado en el Inspector.", this);
+        if (sensitivitySlider == null) Debug.LogWarning("Options: 'sensitivitySlider' no está asignado en el Inspector.", this);
+        if (sensitivityLabel == null) Debug.LogWarning("Options: 'sensitivityLabel' no está asignado en el Inspector.", this);
+        if (backButton == null) Debug.LogWarning("Options: 'backButton' no está asignado en el Inspector.", this);
+        if (fpsTitleText == null) Debug.LogWarning("Options: 'fpsTitleText' no está asignado en el Inspector.", this);
+        if (fpsToggle == null) Debug.LogWarning("Options: 'fpsToggle' no está asignado en el Inspector.", this);
+        if (fullscreenTitleText == null) Debug.LogWarning("Options: 'fullscreenTitleText' no está asignado en el Inspector.", this);
+        if (fullscreenButtonOn == null) Debug.LogWarning("Options: 'fullscreenButtonOn' no está asignado en el Inspector.", this);
+        if (fullscreenButtonWindowed == null) Debug.LogWarning("Options: 'fullscreenButtonWindowed' no está asignado en el Inspector.", this);
+#endif
 
         if (sensitivitySlider != null)
         {
             sensitivitySlider.minValue = minSensitivity;
             sensitivitySlider.maxValue = maxSensitivity;
             sensitivitySlider.onValueChanged.AddListener(OnSensitivityChanged);
-            sensitivitySlider.gameObject.SetActive(false);
-        }
-
-        if (sensitivityLabel != null)
-        {
-            sensitivityLabel.gameObject.SetActive(false);
         }
 
         if (backButton != null)
         {
             backButton.onClick.AddListener(HideOptions);
-            backButton.gameObject.SetActive(false);
-        }
-
-        if (fpsTitleText != null)
-        {
-            fpsTitleText.gameObject.SetActive(false);
         }
 
         if (fpsToggle != null)
         {
             fpsToggle.onValueChanged.AddListener(OnFPSToggleChanged);
-            fpsToggle.gameObject.SetActive(false);
-        }
-
-        if (fullscreenTitleText != null)
-        {
-            fullscreenTitleText.gameObject.SetActive(false);
         }
 
         if (fullscreenButtonOn != null)
@@ -107,7 +92,6 @@ public class Options : MonoBehaviour
             {
                 fullscreenButtonOn.onClick.AddListener(SetFullscreen);
             }
-            fullscreenButtonOn.gameObject.SetActive(false);
         }
 
         if (fullscreenButtonWindowed != null)
@@ -116,8 +100,11 @@ public class Options : MonoBehaviour
             {
                 fullscreenButtonWindowed.onClick.AddListener(SetWindowed);
             }
-            fullscreenButtonWindowed.gameObject.SetActive(false);
         }
+
+        // Desactiva el panel por defecto. Todos sus hijos (botones, textos, etc.)
+        // se desactivarán con él, manteniendo su estado para cuando se reactive.
+        gameObject.SetActive(false);
     }
 
     private void Start()
@@ -132,7 +119,7 @@ public class Options : MonoBehaviour
 
         if (sensitivityTitleText != null)
         {
-            sensitivityTitleText.text = "Sensibilidad del Mouse";
+            sensitivityTitleText.text = "SENSIBILIDAD DE LA CÁMARA";
         }
 
         UpdateSensitivityLabel(savedSensitivity);
@@ -145,7 +132,7 @@ public class Options : MonoBehaviour
         }
         if (fpsTitleText != null)
         {
-            fpsTitleText.text = "Mostrar FPS";
+            fpsTitleText.text = "MOSTRAR FPS";
         }
 
         if (SupportsScreenModeOptions)
@@ -166,65 +153,26 @@ public class Options : MonoBehaviour
         Cursor.visible = true;
 
         gameObject.SetActive(true);
-        transform.SetAsFirstSibling();
 
-        if (titleText != null)
-        {
-            titleText.gameObject.SetActive(true);
-        }
+        transform.SetAsLastSibling();
 
-        if (sensitivityTitleText != null)
-        {
-            sensitivityTitleText.gameObject.SetActive(true);
-        }
-
-        if (sensitivitySlider != null)
-        {
-            sensitivitySlider.gameObject.SetActive(true);
-        }
-
-        if (sensitivityLabel != null)
-        {
-            sensitivityLabel.gameObject.SetActive(true);
-        }
-
-        if (backButton != null)
-        {
-            backButton.gameObject.SetActive(true);
-        }
-
-        if (fpsTitleText != null)
-        {
-            fpsTitleText.gameObject.SetActive(true);
-        }
-
-        if (fpsToggle != null)
-        {
-            ShowToggle(fpsToggle);
-        }
-
-        if (fullscreenTitleText != null)
-        {
-            fullscreenTitleText.gameObject.SetActive(SupportsScreenModeOptions);
-        }
-
-        if (fullscreenButtonOn != null)
-        {
-            fullscreenButtonOn.gameObject.SetActive(SupportsScreenModeOptions);
-        }
-
-        if (fullscreenButtonWindowed != null)
-        {
-            fullscreenButtonWindowed.gameObject.SetActive(SupportsScreenModeOptions);
-        }
+        // Activar explícitamente todos los elementos y sus CanvasGroups si existen,
+        // para asegurar que sean visibles incluso si estaban desactivados en el editor.
+        ShowUIElement(titleText?.gameObject);
+        ShowUIElement(sensitivityTitleText?.gameObject);
+        ShowUIElement(sensitivitySlider?.gameObject);
+        ShowUIElement(sensitivityLabel?.gameObject);
+        ShowUIElement(backButton?.gameObject);
+        ShowUIElement(fpsTitleText?.gameObject);
+        ShowUIElement(fpsToggle?.gameObject);
+        ShowUIElement(fullscreenTitleText?.gameObject, SupportsScreenModeOptions);
+        ShowUIElement(fullscreenButtonOn?.gameObject, SupportsScreenModeOptions);
+        ShowUIElement(fullscreenButtonWindowed?.gameObject, SupportsScreenModeOptions);
 
         IsOpen = true;
     }
-
     public void HideOptions()
     {
-        // Since this script is on the options panel itself, we just deactivate the whole GameObject.
-        // This also deactivates all its children, so individual calls are not needed.
         gameObject.SetActive(false);
         IsOpen = false;
     }
@@ -241,6 +189,25 @@ public class Options : MonoBehaviour
         if (sensitivityLabel != null)
         {
             sensitivityLabel.text = $"{value:0}";
+        }
+    }
+
+    private void ShowUIElement(GameObject go, bool active = true)
+    {
+        if (go == null) return;
+
+        go.SetActive(active);
+
+        if (active)
+        {
+            // Si el elemento tiene un CanvasGroup, asegurarse de que sea visible.
+            CanvasGroup cg = go.GetComponent<CanvasGroup>();
+            if (cg != null)
+            {
+                cg.alpha = 1f;
+                cg.interactable = true;
+                cg.blocksRaycasts = true;
+            }
         }
     }
 
@@ -290,31 +257,6 @@ public class Options : MonoBehaviour
         }
 
         return null;
-    }
-
-    private void ShowToggle(Toggle toggle)
-    {
-        toggle.gameObject.SetActive(true);
-        toggle.interactable = true;
-        toggle.transform.SetAsLastSibling();
-
-        CanvasGroup canvasGroup = toggle.GetComponent<CanvasGroup>();
-        if (canvasGroup != null)
-        {
-            canvasGroup.alpha = 1f;
-            canvasGroup.interactable = true;
-            canvasGroup.blocksRaycasts = true;
-        }
-
-        if (toggle.targetGraphic != null)
-        {
-            toggle.targetGraphic.raycastTarget = true;
-        }
-
-        if (toggle.graphic != null)
-        {
-            toggle.graphic.raycastTarget = true;
-        }
     }
 
     public void SetFullscreen()

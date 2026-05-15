@@ -178,10 +178,16 @@ public class MapUI : MonoBehaviour
             return;
         }
 
+        float oldScale = currentExpandScale;
         float targetScale = Input.GetKey(expandHoldKey) ? expandedScale : 1f;
         float deltaTime = Time.unscaledDeltaTime > 0f ? Time.unscaledDeltaTime : Time.deltaTime;
         currentExpandScale = Mathf.MoveTowards(currentExpandScale, targetScale, expandLerpSpeed * deltaTime);
         ApplyContainerSize();
+
+        if (!Mathf.Approximately(oldScale, currentExpandScale))
+        {
+            Redraw();
+        }
     }
 
     private void UpdateAreaRendering()
@@ -257,10 +263,11 @@ public class MapUI : MonoBehaviour
 
     private bool ShouldUseAreaRendering()
     {
+        bool isTutorial = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name == "Level_Tuto";
         IReadOnlyList<RoomInstance> areas = RoomInstance.ActiveInstances;
         for (int i = 0; i < areas.Count; i++)
         {
-            if (areas[i] != null && areas[i].IsDiscovered && areas[i].HasBounds)
+            if (areas[i] != null && (isTutorial || areas[i].IsDiscovered) && areas[i].HasBounds)
             {
                 return true;
             }
@@ -271,6 +278,8 @@ public class MapUI : MonoBehaviour
 
     private void Redraw()
     {
+        ResolvePlayer();
+
         EnsureUiRoots();
         ClearChildren(roomsRoot);
 
@@ -305,29 +314,103 @@ public class MapUI : MonoBehaviour
         }
 
         Vector3 playerPosition = playerTransform.position;
-        float pixelsPerWorldUnit = IsExpandedView()
-            ? CalculateExpandedAreaScale(discoveredAreas, playerPosition)
-            : Mathf.Clamp(collapsedPixelsPerWorldUnit, minPixelsPerWorldUnit, maxPixelsPerWorldUnit);
+        bool isTutorial = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name == "Level_Tuto";
 
-        for (int i = 0; i < discoveredAreas.Count; i++)
+        if (isTutorial)
         {
-            RoomInstance area = discoveredAreas[i];
-            IReadOnlyList<Bounds> segments = area.VisualSegments;
+            // 1. Calcular los límites totales (Bounds) de todo el mapa
+            Bounds mapBounds = new Bounds();
+            bool boundsInitialized = false;
 
-            for (int segmentIndex = 0; segmentIndex < segments.Count; segmentIndex++)
+            for (int i = 0; i < discoveredAreas.Count; i++)
             {
-                Bounds segment = segments[segmentIndex];
-                Vector2 localCenter = new Vector2(
-                    (segment.center.x - playerPosition.x) * pixelsPerWorldUnit,
-                    (segment.center.z - playerPosition.z) * pixelsPerWorldUnit
-                );
-
-                Vector2 visualSize = GetAreaVisualSize(area, segment, pixelsPerWorldUnit);
-                CreateMapBlock(localCenter, visualSize, GetAreaColor(area));
+                IReadOnlyList<Bounds> segments = discoveredAreas[i].VisualSegments;
+                for (int j = 0; j < segments.Count; j++)
+                {
+                    if (!boundsInitialized)
+                    {
+                        mapBounds = segments[j];
+                        boundsInitialized = true;
+                    }
+                    else
+                    {
+                        mapBounds.Encapsulate(segments[j]);
+                    }
+                }
             }
+
+            if (!boundsInitialized) return false;
+
+            // 2. Calcular la escala EXACTA para que el mapa encaje en el panel saltando límites
+            Vector2 availableSize = GetCurrentPanelSize() - new Vector2(mapPadding * 2f, mapPadding * 2f);
+            float scaleX = availableSize.x / Mathf.Max(0.1f, mapBounds.size.x);
+            float scaleZ = availableSize.y / Mathf.Max(0.1f, mapBounds.size.z);
+            
+            // Elegir la escala menor para asegurar que todo encaje sin recortarse
+            float pixelsPerWorldUnit = Mathf.Min(scaleX, scaleZ);
+
+            // 3. Dibujar las áreas relativas al CENTRO del mapa
+            for (int i = 0; i < discoveredAreas.Count; i++)
+            {
+                RoomInstance area = discoveredAreas[i];
+                IReadOnlyList<Bounds> segments = area.VisualSegments;
+
+                for (int segmentIndex = 0; segmentIndex < segments.Count; segmentIndex++)
+                {
+                    Bounds segment = segments[segmentIndex];
+                    Vector2 localCenter = new Vector2(
+                        (segment.center.x - mapBounds.center.x) * pixelsPerWorldUnit,
+                        (segment.center.z - mapBounds.center.z) * pixelsPerWorldUnit
+                    );
+
+                    // Pasamos "true" para evadir los límites que deformaban los pasillos a cuadrados enormes
+                    Vector2 visualSize = GetAreaVisualSize(area, segment, pixelsPerWorldUnit, true);
+                    CreateMapBlock(localCenter, visualSize, GetAreaColor(area));
+                }
+            }
+
+            // 4. Dibujar al jugador relativo al centro del mapa
+            Vector2 playerPosLocal = new Vector2(
+                (playerPosition.x - mapBounds.center.x) * pixelsPerWorldUnit,
+                (playerPosition.z - mapBounds.center.z) * pixelsPerWorldUnit
+            );
+            CreatePlayerMarker(playerPosLocal);
+        }
+        else
+        {
+            // --- COMPORTAMIENTO NORMAL DEL ROGUELITE ---
+            float collapsedPPU = Mathf.Clamp(collapsedPixelsPerWorldUnit, minPixelsPerWorldUnit, maxPixelsPerWorldUnit);
+            float expandedPPU = CalculateExpandedAreaScale(discoveredAreas, playerPosition);
+
+            float expansionT = 0f;
+            if (allowTemporaryExpand && expandedScale > 1.01f)
+            {
+                expansionT = Mathf.Clamp01((currentExpandScale - 1f) / (expandedScale - 1f));
+            }
+
+            float pixelsPerWorldUnit = Mathf.Lerp(collapsedPPU, expandedPPU, expansionT);
+
+            for (int i = 0; i < discoveredAreas.Count; i++)
+            {
+                RoomInstance area = discoveredAreas[i];
+                IReadOnlyList<Bounds> segments = area.VisualSegments;
+
+                for (int segmentIndex = 0; segmentIndex < segments.Count; segmentIndex++)
+                {
+                    Bounds segment = segments[segmentIndex];
+                    Vector2 localCenter = new Vector2(
+                        (segment.center.x - playerPosition.x) * pixelsPerWorldUnit,
+                        (segment.center.z - playerPosition.z) * pixelsPerWorldUnit
+                    );
+
+                    Vector2 visualSize = GetAreaVisualSize(area, segment, pixelsPerWorldUnit, false);
+                    CreateMapBlock(localCenter, visualSize, GetAreaColor(area));
+                }
+            }
+
+            CreatePlayerMarker(Vector2.zero); // En modo normal siempre en el centro de la UI
         }
 
-        CreatePlayerMarker(Vector2.zero);
         return true;
     }
 
@@ -335,11 +418,12 @@ public class MapUI : MonoBehaviour
     {
         List<RoomInstance> discoveredAreas = new List<RoomInstance>();
         IReadOnlyList<RoomInstance> areas = RoomInstance.ActiveInstances;
+        bool isTutorial = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name == "Level_Tuto";
 
         for (int i = 0; i < areas.Count; i++)
         {
             RoomInstance area = areas[i];
-            if (area != null && area.IsDiscovered && area.HasBounds)
+            if (area != null && (area.IsDiscovered || isTutorial) && area.HasBounds)
             {
                 discoveredAreas.Add(area);
             }
@@ -356,9 +440,18 @@ public class MapUI : MonoBehaviour
         float maxAbsX = 1f;
         float maxAbsZ = 1f;
 
-        for (int i = 0; i < discoveredAreas.Count; i++)
+        IReadOnlyList<RoomInstance> areasToConsider = RoomInstance.ActiveInstances;
+        if (areasToConsider.Count == 0)
         {
-            IReadOnlyList<Bounds> segments = discoveredAreas[i].VisualSegments;
+            areasToConsider = discoveredAreas; 
+        }
+
+        for (int i = 0; i < areasToConsider.Count; i++)
+        {
+            RoomInstance area = areasToConsider[i];
+            if (area == null || !area.HasBounds) continue;
+
+            IReadOnlyList<Bounds> segments = area.VisualSegments;
             for (int segmentIndex = 0; segmentIndex < segments.Count; segmentIndex++)
             {
                 Bounds segment = segments[segmentIndex];
@@ -386,9 +479,16 @@ public class MapUI : MonoBehaviour
             return;
         }
 
-        float pixelsPerWorldUnit = IsExpandedView()
-            ? CalculateExpandedFallbackScale()
-            : Mathf.Clamp(collapsedPixelsPerWorldUnit, minPixelsPerWorldUnit, maxPixelsPerWorldUnit);
+        float collapsedPPU = Mathf.Clamp(collapsedPixelsPerWorldUnit, minPixelsPerWorldUnit, maxPixelsPerWorldUnit);
+        float expandedPPU = CalculateExpandedFallbackScale();
+
+        float expansionT = 0f;
+        if (allowTemporaryExpand && expandedScale > 1.01f)
+        {
+            expansionT = Mathf.Clamp01((currentExpandScale - 1f) / (expandedScale - 1f));
+        }
+
+        float pixelsPerWorldUnit = Mathf.Lerp(collapsedPPU, expandedPPU, expansionT);
 
         int explorationQuarterTurns = GetExplorationQuarterTurns();
 
@@ -433,8 +533,14 @@ public class MapUI : MonoBehaviour
         return Mathf.Clamp(Mathf.Min(scaleX, scaleY), GetExpandedMinimumPixelsPerWorldUnit(), maxPixelsPerWorldUnit);
     }
 
-    private Vector2 GetAreaVisualSize(RoomInstance area, Bounds bounds, float pixelsPerWorldUnit)
+    private Vector2 GetAreaVisualSize(RoomInstance area, Bounds bounds, float pixelsPerWorldUnit, bool bypassLimits)
     {
+        if (bypassLimits)
+        {
+            // Evitar distorsiones en el tutorial, usando la escala real estricta.
+            return new Vector2(bounds.size.x * pixelsPerWorldUnit, bounds.size.z * pixelsPerWorldUnit);
+        }
+
         if (area.AreaShape == MapAreaShape.Corridor)
         {
             float width = Mathf.Max(minimumCorridorThickness, bounds.size.x * pixelsPerWorldUnit);
@@ -706,7 +812,9 @@ public class MapUI : MonoBehaviour
 
         for (int i = root.childCount - 1; i >= 0; i--)
         {
-            UnityEngine.Object.Destroy(root.GetChild(i).gameObject);
+            GameObject child = root.GetChild(i).gameObject;
+            child.SetActive(false);
+            UnityEngine.Object.Destroy(child);
         }
     }
 

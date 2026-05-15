@@ -3,12 +3,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 
 public class CheckerboardTransition : MonoBehaviour
 {
+    public static CheckerboardTransition Instance { get; private set; }
+
     [SerializeField] private List<Image> squares = new List<Image>();
     [SerializeField] private GameObject squarePrefab;
     [SerializeField] private float squareSize = 50f;
@@ -23,6 +26,16 @@ public class CheckerboardTransition : MonoBehaviour
 
     private void Awake()
     {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else if (Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
         // Asegurar que el panel cubra toda la pantalla
         RectTransform rect = GetComponent<RectTransform>();
         if (rect != null)
@@ -110,6 +123,20 @@ public class CheckerboardTransition : MonoBehaviour
     {
         onComplete = onCompleteCallback;
         StartCoroutine(AnimateCheckerboard());
+    }
+
+    public static void LoadScene(string sceneName)
+    {
+        if (Instance != null)
+        {
+            Instance.gameObject.SetActive(true);
+            Instance.StartTransition(() => SceneManager.LoadScene(sceneName));
+        }
+        else
+        {
+            Debug.LogWarning("CheckerboardTransition.Instance not found in current scene. Loading scene directly.");
+            SceneManager.LoadScene(sceneName);
+        }
     }
 
     private IEnumerator AnimateCheckerboard()

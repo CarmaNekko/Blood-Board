@@ -151,7 +151,7 @@ public class EndlessScoreInputUI : MonoBehaviour
             ScoreManager.Instance?.AddNormalModeScore(_currentScore, playerName);
             SaveManager.DeleteSlot(GameModeManager.CurrentSlot);
             Time.timeScale = 1f;
-            SceneManager.LoadScene("Credits");
+            CheckerboardTransition.LoadScene("Credits");
         }
         else
         {
@@ -168,7 +168,7 @@ public class EndlessScoreInputUI : MonoBehaviour
         {
             SaveManager.DeleteSlot(GameModeManager.CurrentSlot);
             Time.timeScale = 1f;
-            SceneManager.LoadScene("Credits");
+            CheckerboardTransition.LoadScene("Credits");
         }
         else
         {

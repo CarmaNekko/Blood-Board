@@ -116,6 +116,13 @@ public class RoomInstance : MonoBehaviour
             AreasChanged?.Invoke();
         }
 
+        // In tutorial scene, always discover rooms for full minimap
+        if (!IsDiscovered && UnityEngine.SceneManagement.SceneManager.GetActiveScene().name == "Level_Tuto")
+        {
+            MarkDiscovered();
+            AreasChanged?.Invoke();
+        }
+
         if (playerTransform == null)
         {
             ResolvePlayer();

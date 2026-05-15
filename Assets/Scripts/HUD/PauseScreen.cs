@@ -139,6 +139,6 @@ public class PauseScreen : MonoBehaviour
         TutorialMessage.ResetTutorialState();
         SetPause(false);
         Time.timeScale = 1f;
-        SceneManager.LoadScene("TitleScreen");
+        CheckerboardTransition.LoadScene("NewTitleScreen");
     }
 }

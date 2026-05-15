@@ -45,23 +45,33 @@ public class SlotsUI : MonoBehaviour
 
     public void UpdateSlots()
     {
+        var action = TitleScreen.Instance != null ? TitleScreen.Instance.GetCurrentSlotAction() : SlotAction.None;
+
         for (int i = 0; i < 3; i++)
         {
             int slot = i + 1;
-            if (SaveManager.IsSlotEmpty(slot))
+            bool isEmpty = SaveManager.IsSlotEmpty(slot);
+
+            if (isEmpty)
             {
                 slotTexts[i].text = "ARCHIVO VACIO";
             }
             else
             {
                 var data = SaveManager.LoadFromSlot(slot);
-                if (data.floor == 0)
+                string floorText = data.floor == 0 ? "Tutorial" : $"Piso {data.floor}";
+                slotTexts[i].text = $"{floorText}, Score {data.score}, Modo {data.mode}";
+            }
+
+            if (slotButtons[i] != null)
+            {
+                if (action == SlotAction.ContinueGame)
                 {
-                    slotTexts[i].text = $"Tutorial, Score {data.score}, Modo {data.mode}";
+                    slotButtons[i].interactable = !isEmpty;
                 }
                 else
                 {
-                    slotTexts[i].text = $"Piso {data.floor}, Score {data.score}, Modo {data.mode}";
+                    slotButtons[i].interactable = true;
                 }
             }
         }
@@ -87,11 +97,11 @@ public class SlotsUI : MonoBehaviour
 
                 if (data.floor == 0)
                 {
-                    UnityEngine.SceneManagement.SceneManager.LoadScene("Level_Tuto");
+                    CheckerboardTransition.LoadScene("Level_Tuto");
                 }
                 else
                 {
-                    UnityEngine.SceneManagement.SceneManager.LoadScene("Level_1");
+                    CheckerboardTransition.LoadScene("Level_1");
                 }
             }
             else
