@@ -4861,7 +4861,7 @@ GameObject:
   - component: {fileID: 3255904632370627433}
   m_Layer: 0
   m_Name: Black Magic
-  m_TagString: Untagged
+  m_TagString: MagiaNegra
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
