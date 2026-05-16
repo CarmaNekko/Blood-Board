@@ -139,8 +139,6 @@ public class PauseScreen : MonoBehaviour
     public void OnMainMenuButton()
     {
         TutorialMessage.ResetTutorialState();
-        SetPause(false);
-        Time.timeScale = 1f;
         CheckerboardTransition.directToMenu = true;
         CheckerboardTransition.LoadScene("NewTitleScreen");
     }
