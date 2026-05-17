@@ -10,12 +10,20 @@ public class EndlessCorridor : MonoBehaviour
 
     [Header("Los Prefabs")]
     public GameObject[] chunkPrefabs;
+    [Tooltip("Arrastra aquí el Prefab de tu Habitación Final")]
+    public GameObject finalRoomPrefab;
+
+    [Header("Progreso del Nivel")]
+    [Tooltip("¿Cuántos pasillos debe cruzar antes de la meta?")]
+    public int chunksToSpawnBeforeEnd = 15;
 
     private float spawnZ = 0f;
     private List<GameObject> activeChunks = new List<GameObject>();
     private bool isRunning = false;
-
     private CharacterController playerController;
+
+    private int chunksSpawned = 0;
+    private bool isEndRoomSpawned = false;
 
     void Start()
     {
@@ -41,7 +49,7 @@ public class EndlessCorridor : MonoBehaviour
 
         float finDelBloqueMasViejo = activeChunks[0].transform.position.z + chunkLength;
 
-        if (playerTransform.position.z > finDelBloqueMasViejo + 5f)
+        if (!isEndRoomSpawned && playerTransform.position.z > finDelBloqueMasViejo + 5f)
         {
             SpawnChunk();
             DeleteOldestChunk();
@@ -64,16 +72,31 @@ public class EndlessCorridor : MonoBehaviour
         {
             chunk.transform.position = new Vector3(chunk.transform.position.x, chunk.transform.position.y, chunk.transform.position.z - distanciaARetroceder);
         }
-
         spawnZ -= distanciaARetroceder;
     }
 
     private void SpawnChunk()
     {
-        int randomIndex = Random.Range(0, chunkPrefabs.Length);
-        GameObject newChunk = Instantiate(chunkPrefabs[randomIndex], new Vector3(0, 0, spawnZ), Quaternion.identity);
+        if (isEndRoomSpawned) return;
+
+        GameObject chunkToSpawn;
+
+        if (chunksSpawned < chunksToSpawnBeforeEnd)
+        {
+            int randomIndex = Random.Range(0, chunkPrefabs.Length);
+            chunkToSpawn = chunkPrefabs[randomIndex];
+            chunksSpawned++;
+        }
+        else
+        {
+            chunkToSpawn = finalRoomPrefab;
+            isEndRoomSpawned = true;
+        }
+
+        GameObject newChunk = Instantiate(chunkToSpawn, new Vector3(0, 0, spawnZ), Quaternion.identity);
         newChunk.transform.SetParent(transform);
         activeChunks.Add(newChunk);
+
         spawnZ += chunkLength;
     }
 

@@ -419,6 +419,8 @@ MonoBehaviour:
   - {fileID: 6607559035789415839, guid: 33f9ef63c38738247865f49554839793, type: 3}
   - {fileID: 5271250817774327995, guid: 2c47e2b174705e541882881d92dc5252, type: 3}
   - {fileID: 168996574015911240, guid: 6ffdf207610e2324a915595a81a2c248, type: 3}
+  finalRoomPrefab: {fileID: 2125823801780091322, guid: 08c183234a4cfce4cb24da195cdf6f06, type: 3}
+  chunksToSpawnBeforeEnd: 5
 --- !u!4 &408903142
 Transform:
   m_ObjectHideFlags: 0
@@ -428,7 +430,7 @@ Transform:
   m_GameObject: {fileID: 408903140}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -16.14248, y: 12.93651, z: 42.12789}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
