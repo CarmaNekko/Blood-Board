@@ -50,7 +50,7 @@ public class LevelManager : MonoBehaviour
     {
         currentLevel++;
         OnFloorAdvanced?.Invoke(currentLevel);
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        CheckerboardTransition.LoadScene(SceneManager.GetActiveScene().name);
     }
 
     private void OnDestroy()

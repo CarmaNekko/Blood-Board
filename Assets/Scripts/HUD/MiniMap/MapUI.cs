@@ -35,6 +35,7 @@ public class MapUI : MonoBehaviour
     [SerializeField] private int maxExplorationCells = 300;
 
     [Header("Player Marker")]
+    [SerializeField] private Sprite playerMarkerSprite;
     [SerializeField] private Vector2 currentMarkerSize = new Vector2(18f, 18f);
     [SerializeField] private Color currentMarkerColor = new Color(0.45f, 1f, 0.35f, 1f);
     [SerializeField] private Color currentRoomColor = new Color(1f, 0.82f, 0.28f, 1f);
@@ -46,7 +47,14 @@ public class MapUI : MonoBehaviour
     [SerializeField] private Color finalRoomColor = new Color(1f, 0.55f, 0.35f, 1f);
     [SerializeField] private Color corridorColor = new Color(0.85f, 0.85f, 0.85f, 0.9f);
 
+    [Header("Enemy Marker")]
+    [SerializeField] private bool showEnemies = true;
+    [SerializeField] private Sprite enemyMarkerSprite;
+    [SerializeField] private Vector2 enemyMarkerSize = new Vector2(12f, 12f);
+    [SerializeField] private Color enemyMarkerColor = Color.red;
+
     private static Sprite cachedWhiteSprite;
+    private static Sprite cachedTriangleSprite;
 
     private readonly HashSet<Vector2Int> exploredCells = new HashSet<Vector2Int>();
     private readonly Queue<Vector2Int> exploredCellOrder = new Queue<Vector2Int>();
@@ -57,6 +65,7 @@ public class MapUI : MonoBehaviour
     private Transform playerTransform;
     private Vector3 lastRedrawPlayerPosition;
     private bool hasLastRedrawPlayerPosition;
+    private float lastRedrawPlayerYaw;
     private Vector2Int currentExplorationCell;
     private bool hasCurrentExplorationCell;
     private Vector2Int lastExplorationCell;
@@ -144,8 +153,6 @@ public class MapUI : MonoBehaviour
         if (activeLayout != null)
         {
             activeLayout.LayoutChanged += Redraw;
-
-            // In tutorial scene, discover all rooms so the minimap is fully drawn from the start
             bool isTutorial = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name == "Level_Tuto";
             if (isTutorial)
             {
@@ -197,8 +204,12 @@ public class MapUI : MonoBehaviour
             return;
         }
 
-        if (!hasLastRedrawPlayerPosition ||
-            (playerTransform.position - lastRedrawPlayerPosition).sqrMagnitude >= redrawMoveThreshold * redrawMoveThreshold)
+        bool positionChanged = !hasLastRedrawPlayerPosition ||
+            (playerTransform.position - lastRedrawPlayerPosition).sqrMagnitude >= redrawMoveThreshold * redrawMoveThreshold;
+
+        bool rotationChanged = hasLastRedrawPlayerPosition && Mathf.Abs(Mathf.DeltaAngle(playerTransform.eulerAngles.y, lastRedrawPlayerYaw)) > 1.0f;
+
+        if (positionChanged || rotationChanged)
         {
             Redraw();
         }
@@ -212,28 +223,34 @@ public class MapUI : MonoBehaviour
         }
 
         Vector2Int playerCell = WorldToExplorationCell(playerTransform.position);
-        if (hasCurrentExplorationCell && playerCell == currentExplorationCell)
+        bool positionChanged = !hasCurrentExplorationCell || playerCell != currentExplorationCell;
+        bool rotationChanged = hasLastRedrawPlayerPosition && Mathf.Abs(Mathf.DeltaAngle(playerTransform.eulerAngles.y, lastRedrawPlayerYaw)) > 1.0f;
+
+        if (!positionChanged && !rotationChanged)
         {
             return;
         }
 
-        if (hasLastExplorationCell && !hasExplorationOrientation && playerCell != lastExplorationCell)
+        if (positionChanged)
         {
-            explorationQuarterTurnsToUp = GetQuarterTurnsToUp(playerCell - lastExplorationCell);
-            hasExplorationOrientation = true;
-        }
-
-        currentExplorationCell = playerCell;
-        hasCurrentExplorationCell = true;
-        lastExplorationCell = playerCell;
-        hasLastExplorationCell = true;
-
-        if (exploredCells.Add(playerCell))
-        {
-            exploredCellOrder.Enqueue(playerCell);
-            while (exploredCellOrder.Count > maxExplorationCells)
+            if (hasLastExplorationCell && !hasExplorationOrientation && playerCell != lastExplorationCell)
             {
-                exploredCells.Remove(exploredCellOrder.Dequeue());
+                explorationQuarterTurnsToUp = GetQuarterTurnsToUp(playerCell - lastExplorationCell);
+                hasExplorationOrientation = true;
+            }
+
+            currentExplorationCell = playerCell;
+            hasCurrentExplorationCell = true;
+            lastExplorationCell = playerCell;
+            hasLastExplorationCell = true;
+
+            if (exploredCells.Add(playerCell))
+            {
+                exploredCellOrder.Enqueue(playerCell);
+                while (exploredCellOrder.Count > maxExplorationCells)
+                {
+                    exploredCells.Remove(exploredCellOrder.Dequeue());
+                }
             }
         }
 
@@ -287,6 +304,7 @@ public class MapUI : MonoBehaviour
         {
             lastRedrawPlayerPosition = playerTransform.position;
             hasLastRedrawPlayerPosition = true;
+            lastRedrawPlayerYaw = playerTransform.eulerAngles.y;
         }
 
         if (DrawAreaMap())
@@ -318,7 +336,6 @@ public class MapUI : MonoBehaviour
 
         if (isTutorial)
         {
-            // 1. Calcular los límites totales (Bounds) de todo el mapa
             Bounds mapBounds = new Bounds();
             bool boundsInitialized = false;
 
@@ -341,15 +358,14 @@ public class MapUI : MonoBehaviour
 
             if (!boundsInitialized) return false;
 
-            // 2. Calcular la escala EXACTA para que el mapa encaje en el panel saltando límites
             Vector2 availableSize = GetCurrentPanelSize() - new Vector2(mapPadding * 2f, mapPadding * 2f);
             float scaleX = availableSize.x / Mathf.Max(0.1f, mapBounds.size.x);
             float scaleZ = availableSize.y / Mathf.Max(0.1f, mapBounds.size.z);
-            
-            // Elegir la escala menor para asegurar que todo encaje sin recortarse
+
             float pixelsPerWorldUnit = Mathf.Min(scaleX, scaleZ);
 
-            // 3. Dibujar las áreas relativas al CENTRO del mapa
+            DrawEnemyMarkers(pixelsPerWorldUnit, mapBounds.center);
+
             for (int i = 0; i < discoveredAreas.Count; i++)
             {
                 RoomInstance area = discoveredAreas[i];
@@ -363,13 +379,11 @@ public class MapUI : MonoBehaviour
                         (segment.center.z - mapBounds.center.z) * pixelsPerWorldUnit
                     );
 
-                    // Pasamos "true" para evadir los límites que deformaban los pasillos a cuadrados enormes
                     Vector2 visualSize = GetAreaVisualSize(area, segment, pixelsPerWorldUnit, true);
                     CreateMapBlock(localCenter, visualSize, GetAreaColor(area));
                 }
             }
 
-            // 4. Dibujar al jugador relativo al centro del mapa
             Vector2 playerPosLocal = new Vector2(
                 (playerPosition.x - mapBounds.center.x) * pixelsPerWorldUnit,
                 (playerPosition.z - mapBounds.center.z) * pixelsPerWorldUnit
@@ -378,7 +392,6 @@ public class MapUI : MonoBehaviour
         }
         else
         {
-            // --- COMPORTAMIENTO NORMAL DEL ROGUELITE ---
             float collapsedPPU = Mathf.Clamp(collapsedPixelsPerWorldUnit, minPixelsPerWorldUnit, maxPixelsPerWorldUnit);
             float expandedPPU = CalculateExpandedAreaScale(discoveredAreas, playerPosition);
 
@@ -408,7 +421,9 @@ public class MapUI : MonoBehaviour
                 }
             }
 
-            CreatePlayerMarker(Vector2.zero); // En modo normal siempre en el centro de la UI
+            DrawEnemyMarkers(pixelsPerWorldUnit, playerPosition);
+
+            CreatePlayerMarker(Vector2.zero);
         }
 
         return true;
@@ -505,6 +520,8 @@ public class MapUI : MonoBehaviour
             CreateMapBlock(cellCenter, new Vector2(cellSide, cellSide), normalRoomColor);
         }
 
+        DrawEnemyMarkersFallback(pixelsPerWorldUnit);
+
         CreatePlayerMarker(Vector2.zero);
     }
 
@@ -537,7 +554,6 @@ public class MapUI : MonoBehaviour
     {
         if (bypassLimits)
         {
-            // Evitar distorsiones en el tutorial, usando la escala real estricta.
             return new Vector2(bounds.size.x * pixelsPerWorldUnit, bounds.size.z * pixelsPerWorldUnit);
         }
 
@@ -603,12 +619,68 @@ public class MapUI : MonoBehaviour
         rectTransform.anchorMax = new Vector2(0.5f, 0.5f);
         rectTransform.pivot = new Vector2(0.5f, 0.5f);
         rectTransform.anchoredPosition = anchoredPosition;
-        rectTransform.sizeDelta = GetSquareSize(currentMarkerSize);
+        rectTransform.sizeDelta = currentMarkerSize;
+
+        if (playerTransform != null)
+        {
+            float mapRotationDegrees = 0f;
+            if (!ShouldUseAreaRendering() && enableExplorationFallback)
+            {
+                mapRotationDegrees = GetExplorationQuarterTurns() * 90f;
+            }
+
+            float playerYaw = playerTransform.eulerAngles.y;
+            rectTransform.localEulerAngles = new Vector3(0f, 0f, -playerYaw + mapRotationDegrees);
+        }
 
         Image image = markerObject.GetComponent<Image>();
-        image.sprite = GetWhiteSprite();
+        image.sprite = playerMarkerSprite != null ? playerMarkerSprite : GetTriangleSprite();
+        image.preserveAspect = true;
         image.color = currentMarkerColor;
         image.raycastTarget = false;
+    }
+
+    private void CreateEnemyMarker(Vector2 anchoredPosition)
+    {
+        GameObject markerObject = new GameObject("EnemyMarker", typeof(RectTransform), typeof(Image));
+        markerObject.transform.SetParent(roomsRoot, false);
+
+        RectTransform rectTransform = markerObject.GetComponent<RectTransform>();
+        rectTransform.anchorMin = new Vector2(0.5f, 0.5f);
+        rectTransform.anchorMax = new Vector2(0.5f, 0.5f);
+        rectTransform.pivot = new Vector2(0.5f, 0.5f);
+        rectTransform.anchoredPosition = anchoredPosition;
+        rectTransform.sizeDelta = enemyMarkerSize;
+
+        Image image = markerObject.GetComponent<Image>();
+        image.sprite = enemyMarkerSprite != null ? enemyMarkerSprite : GetWhiteSprite();
+        image.color = enemyMarkerColor;
+        image.raycastTarget = false;
+    }
+
+    private void DrawEnemyMarkers(float pixelsPerWorldUnit, Vector3 mapCenter)
+    {
+        if (!showEnemies) return;
+
+        // NOTE: Finding all enemies every redraw can impact performance. 
+        // For better performance, consider a central manager to track active enemies.
+        // Using EnemyPawn as it's a known enemy type. If there's a more generic
+        // component like EnemyHealth, it would be better to use that.
+        var enemies = FindObjectsByType<EnemyPawn>(FindObjectsSortMode.None);
+        List<RoomInstance> visibleAreas = CollectDiscoveredAreas();
+
+        foreach (var enemy in enemies)
+        {
+            if (!enemy.gameObject.activeInHierarchy) continue;
+
+            if (IsPositionInVisibleArea(enemy.transform.position, visibleAreas))
+            {
+                Vector2 enemyPosLocal = new Vector2(
+                    (enemy.transform.position.x - mapCenter.x) * pixelsPerWorldUnit,
+                    (enemy.transform.position.z - mapCenter.z) * pixelsPerWorldUnit);
+                CreateEnemyMarker(enemyPosLocal);
+            }
+        }
     }
 
     private void EnsureUiRoots()
@@ -784,12 +856,6 @@ public class MapUI : MonoBehaviour
         }
     }
 
-    private static Vector2 GetSquareSize(Vector2 size)
-    {
-        float side = Mathf.Max(size.x, size.y);
-        return new Vector2(side, side);
-    }
-
     private Vector2Int WorldToExplorationCell(Vector3 worldPosition)
     {
         if (Mathf.Approximately(explorationCellWorldSize, 0f))
@@ -830,5 +896,91 @@ public class MapUI : MonoBehaviour
         }
 
         return cachedWhiteSprite;
+    }
+
+    private bool IsPositionInVisibleArea(Vector3 position, List<RoomInstance> visibleAreas)
+    {
+        foreach (var area in visibleAreas)
+        {
+            foreach (var segment in area.VisualSegments)
+            {
+                if (segment.min.x <= position.x && position.x <= segment.max.x &&
+                    segment.min.z <= position.z && position.z <= segment.max.z)
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private void DrawEnemyMarkersFallback(float pixelsPerWorldUnit)
+    {
+        if (!showEnemies) return;
+
+        var enemies = FindObjectsByType<EnemyPawn>(FindObjectsSortMode.None);
+        int explorationQuarterTurns = GetExplorationQuarterTurns();
+
+        foreach (var enemy in enemies)
+        {
+            if (!enemy.gameObject.activeInHierarchy) continue;
+
+            Vector2Int enemyCell = WorldToExplorationCell(enemy.transform.position);
+            if (exploredCells.Contains(enemyCell))
+            {
+                Vector2Int deltaCell = enemyCell - currentExplorationCell;
+                Vector2Int rotatedDelta = RotateGrid(deltaCell, explorationQuarterTurns);
+                Vector2 enemyPosLocal = new Vector2(
+                    rotatedDelta.x * explorationCellWorldSize * pixelsPerWorldUnit,
+                    rotatedDelta.y * explorationCellWorldSize * pixelsPerWorldUnit
+                );
+                CreateEnemyMarker(enemyPosLocal);
+            }
+        }
+    }
+
+    private static Sprite GetTriangleSprite()
+    {
+        if (cachedTriangleSprite != null)
+        {
+            return cachedTriangleSprite;
+        }
+
+        int size = 32;
+        var triangleTexture = new Texture2D(size, size, TextureFormat.RGBA32, false)
+        {
+            filterMode = FilterMode.Bilinear,
+            wrapMode = TextureWrapMode.Clamp,
+            name = "ProgrammaticTriangleTexture"
+        };
+
+        var pixels = new Color[size * size];
+        for (int i = 0; i < pixels.Length; i++)
+        {
+            pixels[i] = Color.clear;
+        }
+
+        // Draw an upward-pointing triangle
+        for (int y = 0; y < size; y++)
+        {
+            float widthAtY = (1.0f - (float)y / (size - 1)) * size;
+            float halfWidth = widthAtY * 0.5f;
+            float centerX = size * 0.5f;
+
+            int xStart = Mathf.CeilToInt(centerX - halfWidth);
+            int xEnd = Mathf.FloorToInt(centerX + halfWidth);
+
+            for (int x = xStart; x < xEnd; x++)
+            {
+                pixels[y * size + x] = Color.white;
+            }
+        }
+
+        triangleTexture.SetPixels(pixels);
+        triangleTexture.Apply(false);
+
+        cachedTriangleSprite = Sprite.Create(triangleTexture, new Rect(0, 0, size, size), new Vector2(0.5f, 0.5f));
+        cachedTriangleSprite.name = "ProgrammaticTriangleSprite";
+        return cachedTriangleSprite;
     }
 }

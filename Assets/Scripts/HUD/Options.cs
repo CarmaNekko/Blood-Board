@@ -55,8 +55,6 @@ public class Options : MonoBehaviour
         }
 
 #if UNITY_EDITOR
-        // Añadido para diagnosticar referencias faltantes en el Inspector.
-        // Si ves un warning en la consola al iniciar, hazle clic para ver qué referencia falta.
         if (titleText == null) Debug.LogWarning("Options: 'titleText' no está asignado en el Inspector.", this);
         if (sensitivityTitleText == null) Debug.LogWarning("Options: 'sensitivityTitleText' no está asignado en el Inspector.", this);
         if (sensitivitySlider == null) Debug.LogWarning("Options: 'sensitivitySlider' no está asignado en el Inspector.", this);
@@ -102,8 +100,6 @@ public class Options : MonoBehaviour
             }
         }
 
-        // Desactiva el panel por defecto. Todos sus hijos (botones, textos, etc.)
-        // se desactivarán con él, manteniendo su estado para cuando se reactive.
         gameObject.SetActive(false);
     }
 
@@ -156,8 +152,6 @@ public class Options : MonoBehaviour
 
         transform.SetAsLastSibling();
 
-        // Activar explícitamente todos los elementos y sus CanvasGroups si existen,
-        // para asegurar que sean visibles incluso si estaban desactivados en el editor.
         ShowUIElement(titleText?.gameObject);
         ShowUIElement(sensitivityTitleText?.gameObject);
         ShowUIElement(sensitivitySlider?.gameObject);
@@ -200,7 +194,6 @@ public class Options : MonoBehaviour
 
         if (active)
         {
-            // Si el elemento tiene un CanvasGroup, asegurarse de que sea visible.
             CanvasGroup cg = go.GetComponent<CanvasGroup>();
             if (cg != null)
             {

@@ -7,6 +7,7 @@ public class BackTitleButton : MonoBehaviour
 
     public void BackTitle()
     {
+        CheckerboardTransition.directToMenu = true;
         CheckerboardTransition.LoadScene(titleSceneName);
     }
 }

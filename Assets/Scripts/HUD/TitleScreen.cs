@@ -28,6 +28,7 @@ public class TitleScreen : MonoBehaviour
             return;
         }
 
+        Time.timeScale = 1f;
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
 
@@ -36,28 +37,49 @@ public class TitleScreen : MonoBehaviour
 
     private void Start()
     {
-        if (selectionManager != null)
+        if (CheckerboardTransition.Instance != null && CheckerboardTransition.directToMenu)
         {
-            selectionManager.HideMainMenu();
-        }
+            CheckerboardTransition.directToMenu = false; // Consume the flag
 
-        // Mostrar pantalla inicial
-        if (initialScreenPanel != null)
-        {
-            initialScreenPanel.SetActive(true);
-        }
-        if (gameTitleText != null)
-        {
-            gameTitleText.text = "BLOOD BOARD";
-        }
-        if (initialText != null)
-        {
-            initialText.text = "PRESIONA ENTER O CLICK IZ. PARA INICIAR";
-        }
+            // Go directly to the main menu state
+            currentMenuState = MenuState.MainMenu;
 
-        if (selectionManager != null)
+            if (initialScreenPanel != null)
+            {
+                initialScreenPanel.SetActive(false);
+            }
+
+            if (selectionManager != null)
+            {
+                selectionManager.SetupMainMenu();
+                selectionManager.ShowMainMenu();
+            }
+        }
+        else
         {
-            selectionManager.SetupMainMenu();
+            // Normal startup: show the initial screen
+            if (selectionManager != null)
+            {
+                selectionManager.HideMainMenu();
+            }
+
+            if (initialScreenPanel != null)
+            {
+                initialScreenPanel.SetActive(true);
+            }
+            if (gameTitleText != null)
+            {
+                gameTitleText.text = "BLOOD BOARD";
+            }
+            if (initialText != null)
+            {
+                initialText.text = "PRESIONA ENTER O CLICK IZ. PARA INICIAR";
+            }
+
+            if (selectionManager != null)
+            {
+                selectionManager.SetupMainMenu();
+            }
         }
     }
 
@@ -75,16 +97,24 @@ public class TitleScreen : MonoBehaviour
     private void StartTransition()
     {
         currentMenuState = MenuState.Transition;
-        if (initialScreenPanel != null) initialScreenPanel.SetActive(false);
-        if (gameTitleText != null) gameTitleText.gameObject.SetActive(false);
-        if (initialText != null) initialText.gameObject.SetActive(false);
 
         if (checkerboardTransition != null)
         {
-            checkerboardTransition.StartTransition(() => OnTransitionComplete());
+            checkerboardTransition.StartTransition(() => {
+                if (initialScreenPanel != null) initialScreenPanel.SetActive(false);
+
+                if (selectionManager != null)
+                {
+                    selectionManager.ShowMainMenu();
+                }
+
+                OnTransitionComplete();
+            }, false);
         }
         else
         {
+            if (initialScreenPanel != null) initialScreenPanel.SetActive(false);
+            if (selectionManager != null) selectionManager.ShowMainMenu();
             OnTransitionComplete();
         }
     }
@@ -92,10 +122,6 @@ public class TitleScreen : MonoBehaviour
     private void OnTransitionComplete()
     {
         currentMenuState = MenuState.MainMenu;
-        if (selectionManager != null)
-        {
-            selectionManager.ShowMainMenu();
-        }
     }
 
     public void ShowModeSelector() { if (selectionManager != null) selectionManager.ShowModeSelector(); }

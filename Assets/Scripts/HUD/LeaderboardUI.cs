@@ -120,12 +120,12 @@ public class LeaderboardUI : MonoBehaviour
         Color imageColor = image.color;
         Color textColor = text.color;
 
-        if (isActive) // "illuminated"
+        if (isActive)
         {
-            imageColor.a = 0.09019608f; // Default button alpha
-            textColor.a = 1.0f; // Default text alpha
+            imageColor.a = 0.09019608f;
+            textColor.a = 1.0f;
         }
-        else // "inactive"
+        else
         {
             imageColor.a = 0.04313726f;
             textColor.a = 0.2901961f;

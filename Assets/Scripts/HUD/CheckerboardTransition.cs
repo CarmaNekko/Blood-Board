@@ -11,6 +11,7 @@ using UnityEditor;
 public class CheckerboardTransition : MonoBehaviour
 {
     public static CheckerboardTransition Instance { get; private set; }
+    public static bool directToMenu = false;
 
     [SerializeField] private List<Image> squares = new List<Image>();
     [SerializeField] private GameObject squarePrefab;
@@ -22,13 +23,18 @@ public class CheckerboardTransition : MonoBehaviour
     private int columns;
     private int rows;
 
+    public bool IsTransitioning { get; private set; } = false;
     private Action onComplete;
+    private Image raycastBlocker;
 
     private void Awake()
     {
         if (Instance == null)
         {
             Instance = this;
+            transform.SetParent(null);
+            DontDestroyOnLoad(gameObject);
+            SceneManager.sceneLoaded += OnSceneLoaded;
         }
         else if (Instance != this)
         {
@@ -36,7 +42,21 @@ public class CheckerboardTransition : MonoBehaviour
             return;
         }
 
-        // Asegurar que el panel cubra toda la pantalla
+        Canvas canvas = GetComponent<Canvas>();
+        if (canvas == null) { canvas = gameObject.AddComponent<Canvas>(); }
+        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+        canvas.sortingOrder = 100;
+
+        CanvasScaler scaler = GetComponent<CanvasScaler>();
+        if (scaler == null) { scaler = gameObject.AddComponent<CanvasScaler>(); }
+        scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+        scaler.referenceResolution = new Vector2(1920, 1080);
+        scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
+        scaler.matchWidthOrHeight = 0.5f;
+
+        if (GetComponent<GraphicRaycaster>() == null) { gameObject.AddComponent<GraphicRaycaster>(); }
+
+
         RectTransform rect = GetComponent<RectTransform>();
         if (rect != null)
         {
@@ -46,10 +66,68 @@ public class CheckerboardTransition : MonoBehaviour
             rect.offsetMax = Vector2.zero;
         }
 
-        if (squares.Count == 0 && squarePrefab != null)
+        raycastBlocker = GetComponent<Image>();
+        if (raycastBlocker == null) { raycastBlocker = gameObject.AddComponent<Image>(); }
+        raycastBlocker.color = Color.clear;
+        raycastBlocker.raycastTarget = false;
+        IsTransitioning = false;
+    }
+
+    private void OnDestroy()
+    {
+        if (Instance == this)
         {
-            CalculateGridSize();
-            CreateSquares();
+            SceneManager.sceneLoaded -= OnSceneLoaded;
+        }
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        if (!IsTransitioning)
+        {
+            IsTransitioning = true;
+        }
+
+        if (raycastBlocker != null) raycastBlocker.raycastTarget = true;
+        UpdateGrid(true);
+        if (IsLevelScene(scene.name))
+        {
+            StartCoroutine(FadeOutAfterFloorSign());
+        }
+        else
+        {
+            StartCoroutine(AnimateFadeOut());
+        }
+    }
+
+    private void Start()
+    {
+        if (squarePrefab != null)
+        {
+            UpdateGrid();
+        }
+    }
+
+    private void UpdateGrid(bool startBlack = false)
+    {
+        Canvas.ForceUpdateCanvases();
+
+        int oldColumns = columns;
+        int oldRows = rows;
+        CalculateGridSize();
+
+        if (squares.Count == 0 || oldColumns != columns || oldRows != rows)
+        {
+            foreach (Transform child in transform) { Destroy(child.gameObject); }
+            squares.Clear();
+            CreateSquares(startBlack);
+        }
+        else if (startBlack)
+        {
+            foreach (var square in squares)
+            {
+                square.color = Color.black;
+            }
         }
     }
 
@@ -61,7 +139,6 @@ public class CheckerboardTransition : MonoBehaviour
             columns = Mathf.CeilToInt(rect.rect.width / squareSize);
             rows = Mathf.CeilToInt(rect.rect.height / squareSize);
 
-            // Configurar GridLayoutGroup
             var grid = GetComponent<UnityEngine.UI.GridLayoutGroup>();
             if (grid != null)
             {
@@ -78,7 +155,7 @@ public class CheckerboardTransition : MonoBehaviour
         }
     }
 
-    private void CreateSquares()
+    private void CreateSquares(bool startBlack = false)
     {
         int totalSquares = columns * rows;
         for (int i = 0; i < totalSquares; i++)
@@ -88,14 +165,14 @@ public class CheckerboardTransition : MonoBehaviour
             Image img = go.GetComponent<Image>();
             if (img != null)
             {
-                img.color = Color.clear; // Iniciar transparentes
+                img.color = startBlack ? Color.black : Color.clear;
+                img.raycastTarget = false;
                 squares.Add(img);
             }
         }
         Debug.Log($"{totalSquares} squares created from prefab! Grid: {columns}x{rows}");
 
-        // Verificar patrón ajedrez
-        for (int i = 0; i < Mathf.Min(squares.Count, 10); i++) // Primeros 10
+        for (int i = 0; i < Mathf.Min(squares.Count, 10); i++)
         {
             int x = i % columns;
             int y = i / columns;
@@ -119,18 +196,25 @@ public class CheckerboardTransition : MonoBehaviour
     }
 #endif
 
-    public void StartTransition(Action onCompleteCallback)
+    public void StartTransition(Action onCompleteCallback, bool isSceneLoad = true)
     {
+        if (IsTransitioning)
+        {
+            Debug.LogWarning("Ya hay una transición en curso. Se ignora la nueva solicitud.");
+            return;
+        }
+        IsTransitioning = true;
+        if (raycastBlocker != null) raycastBlocker.raycastTarget = true;
+        UpdateGrid();
         onComplete = onCompleteCallback;
-        StartCoroutine(AnimateCheckerboard());
+        StartCoroutine(AnimateTransitionFlow(isSceneLoad));
     }
 
     public static void LoadScene(string sceneName)
     {
         if (Instance != null)
         {
-            Instance.gameObject.SetActive(true);
-            Instance.StartTransition(() => SceneManager.LoadScene(sceneName));
+            Instance.StartTransition(() => SceneManager.LoadScene(sceneName), true);
         }
         else
         {
@@ -139,9 +223,8 @@ public class CheckerboardTransition : MonoBehaviour
         }
     }
 
-    private IEnumerator AnimateCheckerboard()
+    private IEnumerator AnimateTransitionFlow(bool isSceneLoad)
     {
-        // Agrupar por columnas
         List<List<Image>> visibleColumns = new List<List<Image>>();
         List<List<Image>> hiddenColumns = new List<List<Image>>();
 
@@ -167,73 +250,109 @@ public class CheckerboardTransition : MonoBehaviour
             }
         }
 
-        // Ajustar duración por speed
         float adjustedDuration = animationDuration / speed;
 
-        // Fase 1: Animar visibles (negros) columna por columna, de izquierda a derecha
         for (int x = 0; x < columns; x++)
         {
-            // Animar visibles de la columna simultáneamente (a negro)
             foreach (Image square in visibleColumns[x])
             {
                 StartCoroutine(FadeIn(square, adjustedDuration));
             }
 
-            // Esperar antes de siguiente columna
-            yield return new WaitForSeconds(delayBetweenColumns);
+            yield return new WaitForSecondsRealtime(delayBetweenColumns);
         }
 
-        // Esperar a que termine la animación de visibles
-        yield return new WaitForSeconds(adjustedDuration);
+        yield return new WaitForSecondsRealtime(adjustedDuration);
 
-        // Fase 2: Animar hidden (transparentes) a negro, columna por columna
         for (int x = 0; x < columns; x++)
         {
-            // Animar hidden de la columna simultáneamente (a negro)
             foreach (Image square in hiddenColumns[x])
             {
                 StartCoroutine(FadeIn(square, adjustedDuration));
             }
 
-            // Esperar antes de siguiente columna
-            yield return new WaitForSeconds(delayBetweenColumns);
+            yield return new WaitForSecondsRealtime(delayBetweenColumns);
         }
 
-        // Esperar a que termine la animación de hidden
-        yield return new WaitForSeconds(adjustedDuration);
+        yield return new WaitForSecondsRealtime(adjustedDuration);
 
-        onComplete?.Invoke();
+        if (isSceneLoad)
+        {
+            onComplete?.Invoke();
+        }
+        else
+        {
+            onComplete?.Invoke();
+            yield return StartCoroutine(AnimateFadeOut());
+        }
+    }
 
-        // Fase 3: Deshacer transición - animar de negro a transparente, de derecha a izquierda
+    private IEnumerator FadeOutAfterFloorSign()
+    {
+        // Espera hasta que el cartel del piso haya desaparecido
+        yield return new WaitUntil(() => !PauseScreen.IsFloorSignActive);
+        yield return StartCoroutine(AnimateFadeOut());
+    }
+
+    private bool IsLevelScene(string sceneName)
+    {
+        return sceneName.StartsWith("Level_");
+    }
+
+    private IEnumerator AnimateFadeOut()
+    {
+        float adjustedDuration = animationDuration / speed;
+
+        List<List<Image>> visibleColumns = new List<List<Image>>();
+        List<List<Image>> hiddenColumns = new List<List<Image>>();
+
+        for (int x = 0; x < columns; x++)
+        {
+            visibleColumns.Add(new List<Image>());
+            hiddenColumns.Add(new List<Image>());
+        }
+
+        for (int i = 0; i < squares.Count; i++)
+        {
+            int x = i % columns;
+            int y = i / columns;
+            bool isVisiblePattern = (x + y) % 2 == 0;
+
+            if (isVisiblePattern)
+            {
+                visibleColumns[x].Add(squares[i]);
+            }
+            else
+            {
+                hiddenColumns[x].Add(squares[i]);
+            }
+        }
+
         for (int x = columns - 1; x >= 0; x--)
         {
-            // Animar todos de la columna simultáneamente (a transparente)
-            foreach (Image square in squares)
+            foreach (Image square in hiddenColumns[x])
             {
-                int idx = squares.IndexOf(square);
-                int sx = idx % columns;
-                if (sx == x)
-                {
-                    StartCoroutine(FadeOut(square, adjustedDuration));
-                }
+                StartCoroutine(FadeOut(square, adjustedDuration));
             }
-
-            // Esperar antes de columna anterior
-            yield return new WaitForSeconds(delayBetweenColumns);
+            yield return new WaitForSecondsRealtime(delayBetweenColumns);
         }
 
-        // Esperar a que termine el fade out
-        yield return new WaitForSeconds(adjustedDuration);
+        yield return new WaitForSecondsRealtime(adjustedDuration);
 
-        // Reiniciar alphas y deshabilitar raycast para no bloquear input
-        foreach (Image square in squares)
+        for (int x = columns - 1; x >= 0; x--)
         {
-            square.color = new Color(0, 0, 0, 0);
-            square.raycastTarget = false;
+            foreach (Image square in visibleColumns[x])
+            {
+                StartCoroutine(FadeOut(square, adjustedDuration));
+            }
+            yield return new WaitForSecondsRealtime(delayBetweenColumns);
         }
 
-        // Desactivar el transition para liberar input
-        gameObject.SetActive(false);
+        yield return new WaitForSecondsRealtime(adjustedDuration);
+
+        foreach (Image square in squares) { square.color = Color.clear; }
+        IsTransitioning = false;
+        if (raycastBlocker != null) raycastBlocker.raycastTarget = false;
     }
 
     private IEnumerator FadeIn(Image image, float duration)
@@ -244,7 +363,7 @@ public class CheckerboardTransition : MonoBehaviour
 
         while (elapsed < duration)
         {
-            elapsed += Time.deltaTime;
+            elapsed += Time.unscaledDeltaTime;
             image.color = Color.Lerp(startColor, endColor, elapsed / duration);
             yield return null;
         }
@@ -260,11 +379,12 @@ public class CheckerboardTransition : MonoBehaviour
 
         while (elapsed < duration)
         {
-            elapsed += Time.deltaTime;
+            elapsed += Time.unscaledDeltaTime;
             image.color = Color.Lerp(startColor, endColor, elapsed / duration);
             yield return null;
         }
 
         image.color = endColor;
     }
+
 }

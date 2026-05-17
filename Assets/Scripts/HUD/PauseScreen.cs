@@ -62,7 +62,9 @@ public class PauseScreen : MonoBehaviour
 
     private void Update()
     {
-        if (!IsFloorSignActive && Input.GetKeyDown(KeyCode.Escape))
+        bool transitionIsActive = CheckerboardTransition.Instance != null && CheckerboardTransition.Instance.IsTransitioning;
+
+        if (!IsFloorSignActive && !transitionIsActive && Input.GetKeyDown(KeyCode.Escape))
         {
             if (Options.Instance != null && Options.Instance.IsOpen)
             {
@@ -137,8 +139,7 @@ public class PauseScreen : MonoBehaviour
     public void OnMainMenuButton()
     {
         TutorialMessage.ResetTutorialState();
-        SetPause(false);
-        Time.timeScale = 1f;
+        CheckerboardTransition.directToMenu = true;
         CheckerboardTransition.LoadScene("NewTitleScreen");
     }
 }

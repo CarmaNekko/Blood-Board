@@ -100,19 +100,19 @@ public class GameOver : MonoBehaviour
     private void GoToCredits()
     {
         Time.timeScale = 1f;
-        SceneManager.LoadScene(creditsSceneName);
+        CheckerboardTransition.LoadScene(creditsSceneName);
     }
 
     public void OnRetryButton()
     {
         ScoreManager.Instance?.ResetCurrentScore();
         Time.timeScale = 1f;
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        CheckerboardTransition.LoadScene(SceneManager.GetActiveScene().name);
     }
 
     public void OnMenuButton()
     {
         Time.timeScale = 1f;
-        SceneManager.LoadScene("TitleScreen");
+        CheckerboardTransition.LoadScene("NewTitleScreen");
     }
 }

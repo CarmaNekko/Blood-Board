@@ -36,7 +36,7 @@ public class Finish_Level : MonoBehaviour
             SaveManager.SaveToSlot(GameModeManager.CurrentSlot, LevelManager.currentLevel, currentScore, health, GameModeManager.CurrentMode.GetModeName());
             Debug.Log($"Guardando progreso para el piso {LevelManager.currentLevel} en el slot {GameModeManager.CurrentSlot}.");
 
-            SceneManager.LoadScene(mainLevelScene);
+            CheckerboardTransition.LoadScene(mainLevelScene);
         }
     }
 }
