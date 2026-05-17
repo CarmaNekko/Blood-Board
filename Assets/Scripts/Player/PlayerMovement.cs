@@ -33,6 +33,7 @@ public class PlayerMovement : MonoBehaviour
     public Vector3 CurrentVelocity => controller.velocity;
     public float CameraTilt { get; set; }
     private bool wasSprintingWhenJumped = false;
+
     void Start()
     {
         controller = GetComponent<CharacterController>();
@@ -47,10 +48,8 @@ public class PlayerMovement : MonoBehaviour
             return;
         }
 
-        isActuallyGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
-
-        float mouseX = Input.GetAxis("Mouse X") * GlobalMouseSensitivity * Time.deltaTime;
-        float mouseY = Input.GetAxis("Mouse Y") * GlobalMouseSensitivity * Time.deltaTime;
+        float mouseX = Input.GetAxis("Mouse X") * GlobalMouseSensitivity * 0.02f;
+        float mouseY = Input.GetAxis("Mouse Y") * GlobalMouseSensitivity * 0.02f;
 
         xRotation -= mouseY;
         xRotation = Mathf.Clamp(xRotation, -90f, 90f);
@@ -58,6 +57,7 @@ public class PlayerMovement : MonoBehaviour
         playerCamera.localRotation = Quaternion.Euler(xRotation, 0f, CameraTilt);
         transform.Rotate(Vector3.up * mouseX);
 
+        isActuallyGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
         CurrentInputX = Input.GetAxis("Horizontal");
         float z = Input.GetAxis("Vertical");
 
@@ -78,16 +78,16 @@ public class PlayerMovement : MonoBehaviour
         }
 
         bool isSprintingOnGround = Input.GetKey(KeyCode.LeftShift) && z > 0 && isActuallyGrounded;
-
         IsSprinting = isSprintingOnGround || (!isActuallyGrounded && wasSprintingWhenJumped);
 
         float currentSpeed = IsSprinting ? sprintSpeed : moveSpeed;
-        Vector3 move = transform.right * CurrentInputX + transform.forward * z;
-        controller.Move(move * currentSpeed * Time.deltaTime);
 
+        Vector3 horizontalVelocity = (transform.right * CurrentInputX + transform.forward * z) * currentSpeed;
+
+        Vector3 currentKnockback = Vector3.zero;
         if (impactVelocity.magnitude > 0.2f)
         {
-            controller.Move(impactVelocity * Time.deltaTime);
+            currentKnockback = impactVelocity;
             impactVelocity = Vector3.Lerp(impactVelocity, Vector3.zero, 5f * Time.deltaTime);
         }
         else
@@ -96,7 +96,10 @@ public class PlayerMovement : MonoBehaviour
         }
 
         velocity.y += gravity * Time.deltaTime;
-        controller.Move(velocity * Time.deltaTime);
+
+        Vector3 finalMovement = horizontalVelocity + currentKnockback + velocity;
+
+        controller.Move(finalMovement * Time.deltaTime);
     }
 
     public void ApplyKnockback(Vector3 direction, float force)
@@ -109,6 +112,6 @@ public class PlayerMovement : MonoBehaviour
 
     public static void SetGlobalMouseSensitivity(float sensitivity)
     {
-        GlobalMouseSensitivity = Mathf.Clamp(sensitivity, 10f, 1000f);
+        GlobalMouseSensitivity = Mathf.Clamp(sensitivity, 0.1f, 50f);
     }
 }
