@@ -10,6 +10,11 @@ public class BossKnight : MonoBehaviour
     public Transform playerCamera;
     public GameOver gameOverManager;
 
+    [Header("Audio")]
+    public AudioSource bossAudioSource;
+    public AudioClip jumpSound;
+    public AudioClip crashSound;
+
     [Header("Chase Stats")]
     public float distanceBehindPlayer = 5f;
     public float restTime = 0.5f;
@@ -28,13 +33,6 @@ public class BossKnight : MonoBehaviour
     private Vector3 currentStartPos;
     private Vector3 currentTargetPos;
 
-    public void WakeUp()
-    {
-        isAwake = true;
-        redShadow.gameObject.SetActive(false);
-        StartCoroutine(ChaseRoutine());
-    }
-
     void Update()
     {
         if (isAwake && playerTransform.position.z < transform.position.z - 2f)
@@ -45,6 +43,13 @@ public class BossKnight : MonoBehaviour
             }
             isAwake = false;
         }
+    }
+
+    public void WakeUp()
+    {
+        isAwake = true;
+        redShadow.gameObject.SetActive(false);
+        StartCoroutine(ChaseRoutine());
     }
 
     public void SetFinalDoor(float zPosition)
@@ -74,6 +79,11 @@ public class BossKnight : MonoBehaviour
 
             yield return new WaitForSeconds(0.4f);
 
+            if (bossAudioSource != null && jumpSound != null)
+            {
+                bossAudioSource.PlayOneShot(jumpSound);
+            }
+
             currentStartPos = transform.position;
             float elapsedTime = 0f;
 
@@ -91,6 +101,11 @@ public class BossKnight : MonoBehaviour
 
             transform.position = currentTargetPos;
             redShadow.gameObject.SetActive(false);
+
+            if (bossAudioSource != null && crashSound != null)
+            {
+                bossAudioSource.PlayOneShot(crashSound);
+            }
 
             if (playerCamera != null)
             {

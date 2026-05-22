@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class EndlessCorridor : MonoBehaviour
 {
@@ -15,6 +16,7 @@ public class EndlessCorridor : MonoBehaviour
 
     [Header("Level Progress")]
     public int chunksToSpawnBeforeEnd = 15;
+    public Slider progressBar;
 
     public BossKnight bossKnight;
 
@@ -25,11 +27,25 @@ public class EndlessCorridor : MonoBehaviour
     private int chunksSpawned = 0;
     private bool isEndRoomSpawned = false;
 
+    private float lastPlayerZ;
+    private float totalPlayerZ = 0f;
+    private float distanceToFinish;
+
     void Start()
     {
         if (playerTransform != null)
         {
             playerController = playerTransform.GetComponent<CharacterController>();
+            lastPlayerZ = playerTransform.position.z;
+        }
+
+        distanceToFinish = chunksToSpawnBeforeEnd * chunkLength;
+
+        if (progressBar != null)
+        {
+            progressBar.minValue = 0;
+            progressBar.maxValue = distanceToFinish;
+            progressBar.value = 0;
         }
 
         spawnZ = initialSpawnZ;
@@ -42,6 +58,24 @@ public class EndlessCorridor : MonoBehaviour
     void Update()
     {
         if (playerTransform == null || activeChunks.Count == 0) return;
+
+        float deltaZ = playerTransform.position.z - lastPlayerZ;
+
+        if (deltaZ < -100f)
+        {
+            deltaZ = 0f;
+        }
+
+        if (deltaZ > 0)
+        {
+            totalPlayerZ += deltaZ;
+            if (progressBar != null)
+            {
+                progressBar.value = Mathf.Min(totalPlayerZ, distanceToFinish);
+            }
+        }
+
+        lastPlayerZ = playerTransform.position.z;
 
         float oldestChunkEnd = activeChunks[0].transform.position.z + chunkLength;
 
