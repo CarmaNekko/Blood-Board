@@ -3,11 +3,7 @@ using System.Collections;
 
 public class KnightAttack : MonoBehaviour
 {
-    [Header("Target")]
-    public float detectionRange = 25f;
-    private bool isAwake = false;
-
-    [Header("Daño y Área")]
+    [Header("Daño")]
     public float baseDamage = 40f;
     public float baseRadius = 3f;
 
@@ -40,18 +36,8 @@ public class KnightAttack : MonoBehaviour
         myCollider = GetComponent<Collider>();
 
         if (alertIcon != null) alertIcon.SetActive(false);
-    }
 
-    void Update()
-    {
-        if (!isAwake && playerTarget != null)
-        {
-            if (Vector3.Distance(transform.position, playerTarget.position) <= detectionRange)
-            {
-                isAwake = true;
-                StartCoroutine(AttackRoutine());
-            }
-        }
+        StartCoroutine(AttackRoutine());
     }
 
     IEnumerator AttackRoutine()
@@ -81,7 +67,6 @@ public class KnightAttack : MonoBehaviour
         {
             t += Time.deltaTime / 0.5f;
             transform.position = Vector3.Lerp(startPosition, peakPosition, t);
-
             float stretchY = Mathf.Lerp(1.2f, 1f, t);
             float squashXZ = Mathf.Lerp(0.9f, 1f, t);
             transform.localScale = new Vector3(baseScale.x * squashXZ, baseScale.y * stretchY, baseScale.z * squashXZ);
@@ -97,9 +82,12 @@ public class KnightAttack : MonoBehaviour
         }
 
         Vector3 targetDropPosition = playerTarget.position;
+        float spread = 1.5f;
+        targetDropPosition.x += Random.Range(-spread, spread);
+        targetDropPosition.z += Random.Range(-spread, spread);
         Vector3 floorPoint = targetDropPosition;
 
-        if (Physics.Raycast(new Vector3(playerTarget.position.x, peakPosition.y, playerTarget.position.z), Vector3.down, out RaycastHit hit, 50f, groundMask))
+        if (Physics.Raycast(new Vector3(targetDropPosition.x, peakPosition.y, targetDropPosition.z), Vector3.down, out RaycastHit hit, 50f, groundMask))
         {
             floorPoint = hit.point;
             targetDropPosition.y = hit.point.y + offsetCentroModelo;

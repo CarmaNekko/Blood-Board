@@ -46,7 +46,10 @@ public class RoomEnemySpawner : MonoBehaviour
     {
         isSpawning = true;
 
-        if (enemyPrefabs.Length == 0 || spawnPoints.Count == 0)
+        LevelManager levelManager = Object.FindFirstObjectByType<LevelManager>();
+        List<GameObject> pool = levelManager != null ? levelManager.GetAllowedEnemies() : new List<GameObject>();
+
+        if (pool.Count == 0 || spawnPoints.Count == 0)
         {
             isSpawning = false;
             yield break;
@@ -87,8 +90,7 @@ public class RoomEnemySpawner : MonoBehaviour
 
         foreach (Transform spawnLocation in chosenSpawns)
         {
-            int randomEnemyIndex = Random.Range(0, enemyPrefabs.Length);
-            GameObject chosenEnemyPrefab = enemyPrefabs[randomEnemyIndex];
+            GameObject chosenEnemyPrefab = pool[Random.Range(0, pool.Count)];
 
             Vector3 spawnPos = spawnLocation.position;
             if (Physics.Raycast(spawnLocation.position, Vector3.down, out RaycastHit hitEnemy, 50f, groundMask))

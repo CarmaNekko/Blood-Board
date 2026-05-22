@@ -1,7 +1,8 @@
+using BloodBoard.GameManagement;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using BloodBoard.GameManagement;
 
 public class LevelManager : MonoBehaviour
 {
@@ -18,6 +19,16 @@ public class LevelManager : MonoBehaviour
     [Header("Difficulty Curve")]
     [SerializeField] private int extraRoomsPerLevel = 1;
     [SerializeField] private int extraEnemiesPerLevel = 1;
+
+    [Header("Enemies (White & Black)")]
+    public GameObject pawnWhite;
+    public GameObject pawnBlack;
+    public GameObject knightWhite;
+    public GameObject knightBlack;
+    public GameObject bishopWhite;
+    public GameObject bishopBlack;
+    public GameObject rookWhite;
+    public GameObject rookBlack;
 
     private void Awake()
     {
@@ -44,6 +55,34 @@ public class LevelManager : MonoBehaviour
         {
             Debug.LogError("No se encontro el ModularGenerator en la escena.");
         }
+    }
+
+    public List<GameObject> GetAllowedEnemies()
+    {
+        List<GameObject> pool = new List<GameObject>();
+
+        if (pawnWhite != null) pool.Add(pawnWhite);
+        if (pawnBlack != null) pool.Add(pawnBlack);
+
+        if (currentLevel >= 2)
+        {
+            if (knightWhite != null) pool.Add(knightWhite);
+            if (knightBlack != null) pool.Add(knightBlack);
+        }
+
+        if (currentLevel >= 3)
+        {
+            if (bishopWhite != null) pool.Add(bishopWhite);
+            if (bishopBlack != null) pool.Add(bishopBlack);
+        }
+
+        if (currentLevel >= 4)
+        {
+            if (rookWhite != null) pool.Add(rookWhite);
+            if (rookBlack != null) pool.Add(rookBlack);
+        }
+
+        return pool;
     }
 
     public void AdvanceLevel()

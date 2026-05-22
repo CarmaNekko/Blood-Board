@@ -4,6 +4,7 @@ using UnityEngine;
 public class Boss_Exit : MonoBehaviour
 {
     public string mainLevelScene = "Level_1";
+    public bool advanceLevel = true;
 
     private bool isLoading = false;
 
@@ -32,7 +33,10 @@ public class Boss_Exit : MonoBehaviour
         }
         else
         {
-            LevelManager.currentLevel++;
+            if (advanceLevel)
+            {
+                LevelManager.currentLevel++;
+            }
 
             PlayerHealth playerHealth = other.GetComponent<PlayerHealth>();
             float health = playerHealth != null ? playerHealth.currentHealth : 100f;

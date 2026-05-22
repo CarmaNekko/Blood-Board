@@ -11,9 +11,14 @@ public class EnemyHealth : MonoBehaviour
     [Header("Score System")]
     public int scoreValue = 100;
 
+    [Header("Protection")]
+    public bool isShielded = false;
+    [SerializeField] private GameObject shieldVisual;
+
     [Header("Buff Status")]
     public bool isBuffed { get; private set; } = false;
     [SerializeField] private GameObject frenzyParticles;
+
 
     void Start()
     {
@@ -23,18 +28,17 @@ public class EnemyHealth : MonoBehaviour
         {
             frenzyParticles.SetActive(false);
         }
+        if (shieldVisual != null) shieldVisual.SetActive(false);
     }
 
     public void TakeDamage(int damageAmount, MagicColor incomingMagicColor)
     {
+        if (isShielded) return;
+
         if (myColor != incomingMagicColor)
         {
             currentHealth -= damageAmount;
-
-            if (currentHealth <= 0)
-            {
-                Die();
-            }
+            if (currentHealth <= 0) Die();
         }
         else
         {
@@ -62,5 +66,13 @@ public class EnemyHealth : MonoBehaviour
     {
         ScoreManager.Instance?.AddScoreToCurrent(scoreValue);
         Destroy(gameObject);
+    }
+    public void SetShield(bool status)
+    {
+        isShielded = status;
+        if (shieldVisual != null)
+        {
+            shieldVisual.SetActive(status);
+        }
     }
 }
