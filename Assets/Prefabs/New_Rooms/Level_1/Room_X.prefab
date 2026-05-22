@@ -1427,6 +1427,11 @@ MonoBehaviour:
   - {fileID: 1441131322858644324}
   - {fileID: 2194070158596684828}
   enemiesToSpawn: 4
+  warningVisualPrefab: {fileID: 1769356522798718474, guid: e9d9bc66b77f8bc45982567bc2679f97, type: 3}
+  spawnDelay: 1.5
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 64
 --- !u!1 &2122657781789629408
 GameObject:
   m_ObjectHideFlags: 0

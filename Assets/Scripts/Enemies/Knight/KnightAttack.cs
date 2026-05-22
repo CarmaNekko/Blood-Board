@@ -146,7 +146,8 @@ public class KnightAttack : MonoBehaviour
 
         float currentDamage = healthScript.isBuffed ? baseDamage * 2f : baseDamage;
         float currentImpactRadius = healthScript.isBuffed ? baseRadius * 1.5f : baseRadius;
-        damageArea.DealSlamDamage(currentDamage, currentImpactRadius);
+
+        damageArea.DealSlamDamage(currentDamage, currentImpactRadius, transform);
 
         t = 0;
         while (t < 1)

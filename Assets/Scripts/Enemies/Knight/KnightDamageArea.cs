@@ -5,7 +5,7 @@ public class KnightDamageArea : MonoBehaviour
     [Header("Fuerza del Impacto")]
     public float knockbackForce = 60f;
 
-    public void DealSlamDamage(float damageAmount, float radius)
+    public void DealSlamDamage(float damageAmount, float radius, Transform attacker)
     {
         if (CameraShake.Instance != null)
         {
@@ -21,7 +21,7 @@ public class KnightDamageArea : MonoBehaviour
                 PlayerHealth playerHealth = hit.GetComponent<PlayerHealth>();
                 if (playerHealth != null)
                 {
-                    playerHealth.TakeDamage(damageAmount);
+                    playerHealth.TakeDamage(damageAmount, attacker);
                 }
 
                 PlayerMovement movement = hit.GetComponent<PlayerMovement>();

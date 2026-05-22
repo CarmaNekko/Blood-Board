@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections;
 
 public class MagicShooter : MonoBehaviour
 {
@@ -11,6 +12,11 @@ public class MagicShooter : MonoBehaviour
     [SerializeField] private Transform firePoint;
     [SerializeField] private float shootForce = 30f;
     [SerializeField] private PlayerCameraEffects cameraEffects;
+    [SerializeField] private PlayerMovement playerMovement;
+
+    [Header("Arma Pesada (Inercia)")]
+    [SerializeField] private float movingShootDelay = 0.25f;
+    private bool isPreparingToShoot = false;
 
     [Header("UI Colors")]
     [SerializeField] private Image whiteManaFill;
@@ -57,32 +63,50 @@ public class MagicShooter : MonoBehaviour
         playerHealth = GetComponent<PlayerHealth>();
 
         if (cameraEffects == null) cameraEffects = GetComponentInChildren<PlayerCameraEffects>();
+        if (playerMovement == null) playerMovement = GetComponentInParent<PlayerMovement>();
     }
 
     void Update()
     {
-        if (PauseScreen.IsPaused || TutorialMessage.IsTutorialActive) return;
+        if (PauseScreen.IsPaused || TutorialMessage.IsTutorialActive || isPreparingToShoot) return;
 
         RegenerateMana();
 
         if (Input.GetButtonDown("Fire1") && !isWhiteOverheated && currentWhiteMana >= whiteManaCost)
         {
-            Shoot(whiteMagicPrefab);
-            currentWhiteMana -= whiteManaCost;
-
-            if (currentWhiteMana < whiteManaCost) isWhiteOverheated = true;
-
-            UpdateUI();
+            StartCoroutine(HandleShootRequest(whiteMagicPrefab, true));
         }
         else if (Input.GetButtonDown("Fire2") && !isBlackOverheated && currentBlackMana >= blackManaCost)
         {
-            Shoot(blackMagicPrefab);
-            currentBlackMana -= blackManaCost;
-
-            if (currentBlackMana < blackManaCost) isBlackOverheated = true;
-
-            UpdateUI();
+            StartCoroutine(HandleShootRequest(blackMagicPrefab, false));
         }
+    }
+
+    private IEnumerator HandleShootRequest(GameObject magicPrefab, bool isWhiteMagic)
+    {
+        isPreparingToShoot = true;
+
+        bool isMoving = (playerMovement != null && playerMovement.CurrentVelocity.magnitude > 0.5f);
+
+        if (isMoving)
+        {
+            yield return new WaitForSeconds(movingShootDelay);
+        }
+        if (isWhiteMagic && currentWhiteMana >= whiteManaCost)
+        {
+            Shoot(magicPrefab);
+            currentWhiteMana -= whiteManaCost;
+            if (currentWhiteMana < whiteManaCost) isWhiteOverheated = true;
+        }
+        else if (!isWhiteMagic && currentBlackMana >= blackManaCost)
+        {
+            Shoot(magicPrefab);
+            currentBlackMana -= blackManaCost;
+            if (currentBlackMana < blackManaCost) isBlackOverheated = true;
+        }
+
+        UpdateUI();
+        isPreparingToShoot = false;
     }
 
     private void RegenerateMana()

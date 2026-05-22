@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -8,10 +9,15 @@ public class RoomEnemySpawner : MonoBehaviour
     [SerializeField] private List<Transform> spawnPoints;
     [SerializeField] private int enemiesToSpawn = 3;
 
+    [Header("Spawn Delay & Visuals")]
+    [SerializeField] private GameObject warningVisualPrefab;
+    [SerializeField] private float spawnDelay = 1.5f;
+    public LayerMask groundMask = Physics.AllLayers;
+
     private bool roomCleared = false;
     private bool hasTriggered = false;
-
     private bool isWaitingForPlayer = false;
+    private bool isSpawning = false;
     private Transform playerTransform;
 
     private RoomInstance myRoom;
@@ -33,9 +39,22 @@ public class RoomEnemySpawner : MonoBehaviour
 
     private void SpawnEnemies()
     {
-        if (enemyPrefabs.Length == 0 || spawnPoints.Count == 0) return;
+        StartCoroutine(SpawnEnemiesRoutine());
+    }
+
+    private IEnumerator SpawnEnemiesRoutine()
+    {
+        isSpawning = true;
+
+        if (enemyPrefabs.Length == 0 || spawnPoints.Count == 0)
+        {
+            isSpawning = false;
+            yield break;
+        }
 
         List<Transform> availableSpawns = new List<Transform>(spawnPoints);
+        List<Transform> chosenSpawns = new List<Transform>();
+        List<GameObject> activeWarnings = new List<GameObject>();
 
         for (int i = 0; i < enemiesToSpawn; i++)
         {
@@ -43,15 +62,45 @@ public class RoomEnemySpawner : MonoBehaviour
 
             int randomSpawnIndex = Random.Range(0, availableSpawns.Count);
             Transform chosenSpawn = availableSpawns[randomSpawnIndex];
+            chosenSpawns.Add(chosenSpawn);
+            availableSpawns.RemoveAt(randomSpawnIndex);
 
+            if (warningVisualPrefab != null)
+            {
+                Vector3 visualPosition = chosenSpawn.position;
+                if (Physics.Raycast(chosenSpawn.position, Vector3.down, out RaycastHit hit, 50f, groundMask))
+                {
+                    visualPosition = hit.point + new Vector3(0, 0.05f, 0);
+                }
+
+                GameObject warning = Instantiate(warningVisualPrefab, visualPosition, Quaternion.identity);
+                activeWarnings.Add(warning);
+            }
+        }
+
+        yield return new WaitForSeconds(spawnDelay);
+
+        foreach (GameObject warning in activeWarnings)
+        {
+            if (warning != null) Destroy(warning);
+        }
+
+        foreach (Transform spawnLocation in chosenSpawns)
+        {
             int randomEnemyIndex = Random.Range(0, enemyPrefabs.Length);
             GameObject chosenEnemyPrefab = enemyPrefabs[randomEnemyIndex];
 
-            GameObject spawnedEnemy = Instantiate(chosenEnemyPrefab, chosenSpawn.position, chosenSpawn.rotation);
-            activeEnemiesList.Add(spawnedEnemy);
+            Vector3 spawnPos = spawnLocation.position;
+            if (Physics.Raycast(spawnLocation.position, Vector3.down, out RaycastHit hitEnemy, 50f, groundMask))
+            {
+                spawnPos = hitEnemy.point;
+            }
 
-            availableSpawns.RemoveAt(randomSpawnIndex);
+            GameObject spawnedEnemy = Instantiate(chosenEnemyPrefab, spawnPos, spawnLocation.rotation);
+            activeEnemiesList.Add(spawnedEnemy);
         }
+
+        isSpawning = false;
     }
 
     private void Update()
@@ -97,7 +146,7 @@ public class RoomEnemySpawner : MonoBehaviour
             }
         }
 
-        if (hasTriggered && !roomCleared && !isWaitingForPlayer)
+        if (hasTriggered && !roomCleared && !isWaitingForPlayer && !isSpawning)
         {
             activeEnemiesList.RemoveAll(enemy => enemy == null);
 

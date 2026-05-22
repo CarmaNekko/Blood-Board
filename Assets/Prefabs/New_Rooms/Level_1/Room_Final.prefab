@@ -5549,7 +5549,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Finish_Level
   playerTag: Player
-  mainLevelScene: Level_1
+  escenaProcedural: Level_1
+  escenaJefeCaballo: Knigh_Boss
 --- !u!1 &3747489531976802236
 GameObject:
   m_ObjectHideFlags: 0

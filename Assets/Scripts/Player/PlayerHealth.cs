@@ -16,6 +16,10 @@ public class PlayerHealth : MonoBehaviour
     public float flashSpeed = 5f;
     public Color flashColor = new Color(1f, 0f, 0f, 0.4f);
 
+    [Header("Directional Damage (Nuevo)")]
+    public RectTransform directionalIndicator;
+    public Image directionalImage;
+
     void Start()
     {
         currentHealth = maxHealth;
@@ -29,6 +33,11 @@ public class PlayerHealth : MonoBehaviour
         {
             damageFlashImage.color = Color.clear;
         }
+
+        if (directionalImage != null)
+        {
+            directionalImage.color = Color.clear;
+        }
     }
 
     void Update()
@@ -37,20 +46,30 @@ public class PlayerHealth : MonoBehaviour
         {
             damageFlashImage.color = Color.Lerp(damageFlashImage.color, Color.clear, flashSpeed * Time.deltaTime);
         }
+
+        if (directionalImage != null && directionalImage.color != Color.clear)
+        {
+            directionalImage.color = Color.Lerp(directionalImage.color, Color.clear, flashSpeed * Time.deltaTime);
+        }
     }
 
-    public void TakeDamage(float amount)
+    public void TakeDamage(float amount, Transform attacker = null)
     {
         currentHealth -= amount;
 
-        if (healthBarUI != null)
-        {
-            healthBarUI.value = currentHealth;
-        }
+        if (healthBarUI != null) healthBarUI.value = currentHealth;
+        if (damageFlashImage != null) damageFlashImage.color = flashColor;
 
-        if (damageFlashImage != null)
+        if (attacker != null && directionalIndicator != null && directionalImage != null)
         {
-            damageFlashImage.color = flashColor;
+            directionalImage.color = flashColor;
+
+            Vector3 dirToAttacker = attacker.position - transform.position;
+            dirToAttacker.y = 0;
+
+            float angle = Vector3.SignedAngle(transform.forward, dirToAttacker, Vector3.up);
+
+            directionalIndicator.localEulerAngles = new Vector3(0, 0, -angle);
         }
 
         if (currentHealth <= 0)
@@ -66,7 +85,6 @@ public class PlayerHealth : MonoBehaviour
             else
             {
                 SaveManager.SaveToSlot(GameModeManager.CurrentSlot, currentFloor, finalScore, finalHealth, GameModeManager.CurrentMode.GetModeName());
-                Debug.Log("Guardando al morir en piso: " + currentFloor);
                 Object.FindFirstObjectByType<GameOver>().ShowGameOver();
             }
         }
@@ -80,15 +98,7 @@ public class PlayerHealth : MonoBehaviour
     public void RestoreHealth(float amount)
     {
         currentHealth += amount;
-
-        if (currentHealth > maxHealth)
-        {
-            currentHealth = maxHealth;
-        }
-
-        if (healthBarUI != null)
-        {
-            healthBarUI.value = currentHealth;
-        }
+        if (currentHealth > maxHealth) currentHealth = maxHealth;
+        if (healthBarUI != null) healthBarUI.value = currentHealth;
     }
 }
