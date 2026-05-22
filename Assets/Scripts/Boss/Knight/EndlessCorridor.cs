@@ -3,23 +3,23 @@ using UnityEngine;
 
 public class EndlessCorridor : MonoBehaviour
 {
-    [Header("Configuración Principal")]
+    [Header("Main Settings")]
     public Transform playerTransform;
     public float chunkLength = 30f;
     public int chunksOnScreen = 4;
+    public float initialSpawnZ = 30f;
 
-    [Header("Los Prefabs")]
+    [Header("Prefabs")]
     public GameObject[] chunkPrefabs;
-    [Tooltip("Arrastra aquí el Prefab de tu Habitación Final")]
     public GameObject finalRoomPrefab;
 
-    [Header("Progreso del Nivel")]
-    [Tooltip("¿Cuántos pasillos debe cruzar antes de la meta?")]
+    [Header("Level Progress")]
     public int chunksToSpawnBeforeEnd = 15;
+
+    public BossKnight bossKnight;
 
     private float spawnZ = 0f;
     private List<GameObject> activeChunks = new List<GameObject>();
-    private bool isRunning = false;
     private CharacterController playerController;
 
     private int chunksSpawned = 0;
@@ -31,25 +31,21 @@ public class EndlessCorridor : MonoBehaviour
         {
             playerController = playerTransform.GetComponent<CharacterController>();
         }
-    }
 
-    public void IniciarPasillo(float posicionInicioZ)
-    {
-        spawnZ = posicionInicioZ;
+        spawnZ = initialSpawnZ;
         for (int i = 0; i < chunksOnScreen; i++)
         {
             SpawnChunk();
         }
-        isRunning = true;
     }
 
     void Update()
     {
-        if (!isRunning || playerTransform == null || activeChunks.Count == 0) return;
+        if (playerTransform == null || activeChunks.Count == 0) return;
 
-        float finDelBloqueMasViejo = activeChunks[0].transform.position.z + chunkLength;
+        float oldestChunkEnd = activeChunks[0].transform.position.z + chunkLength;
 
-        if (!isEndRoomSpawned && playerTransform.position.z > finDelBloqueMasViejo + 5f)
+        if (!isEndRoomSpawned && playerTransform.position.z > oldestChunkEnd + 5f)
         {
             SpawnChunk();
             DeleteOldestChunk();
@@ -57,22 +53,27 @@ public class EndlessCorridor : MonoBehaviour
 
         if (playerTransform.position.z > 500f)
         {
-            ResetearMundo();
+            ResetWorld();
         }
     }
 
-    private void ResetearMundo()
+    private void ResetWorld()
     {
-        float distanciaARetroceder = 500f;
+        float distanceToReset = 500f;
         playerController.enabled = false;
-        playerTransform.position = new Vector3(playerTransform.position.x, playerTransform.position.y, playerTransform.position.z - distanciaARetroceder);
+        playerTransform.position = new Vector3(playerTransform.position.x, playerTransform.position.y, playerTransform.position.z - distanceToReset);
         playerController.enabled = true;
 
         foreach (GameObject chunk in activeChunks)
         {
-            chunk.transform.position = new Vector3(chunk.transform.position.x, chunk.transform.position.y, chunk.transform.position.z - distanciaARetroceder);
+            chunk.transform.position = new Vector3(chunk.transform.position.x, chunk.transform.position.y, chunk.transform.position.z - distanceToReset);
         }
-        spawnZ -= distanciaARetroceder;
+        spawnZ -= distanceToReset;
+
+        if (bossKnight != null)
+        {
+            bossKnight.ResetBossPosition(distanceToReset);
+        }
     }
 
     private void SpawnChunk()
@@ -91,6 +92,11 @@ public class EndlessCorridor : MonoBehaviour
         {
             chunkToSpawn = finalRoomPrefab;
             isEndRoomSpawned = true;
+
+            if (bossKnight != null)
+            {
+                bossKnight.SetFinalDoor(spawnZ);
+            }
         }
 
         GameObject newChunk = Instantiate(chunkToSpawn, new Vector3(0, 0, spawnZ), Quaternion.identity);

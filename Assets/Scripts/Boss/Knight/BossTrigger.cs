@@ -2,21 +2,24 @@ using UnityEngine;
 
 public class BossTrigger : MonoBehaviour
 {
-    [Header("Referencias")]
-    public EndlessCorridor corredor;
-    public GameObject salaInicial;
+    [Header("References")]
+    public GameObject startRoom;
+    public BossKnight bossKnight;
 
-    public float coordenadaDeInicio = 30f;
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player"))
         {
-            corredor.IniciarPasillo(coordenadaDeInicio);
-
-            if (salaInicial != null)
+            if (bossKnight != null)
             {
-                Destroy(salaInicial, 3f);
+                bossKnight.WakeUp();
             }
+
+            if (startRoom != null)
+            {
+                Destroy(startRoom, 3f);
+            }
+
             gameObject.SetActive(false);
         }
     }
