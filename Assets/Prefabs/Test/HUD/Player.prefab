@@ -352,6 +352,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
   moveSpeed: 9
+  sprintSpeed: 18
   jumpForce: 2
   gravity: -19.81
   playerCamera: {fileID: 1012640326866445846}
@@ -378,6 +379,15 @@ MonoBehaviour:
   blackMagicPrefab: {fileID: 8704798185733213193, guid: d895a193937f5534f9fef31172878c0a, type: 3}
   firePoint: {fileID: 8885997691368852185}
   shootForce: 30
+  cameraEffects: {fileID: 0}
+  playerMovement: {fileID: 0}
+  movingShootDelay: 0
+  whiteManaFill: {fileID: 0}
+  blackManaFill: {fileID: 0}
+  normalWhiteColor: {r: 1, g: 1, b: 1, a: 1}
+  normalBlackColor: {r: 0.3, g: 0, b: 0.5, a: 1}
+  warningColor: {r: 1, g: 0.5, b: 0, a: 1}
+  overheatedColor: {r: 1, g: 0, b: 0, a: 1}
   maxWhiteMana: 100
   whiteManaCost: 8
   whiteManaRegen: 16
@@ -386,8 +396,6 @@ MonoBehaviour:
   blackManaCost: 8
   blackManaRegen: 16
   blackManaBarUI: {fileID: 0}
-  emptyRegenMultiplier: 2
-  exhaustThreshold: 0.1
 --- !u!114 &6507242683096430587
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -403,6 +411,11 @@ MonoBehaviour:
   maxHealth: 100
   currentHealth: 100
   healthBarUI: {fileID: 0}
+  damageFlashImage: {fileID: 0}
+  flashSpeed: 5
+  flashColor: {r: 1, g: 0, b: 0, a: 0.4}
+  directionalIndicator: {fileID: 0}
+  directionalImage: {fileID: 0}
 --- !u!1 &7624917620450374352
 GameObject:
   m_ObjectHideFlags: 0
