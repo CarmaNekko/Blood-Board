@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 7942612013139833894}
   - component: {fileID: 3839013058814198959}
   - component: {fileID: 6499228597242673309}
+  - component: {fileID: -8671241229221104751}
   m_Layer: 8
   m_Name: Rook_White
   m_TagString: Untagged
@@ -92,6 +93,20 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 2.7867343, z: 1.024282}
   m_Center: {x: 0, y: 1.3666252, z: -0.012141094}
+--- !u!114 &-8671241229221104751
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5344714956688607739}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c75e87c3dfd5ccb45a63dea326e33d8e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemySpawnEffect
+  spawnDuration: 2
+  yOffset: -3
 --- !u!1 &8647794725627334111
 GameObject:
   m_ObjectHideFlags: 0

@@ -5180,6 +5180,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 8781a494b72ef2e4d91bd8eb9798e646, type: 3}
       insertIndex: -1
       addedObject: {fileID: 7847892661649423063}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 8781a494b72ef2e4d91bd8eb9798e646, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7409382937165975956}
   m_SourcePrefab: {fileID: 100100000, guid: 8781a494b72ef2e4d91bd8eb9798e646, type: 3}
 --- !u!4 &5910945791519465244 stripped
 Transform:
@@ -5270,3 +5273,17 @@ MonoBehaviour:
   isShielded: 0
   shieldVisual: {fileID: 5270852484274944935}
   frenzyParticles: {fileID: 6318600937171281692}
+--- !u!114 &7409382937165975956
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6434576575197070758}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c75e87c3dfd5ccb45a63dea326e33d8e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemySpawnEffect
+  spawnDuration: 2
+  yOffset: -3

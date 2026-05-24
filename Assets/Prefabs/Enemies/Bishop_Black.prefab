@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 7483303834638043075}
   - component: {fileID: 4523647896431927694}
   - component: {fileID: 6116089848044857167}
+  - component: {fileID: -5114846143936184572}
   m_Layer: 8
   m_Name: Bishop_Black
   m_TagString: Untagged
@@ -95,6 +96,20 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.8320965, y: 2.9240193, z: 0.8010706}
   m_Center: {x: -0.0059747994, y: 1.4153593, z: -0.026222944}
+--- !u!114 &-5114846143936184572
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 217020248887674213}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c75e87c3dfd5ccb45a63dea326e33d8e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemySpawnEffect
+  spawnDuration: 2
+  yOffset: -3
 --- !u!1 &4198374055696165504
 GameObject:
   m_ObjectHideFlags: 0

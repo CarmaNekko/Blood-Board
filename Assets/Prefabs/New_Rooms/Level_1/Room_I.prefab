@@ -1991,9 +1991,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 164235d5a3422c04da9397f87e5bf4fb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RoomEnemySpawner
-  enemyPrefabs:
-  - {fileID: 217020248887674213, guid: 77fb5aff9b5bb0f4fb3fed25d9081326, type: 3}
-  - {fileID: 597776771158220281, guid: 671f050f194f386439b3b22273b4e1ed, type: 3}
+  idealEnemiesPerWave: 4
   spawnPoints:
   - {fileID: 3466503621723805809}
   - {fileID: 9157365307141153989}
@@ -2007,9 +2005,11 @@ MonoBehaviour:
   - {fileID: 1949318511639179872}
   - {fileID: 5099294959020610902}
   - {fileID: 3182818860579789013}
-  enemiesToSpawn: 4
+  maxKnights: 2
+  maxBishops: 2
+  maxRooks: 1
   warningVisualPrefab: {fileID: 1769356522798718474, guid: e9d9bc66b77f8bc45982567bc2679f97, type: 3}
-  spawnDelay: 1.5
+  spawnDelay: 2
   groundMask:
     serializedVersion: 2
     m_Bits: 64

@@ -1,13 +1,27 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class RoomEnemySpawner : MonoBehaviour
 {
-    [Header("Enemy Setup")]
-    [SerializeField] private GameObject[] enemyPrefabs;
+    private TextMeshProUGUI waveText;
+
+    [Header("Wave Setup")]
+    [SerializeField] private int idealEnemiesPerWave = 3;
     [SerializeField] private List<Transform> spawnPoints;
-    [SerializeField] private int enemiesToSpawn = 3;
+    private int totalEnemiesToSpawn = 3;
+    private int maxWaves;
+    private int currentWave = 0;
+
+    [Header("Composition Rules")]
+    [SerializeField] private int maxKnights = 2;
+    [SerializeField] private int maxBishops = 1;
+    [SerializeField] private int maxRooks = 1;
+
+    private int currentKnights = 0;
+    private int currentBishops = 0;
+    private int currentRooks = 0;
 
     [Header("Spawn Delay & Visuals")]
     [SerializeField] private GameObject warningVisualPrefab;
@@ -25,6 +39,20 @@ public class RoomEnemySpawner : MonoBehaviour
 
     private List<GameObject> activeEnemiesList = new List<GameObject>();
 
+    private void Start()
+    {
+        GameObject uiTextObj = GameObject.Find("WaveCounterText");
+        if (uiTextObj != null)
+        {
+            waveText = uiTextObj.GetComponent<TextMeshProUGUI>();
+            waveText.text = "";
+        }
+        else
+        {
+            Debug.LogWarning("No se encontró el objeto en el Canvas.");
+        }
+    }
+
     public void TriggerRoomEvent()
     {
         if (hasTriggered || roomCleared || isWaitingForPlayer) return;
@@ -37,12 +65,25 @@ public class RoomEnemySpawner : MonoBehaviour
         }
     }
 
-    private void SpawnEnemies()
+    private void StartNextWave()
     {
-        StartCoroutine(SpawnEnemiesRoutine());
+        if (currentWave >= maxWaves)
+        {
+            roomCleared = true;
+            LockAllDoors(false);
+            UpdateUI();
+            return;
+        }
+
+        currentWave++;
+        int enemiesThisWave = Mathf.CeilToInt((float)totalEnemiesToSpawn / maxWaves);
+
+        if (enemiesThisWave > spawnPoints.Count) enemiesThisWave = spawnPoints.Count;
+
+        StartCoroutine(SpawnEnemiesRoutine(enemiesThisWave));
     }
 
-    private IEnumerator SpawnEnemiesRoutine()
+    private IEnumerator SpawnEnemiesRoutine(int enemiesToSpawnThisWave)
     {
         isSpawning = true;
 
@@ -59,7 +100,7 @@ public class RoomEnemySpawner : MonoBehaviour
         List<Transform> chosenSpawns = new List<Transform>();
         List<GameObject> activeWarnings = new List<GameObject>();
 
-        for (int i = 0; i < enemiesToSpawn; i++)
+        for (int i = 0; i < enemiesToSpawnThisWave; i++)
         {
             if (availableSpawns.Count == 0) break;
 
@@ -90,7 +131,17 @@ public class RoomEnemySpawner : MonoBehaviour
 
         foreach (Transform spawnLocation in chosenSpawns)
         {
+            if (currentKnights >= maxKnights) pool.RemoveAll(e => e.GetComponent<KnightAttack>() != null);
+            if (currentBishops >= maxBishops) pool.RemoveAll(e => e.GetComponent<BishopAttack>() != null);
+            if (currentRooks >= maxRooks) pool.RemoveAll(e => e.GetComponent<RookProtector>() != null);
+
+            if (pool.Count == 0) break;
+
             GameObject chosenEnemyPrefab = pool[Random.Range(0, pool.Count)];
+
+            if (chosenEnemyPrefab.GetComponent<KnightAttack>() != null) currentKnights++;
+            else if (chosenEnemyPrefab.GetComponent<BishopAttack>() != null) currentBishops++;
+            else if (chosenEnemyPrefab.GetComponent<RookProtector>() != null) currentRooks++;
 
             Vector3 spawnPos = spawnLocation.position;
             if (Physics.Raycast(spawnLocation.position, Vector3.down, out RaycastHit hitEnemy, 50f, groundMask))
@@ -103,6 +154,7 @@ public class RoomEnemySpawner : MonoBehaviour
         }
 
         isSpawning = false;
+        UpdateUI();
     }
 
     private void Update()
@@ -139,25 +191,54 @@ public class RoomEnemySpawner : MonoBehaviour
                     LockAllDoors(true);
 
                     if (LevelManager.currentEnemiesPerRoom > 0)
-                        enemiesToSpawn = LevelManager.currentEnemiesPerRoom;
-                    if (enemiesToSpawn > spawnPoints.Count)
-                        enemiesToSpawn = spawnPoints.Count;
+                    {
+                        totalEnemiesToSpawn = LevelManager.currentEnemiesPerRoom;
+                    }
+                    else
+                    {
+                        totalEnemiesToSpawn = 4;
+                    }
 
-                    SpawnEnemies();
+                    maxWaves = Mathf.CeilToInt((float)totalEnemiesToSpawn / idealEnemiesPerWave);
+                    if (maxWaves < 1) maxWaves = 1;
+
+                    StartNextWave();
                 }
             }
         }
 
         if (hasTriggered && !roomCleared && !isWaitingForPlayer && !isSpawning)
         {
+            int previousCount = activeEnemiesList.Count;
             activeEnemiesList.RemoveAll(enemy => enemy == null);
+
+            if (activeEnemiesList.Count != previousCount)
+            {
+                UpdateUI();
+            }
 
             if (activeEnemiesList.Count == 0)
             {
-                roomCleared = true;
-                LockAllDoors(false);
-                Debug.Log("¡Habitación limpiada!");
+                StartNextWave();
             }
+        }
+    }
+
+    private void UpdateUI()
+    {
+        if (waveText == null) return;
+
+        if (roomCleared)
+        {
+            waveText.text = "";
+        }
+        else if (hasTriggered)
+        {
+            waveText.text = $"OLEADA {currentWave}/{maxWaves} - ENEMIGOS: {activeEnemiesList.Count}";
+        }
+        else
+        {
+            waveText.text = "";
         }
     }
 
