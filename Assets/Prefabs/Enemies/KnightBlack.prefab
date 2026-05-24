@@ -5222,6 +5222,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 49a646464613a8c45a14a126560b3335, type: 3}
       insertIndex: -1
       addedObject: {fileID: 164945014206854552}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 49a646464613a8c45a14a126560b3335, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 830768466814364431}
   m_SourcePrefab: {fileID: 100100000, guid: 49a646464613a8c45a14a126560b3335, type: 3}
 --- !u!4 &2442738508998688262 stripped
 Transform:
@@ -5375,6 +5378,9 @@ MonoBehaviour:
   neighSound: {fileID: 8300000, guid: 28e362a0dde59f64fa2a46cd4e58dd15, type: 3}
   damageArea: {fileID: 1167798690200825190}
   dangerZonePrefab: {fileID: 422775675626992946, guid: 62dd5b781598214449e20e172d79b5e7, type: 3}
+  wallMask:
+    serializedVersion: 2
+    m_Bits: 512
 --- !u!114 &1167798690200825190
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5425,6 +5431,33 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemySpawnEffect
   spawnDuration: 2
   yOffset: -3
+--- !u!54 &830768466814364431
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3075264855909393596}
+  serializedVersion: 5
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1001 &3365276599001842050
 PrefabInstance:
   m_ObjectHideFlags: 0

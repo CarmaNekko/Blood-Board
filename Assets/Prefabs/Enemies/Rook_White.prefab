@@ -66,7 +66,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: adfe344e379f6b64998f849cd7af0960, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth
-  myColor: 1
+  myColor: 0
   maxHealth: 25
   scoreValue: 300
   isShielded: 0
