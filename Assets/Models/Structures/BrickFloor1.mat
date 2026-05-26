@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: BrickFloor1
-  m_Shader: {fileID: -6465566751694194690, guid: c91eb80beb4c54148a371650943c1ac0, type: 3}
+  m_Shader: {fileID: -6465566751694194690, guid: eb37108fabace97409780e1c6b96a088, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -42,10 +42,13 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _Metallic: 0
     - _QueueControl: 0
     - _QueueOffset: 0
     - _SafePad: 0.002
-    m_Colors: []
+    - _Smoothness: 0
+    m_Colors:
+    - _FakeAmbientalLight: {r: 0, g: 0, b: 0, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
 --- !u!114 &2279443150978287497
