@@ -22,6 +22,7 @@ public class CheckerboardTransition : MonoBehaviour
 
     private int columns;
     private int rows;
+    private Color transitionColor;
 
     public bool IsTransitioning { get; private set; } = false;
     private Action onComplete;
@@ -83,6 +84,9 @@ public class CheckerboardTransition : MonoBehaviour
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
+        StopAllCoroutines();
+        transitionColor = (UnityEngine.Random.value > 0.5f) ? Color.black : Color.white;
+
         if (!IsTransitioning)
         {
             IsTransitioning = true;
@@ -108,7 +112,7 @@ public class CheckerboardTransition : MonoBehaviour
         }
     }
 
-    private void UpdateGrid(bool startBlack = false)
+    private void UpdateGrid(bool startFilled = false)
     {
         Canvas.ForceUpdateCanvases();
 
@@ -120,9 +124,9 @@ public class CheckerboardTransition : MonoBehaviour
         {
             foreach (Transform child in transform) { Destroy(child.gameObject); }
             squares.Clear();
-            CreateSquares(startBlack);
+            CreateSquares(startFilled);
         }
-        else if (startBlack)
+        else if (startFilled)
         {
             foreach (var square in squares)
             {
@@ -155,7 +159,7 @@ public class CheckerboardTransition : MonoBehaviour
         }
     }
 
-    private void CreateSquares(bool startBlack = false)
+    private void CreateSquares(bool startFilled = false)
     {
         int totalSquares = columns * rows;
         for (int i = 0; i < totalSquares; i++)
@@ -165,7 +169,7 @@ public class CheckerboardTransition : MonoBehaviour
             Image img = go.GetComponent<Image>();
             if (img != null)
             {
-                img.color = startBlack ? Color.black : Color.clear;
+                img.color = startFilled ? transitionColor : Color.clear;
                 img.raycastTarget = false;
                 squares.Add(img);
             }
@@ -198,11 +202,8 @@ public class CheckerboardTransition : MonoBehaviour
 
     public void StartTransition(Action onCompleteCallback, bool isSceneLoad = true)
     {
-        if (IsTransitioning)
-        {
-            Debug.LogWarning("Ya hay una transición en curso. Se ignora la nueva solicitud.");
-            return;
-        }
+        StopAllCoroutines();
+        transitionColor = (UnityEngine.Random.value > 0.5f) ? Color.black : Color.white;
         IsTransitioning = true;
         if (raycastBlocker != null) raycastBlocker.raycastTarget = true;
         UpdateGrid();
@@ -359,7 +360,7 @@ public class CheckerboardTransition : MonoBehaviour
     {
         float elapsed = 0f;
         Color startColor = image.color;
-        Color endColor = new Color(0, 0, 0, 1);
+        Color endColor = transitionColor;
 
         while (elapsed < duration)
         {
@@ -375,7 +376,7 @@ public class CheckerboardTransition : MonoBehaviour
     {
         float elapsed = 0f;
         Color startColor = image.color;
-        Color endColor = new Color(0, 0, 0, 0);
+        Color endColor = new Color(transitionColor.r, transitionColor.g, transitionColor.b, 0);
 
         while (elapsed < duration)
         {
