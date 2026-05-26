@@ -29,6 +29,9 @@ public class KnightAttack : MonoBehaviour
     private bool isAttacking = false;
     private Collider myCollider;
 
+    [Header("Colisiones de Salto")]
+    public LayerMask wallMask;
+
     void Start()
     {
         playerTarget = GameObject.FindGameObjectWithTag("Player")?.transform;
@@ -51,6 +54,24 @@ public class KnightAttack : MonoBehaviour
             float currentCooldown = healthScript.isBuffed ? cooldown / 2f : cooldown;
             yield return new WaitForSeconds(currentCooldown);
         }
+    }
+
+    private Vector3 GetValidJumpPosition(Vector3 startPos, Vector3 targetPos)
+    {
+        Vector3 rayStart = startPos + Vector3.up * 0.5f;
+        Vector3 rayEnd = targetPos + Vector3.up * 0.5f;
+
+        Vector3 direction = rayEnd - rayStart;
+        float distance = direction.magnitude;
+
+        if (Physics.Raycast(rayStart, direction.normalized, out RaycastHit hit, distance, wallMask))
+        {
+            Vector3 safePosition = hit.point - (direction.normalized * 0.5f);
+            safePosition.y = targetPos.y;
+            return safePosition;
+        }
+
+        return targetPos;
     }
 
     IEnumerator PerformSlamAttack()
@@ -85,6 +106,9 @@ public class KnightAttack : MonoBehaviour
         float spread = 1.5f;
         targetDropPosition.x += Random.Range(-spread, spread);
         targetDropPosition.z += Random.Range(-spread, spread);
+
+        targetDropPosition = GetValidJumpPosition(startPosition, targetDropPosition);
+
         Vector3 floorPoint = targetDropPosition;
 
         if (Physics.Raycast(new Vector3(targetDropPosition.x, peakPosition.y, targetDropPosition.z), Vector3.down, out RaycastHit hit, 50f, groundMask))

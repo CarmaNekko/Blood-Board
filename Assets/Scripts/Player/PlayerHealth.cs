@@ -20,6 +20,14 @@ public class PlayerHealth : MonoBehaviour
     public RectTransform directionalIndicator;
     public Image directionalImage;
 
+    [Header("Damage Scaling")]
+    public float comboWindow = 1.0f;
+    public float mitigationFactor = 0.5f;
+    public float minDamageMultiplier = 0.2f;
+
+    private float lastHitTime = -999f;
+    private float currentDamageMultiplier = 1f;
+
     void Start()
     {
         currentHealth = maxHealth;
@@ -55,7 +63,19 @@ public class PlayerHealth : MonoBehaviour
 
     public void TakeDamage(float amount, Transform attacker = null)
     {
-        currentHealth -= amount;
+        if (Time.time - lastHitTime > comboWindow)
+        {
+            currentDamageMultiplier = 1f;
+        }
+        else
+        {
+            currentDamageMultiplier *= mitigationFactor;
+            currentDamageMultiplier = Mathf.Max(currentDamageMultiplier, minDamageMultiplier);
+        }
+
+        float finalDamage = amount * currentDamageMultiplier;
+        currentHealth -= finalDamage;
+        lastHitTime = Time.time;
 
         if (healthBarUI != null) healthBarUI.value = currentHealth;
         if (damageFlashImage != null) damageFlashImage.color = flashColor;
