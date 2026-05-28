@@ -25,6 +25,13 @@ public class MagicProjectile : MonoBehaviour
         {
             enemy.TakeDamage(damage, projectileColor);
         }
+
+        PawnBossHealth boss = other.GetComponent<PawnBossHealth>();
+        if (boss != null)
+        {
+            boss.TakeDamage(damage, projectileColor);
+        }
+
         if (explosionParticlesPrefab != null)
         {
             GameObject explosion = Instantiate(explosionParticlesPrefab, transform.position, Quaternion.identity);

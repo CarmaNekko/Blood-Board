@@ -1,5 +1,6 @@
 using BloodBoard.GameManagement;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PawnBossHealth : MonoBehaviour
 {
@@ -11,15 +12,25 @@ public class PawnBossHealth : MonoBehaviour
     [Header("Score System")]
     public int scoreValue = 1000;
 
+    [Header("UI (Interfaz)")]
+    public Slider healthBarUI;
+
+    public bool isDead { get; private set; } = false;
+
     private PawnBossController bossController;
     private bool phase2Triggered = false;
     private bool phase3Triggered = false;
-    private bool isDead = false;
 
     void Start()
     {
         currentHealth = maxHealth;
         bossController = GetComponent<PawnBossController>();
+
+        if (healthBarUI != null)
+        {
+            healthBarUI.maxValue = maxHealth;
+            healthBarUI.value = currentHealth;
+        }
     }
 
     void Update()
@@ -41,6 +52,11 @@ public class PawnBossHealth : MonoBehaviour
         if (myColor != incomingMagicColor)
         {
             currentHealth -= damageAmount;
+
+            if (healthBarUI != null)
+            {
+                healthBarUI.value = currentHealth;
+            }
         }
     }
 
@@ -66,6 +82,9 @@ public class PawnBossHealth : MonoBehaviour
     {
         isDead = true;
         ScoreManager.Instance?.AddScoreToCurrent(scoreValue);
-        Destroy(gameObject);
+
+        if (healthBarUI != null) healthBarUI.value = 0;
+
+        if (bossController != null) bossController.SetDefeated();
     }
 }
