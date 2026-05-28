@@ -19,6 +19,7 @@ public class ModularGenerator : MonoBehaviour
     public int maxRooms = 6;
     public LayerMask collisionMask;
     public NavMeshSurface navMesh;
+    [SerializeField] private DungeonLightingManager lightingManager;
     [SerializeField] private float mapGridWorldSize = 30f;
 
     private readonly List<DoorConnector> pendingRoomDoors = new List<DoorConnector>();
@@ -55,6 +56,7 @@ public class ModularGenerator : MonoBehaviour
 
         PlaceFinalRoom();
         SealOpenDoors();
+        ApplyGeneratedLighting();
 
         if (navMesh != null)
         {
@@ -63,6 +65,19 @@ public class ModularGenerator : MonoBehaviour
 
         Debug.Log($"Calabozo generado. Habitaciones: {roomCount}. Intentos: {attempts}");
         return generatedLayout;
+    }
+
+    private void ApplyGeneratedLighting()
+    {
+        if (lightingManager == null)
+        {
+            lightingManager = FindFirstObjectByType<DungeonLightingManager>();
+        }
+
+        if (lightingManager != null)
+        {
+            lightingManager.ApplyLighting(allSpawnedPieces);
+        }
     }
 
     private void SpawnNextPiece()

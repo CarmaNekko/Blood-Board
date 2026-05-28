@@ -204,7 +204,7 @@ Light:
   m_Enabled: 1
   serializedVersion: 12
   m_Type: 1
-  m_Color: {r: 1, g: 0.95686275, b: 0.8392157, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Intensity: 1
   m_Range: 10
   m_SpotAngle: 30
@@ -514,6 +514,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 128
   navMesh: {fileID: 999563471}
+  lightingManager: {fileID: 0}
   mapGridWorldSize: 50
 --- !u!114 &999563471
 MonoBehaviour:
@@ -622,6 +623,67 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1210542690}
   m_CullTransparentMesh: 1
+--- !u!1 &1736192820
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1736192821}
+  - component: {fileID: 1736192822}
+  m_Layer: 0
+  m_Name: DungeonLightManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1736192821
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1736192820}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 751.9664, y: 459.09454, z: 1.81271}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1736192822
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1736192820}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a1d6b9c2f3046e98b58e80e735ad921, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DungeonLightingManager
+  baseDarkness: 0
+  roomSizeDarknessInfluence: 0.05
+  minRoomArea: 250
+  maxRoomArea: 1600
+  brightAmbientColor: {r: 0.39607847, g: 0.42352945, b: 0.454902, a: 1}
+  darkAmbientColor: {r: 0.025, g: 0.025, b: 0.035, a: 1}
+  brightAmbientIntensity: 0.85
+  darkAmbientIntensity: 0.4
+  mainLight: {fileID: 332619939}
+  brightMainLightMultiplier: 0.65
+  darkMainLightMultiplier: 0.08
+  useDistanceFog: 1
+  fogColor: {r: 0.01, g: 0.01, b: 0.018, a: 1}
+  fogStartDistance: 18
+  fogEndDistance: 45
+  liveUpdateInPlayMode: 1
+  logAppliedValues: 0
 --- !u!114 &1776039908 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 3347385784729216109, guid: d9fad25a5ba93d54da34f557342663f8, type: 3}
@@ -1284,3 +1346,4 @@ SceneRoots:
   - {fileID: 6350552718573185839}
   - {fileID: 1996999801}
   - {fileID: 136552438}
+  - {fileID: 1736192821}

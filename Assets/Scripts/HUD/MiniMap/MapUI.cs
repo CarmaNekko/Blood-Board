@@ -35,8 +35,11 @@ public class MapUI : MonoBehaviour
     [SerializeField] private int maxExplorationCells = 300;
 
     [Header("Player Marker")]
+    [SerializeField] private Sprite playerPawnIconSprite;
     [SerializeField] private Sprite playerMarkerSprite;
-    [SerializeField] private Vector2 currentMarkerSize = new Vector2(18f, 18f);
+    [SerializeField] private Vector2 playerIconSize = new Vector2(28f, 28f);
+    [SerializeField] private Vector2 directionIndicatorSize = new Vector2(12f, 12f);
+    [SerializeField] private float directionIndicatorOrbitRadius = 16f;
     [SerializeField] private Color currentMarkerColor = new Color(0.45f, 1f, 0.35f, 1f);
     [SerializeField] private Color currentRoomColor = new Color(1f, 0.82f, 0.28f, 1f);
     [SerializeField] private Color currentCorridorColor = new Color(1f, 0.9f, 0.45f, 1f);
@@ -611,7 +614,8 @@ public class MapUI : MonoBehaviour
 
     private void CreatePlayerMarker(Vector2 anchoredPosition)
     {
-        GameObject markerObject = new GameObject("PlayerMarker", typeof(RectTransform), typeof(Image));
+        // 1. Crear el objeto base para el peón. Este objeto no rota.
+        GameObject markerObject = new GameObject("PlayerMarker", typeof(RectTransform));
         markerObject.transform.SetParent(roomsRoot, false);
 
         RectTransform rectTransform = markerObject.GetComponent<RectTransform>();
@@ -619,8 +623,30 @@ public class MapUI : MonoBehaviour
         rectTransform.anchorMax = new Vector2(0.5f, 0.5f);
         rectTransform.pivot = new Vector2(0.5f, 0.5f);
         rectTransform.anchoredPosition = anchoredPosition;
-        rectTransform.sizeDelta = currentMarkerSize;
+        rectTransform.sizeDelta = playerIconSize;
 
+        // Añadir la imagen del peón al objeto base
+        if (playerPawnIconSprite != null)
+        {
+            Image pawnImage = markerObject.AddComponent<Image>();
+            pawnImage.sprite = playerPawnIconSprite;
+            pawnImage.preserveAspect = true;
+            pawnImage.color = Color.white;
+            pawnImage.raycastTarget = false;
+        }
+
+        // 2. Crear un objeto "Rotator" hijo que SÍ rotará para indicar la dirección.
+        GameObject rotatorObject = new GameObject("DirectionRotator", typeof(RectTransform));
+        rotatorObject.transform.SetParent(markerObject.transform, false);
+
+        RectTransform rotatorRect = rotatorObject.GetComponent<RectTransform>();
+        rotatorRect.anchorMin = new Vector2(0.5f, 0.5f);
+        rotatorRect.anchorMax = new Vector2(0.5f, 0.5f);
+        rotatorRect.pivot = new Vector2(0.5f, 0.5f);
+        rotatorRect.anchoredPosition = Vector2.zero;
+        rotatorRect.sizeDelta = Vector2.zero; // No necesita tamaño, es solo un pivote de rotación
+
+        // Aplicar la rotación de la dirección del jugador al Rotator
         if (playerTransform != null)
         {
             float mapRotationDegrees = 0f;
@@ -630,14 +656,28 @@ public class MapUI : MonoBehaviour
             }
 
             float playerYaw = playerTransform.eulerAngles.y;
-            rectTransform.localEulerAngles = new Vector3(0f, 0f, -playerYaw + mapRotationDegrees);
+            rotatorRect.localEulerAngles = new Vector3(0f, 0f, -playerYaw + mapRotationDegrees);
         }
 
-        Image image = markerObject.GetComponent<Image>();
-        image.sprite = playerMarkerSprite != null ? playerMarkerSprite : GetTriangleSprite();
-        image.preserveAspect = true;
-        image.color = currentMarkerColor;
-        image.raycastTarget = false;
+        // 3. Crear el indicador de dirección (triángulo) como hijo del Rotator.
+        //    Estará desplazado, por lo que al rotar el padre, orbitará alrededor del peón.
+        GameObject directionObject = new GameObject("DirectionIndicator", typeof(RectTransform), typeof(Image));
+        directionObject.transform.SetParent(rotatorObject.transform, false);
+
+        RectTransform directionRect = directionObject.GetComponent<RectTransform>();
+        directionRect.anchorMin = new Vector2(0.5f, 0.5f);
+        directionRect.anchorMax = new Vector2(0.5f, 0.5f);
+        directionRect.pivot = new Vector2(0.5f, 0.5f);
+        // Desplazarlo hacia arriba desde el centro del rotator para que orbite
+        directionRect.anchoredPosition = new Vector2(0, directionIndicatorOrbitRadius);
+        directionRect.sizeDelta = directionIndicatorSize;
+        directionRect.localEulerAngles = Vector3.zero; // El triángulo ya apunta hacia "arriba" (hacia afuera)
+
+        Image directionImage = directionObject.GetComponent<Image>();
+        directionImage.sprite = playerMarkerSprite != null ? playerMarkerSprite : GetTriangleSprite();
+        directionImage.preserveAspect = true;
+        directionImage.color = currentMarkerColor;
+        directionImage.raycastTarget = false;
     }
 
     private void CreateEnemyMarker(Vector2 anchoredPosition)
