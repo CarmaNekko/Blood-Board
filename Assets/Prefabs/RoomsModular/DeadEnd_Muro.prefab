@@ -48,6 +48,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DoorConnector
   isConnected: 0
   doorHeightOffset: 0
+  blockerObject: {fileID: 0}
   owningRoomNodeId: -1
   sourceRoomNodeId: -1
 --- !u!65 &4888103009212671369
@@ -138,7 +139,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 4df2346cfc11dd542b3120a1430680b0, type: 2}
+  - {fileID: 2100000, guid: c1c2a7617f581154494458b5036e614a, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

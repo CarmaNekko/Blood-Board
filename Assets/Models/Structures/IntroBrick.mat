@@ -21,7 +21,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: IntroBrick
-  m_Shader: {fileID: -6465566751694194690, guid: a306c3b50a440f34bb5aa1e766d499a0, type: 3}
+  m_Shader: {fileID: -6465566751694194690, guid: c8d1664c4c801ed4e8a05c5ad0d5267e, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -55,9 +55,13 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _Metallic: 0
     - _QueueControl: 0
     - _QueueOffset: 0
     - _SafePad: 0.002
-    m_Colors: []
+    - _SizeBrick: 1
+    - _Smoothness: 0
+    m_Colors:
+    - _FakeAmbientalLight: {r: 0, g: 0, b: 0, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
