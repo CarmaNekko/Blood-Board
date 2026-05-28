@@ -10,11 +10,11 @@ public class ScoreHUD : MonoBehaviour
     {
         if (scoreText != null && ScoreManager.Instance != null)
         {
-            scoreText.text = $"{ScoreManager.Instance.GetCurrentScore()}";
+            scoreText.text = $"{ScoreManager.Instance.GetCurrentScore()} pts";
         }
         else if (scoreText != null)
         {
-            scoreText.text = "0";
+            scoreText.text = "0 pts";
         }
     }
 }
