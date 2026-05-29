@@ -127,6 +127,9 @@ public class PawnBossController : MonoBehaviour
             yield return new WaitForSeconds(fatigueDuration);
 
             currentState = BossState.Transitioning;
+            if (bossRenderer != null) bossRenderer.material.color = originalColor;
+            if (shieldVisual != null) shieldVisual.SetActive(true);
+
             yield return new WaitForSeconds(1.5f);
         }
     }
