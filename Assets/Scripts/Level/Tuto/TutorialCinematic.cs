@@ -1,7 +1,6 @@
 using System.Collections;
 using UnityEngine;
 
-
 public class TutorialCinematic : MonoBehaviour
 {
     [Header("Progress")]

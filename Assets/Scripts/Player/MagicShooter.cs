@@ -194,4 +194,12 @@ public class MagicShooter : MonoBehaviour
             if (cameraEffects != null) cameraEffects.ApplyShootRecoil();
         }
     }
+    public void RefillManaToMax()
+    {
+        currentWhiteMana = maxWhiteMana;
+        currentBlackMana = maxBlackMana;
+        isWhiteOverheated = false;
+        isBlackOverheated = false;
+        UpdateUI();
+    }
 }
