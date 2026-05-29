@@ -1,6 +1,6 @@
-using UnityEngine;
-using TMPro;
 using System.Collections;
+using TMPro;
+using UnityEngine;
 
 public class FloorSign : MonoBehaviour
 {
@@ -12,14 +12,20 @@ public class FloorSign : MonoBehaviour
         if (signPanel != null && signText != null)
         {
             LevelManager levelManager = FindFirstObjectByType<LevelManager>();
-            if (levelManager != null)
+
+            if (BossCheckpointState.IsBossCheckpoint && !string.IsNullOrWhiteSpace(BossCheckpointState.BossDisplayName))
             {
-                signText.text = $"Piso {LevelManager.currentLevel} - Castillo Monárquico";
+                signText.text = $"Piso {LevelManager.currentLevel} - {BossCheckpointState.BossDisplayName}";
+            }
+            else if (levelManager != null)
+            {
+                signText.text = $"Piso {LevelManager.currentLevel} - Castillo Monarquico";
             }
             else
             {
-                signText.text = "Tutorial - Castillo Monárquico";
+                signText.text = "Tutorial - Castillo Monarquico";
             }
+
             PauseScreen.IsFloorSignActive = true;
             Time.timeScale = 0f;
             signPanel.SetActive(true);

@@ -104,7 +104,23 @@ public class PlayerHealth : MonoBehaviour
             }
             else
             {
-                SaveManager.SaveToSlot(GameModeManager.CurrentSlot, currentFloor, finalScore, finalHealth, GameModeManager.CurrentMode.GetModeName());
+                string modeName = GameModeManager.CurrentMode.GetModeName();
+                if (BossCheckpointState.IsBossCheckpoint)
+                {
+                    SaveManager.SaveBossCheckpointToSlot(
+                        GameModeManager.CurrentSlot,
+                        currentFloor,
+                        finalScore,
+                        finalHealth,
+                        modeName,
+                        BossCheckpointState.CheckpointScene,
+                        BossCheckpointState.BossDisplayName);
+                }
+                else
+                {
+                    SaveManager.SaveToSlot(GameModeManager.CurrentSlot, currentFloor, finalScore, finalHealth, modeName);
+                }
+
                 Object.FindFirstObjectByType<GameOver>().ShowGameOver();
             }
         }
