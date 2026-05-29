@@ -148,8 +148,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 266b0a9cb197af141a05d7f020a45cd7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LevelSkipTool
-  normalLevelSceneName: Level_1
-  bossLevelSceneName: Boss_Knight
+  normalLevelScene: Level_1
+  pawnScene: Pawn_Boss
+  knightScene: Knigh_Boss
+  bishopScene: Bishop_Boss
+  rookScene: Rock_Boss
 --- !u!4 &136552438
 Transform:
   m_ObjectHideFlags: 0
@@ -1342,8 +1345,8 @@ SceneRoots:
   - {fileID: 999563469}
   - {fileID: 8850924432800447675}
   - {fileID: 2483767973135500894}
-  - {fileID: 1444117426484608495}
   - {fileID: 6350552718573185839}
   - {fileID: 1996999801}
   - {fileID: 136552438}
   - {fileID: 1736192821}
+  - {fileID: 1444117426484608495}

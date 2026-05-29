@@ -5557,17 +5557,17 @@ MonoBehaviour:
   escenaProcedural: Level_1
   bossRoutes:
   - originFloor: 1
-    bossDisplayName: Caballo Campeon
-    bossSceneName: Knigh_Boss
-  - originFloor: 2
-    bossDisplayName: Peon Campeon
+    bossDisplayName: Jefe Peon
     bossSceneName: Pawn_Boss
+  - originFloor: 2
+    bossDisplayName: Jefe Caballo
+    bossSceneName: Knigh_Boss
   - originFloor: 3
-    bossDisplayName: Torre Campeona
-    bossSceneName: Rook_Boss
-  - originFloor: 4
-    bossDisplayName: Alfil Campeon
+    bossDisplayName: Jefe Alfil
     bossSceneName: Bishop_Boss
+  - originFloor: 4
+    bossDisplayName: Jefe Torre
+    bossSceneName: Rock_Boss
   - originFloor: 5
     bossDisplayName: Rey y Reina
     bossSceneName: KingQueen_Boss

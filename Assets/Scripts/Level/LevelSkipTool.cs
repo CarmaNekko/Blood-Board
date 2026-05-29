@@ -3,29 +3,27 @@ using UnityEngine.SceneManagement;
 
 public class LevelSkipTool : MonoBehaviour
 {
-    public string normalLevelSceneName = "Level_1";
-    public string bossLevelSceneName = "Boss_Knight";
+    public string normalLevelScene = "Level_1";
+    public string pawnScene = "Pawn_Boss";
+    public string knightScene = "Knigh_Boss";
+    public string bishopScene = "Bishop_Boss";
+    public string rookScene = "Rook_Boss";
 
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.K))
         {
-            string currentScene = SceneManager.GetActiveScene().name;
-
-            if (currentScene == bossLevelSceneName)
+            LevelManager manager = Object.FindFirstObjectByType<LevelManager>();
+            if (manager != null)
             {
-                Debug.Log("Saltando escena de Jefe...");
-                CheckerboardTransition.LoadScene(normalLevelSceneName);
-            }
-            else
-            {
-                LevelManager manager = Object.FindFirstObjectByType<LevelManager>();
-                if (manager != null)
-                {
-                    Debug.Log("Saltando al siguiente nivel...");
-                    manager.AdvanceLevel();
-                }
+                manager.AdvanceLevel();
             }
         }
+
+        if (Input.GetKeyDown(KeyCode.Alpha0)) CheckerboardTransition.LoadScene(normalLevelScene);
+        if (Input.GetKeyDown(KeyCode.Alpha1)) CheckerboardTransition.LoadScene(pawnScene);
+        if (Input.GetKeyDown(KeyCode.Alpha2)) CheckerboardTransition.LoadScene(knightScene);
+        if (Input.GetKeyDown(KeyCode.Alpha3)) CheckerboardTransition.LoadScene(bishopScene);
+        if (Input.GetKeyDown(KeyCode.Alpha4)) CheckerboardTransition.LoadScene(rookScene);
     }
 }

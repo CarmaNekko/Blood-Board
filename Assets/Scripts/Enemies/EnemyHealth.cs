@@ -16,11 +16,12 @@ public class EnemyHealth : MonoBehaviour
     [SerializeField] private GameObject shieldVisual;
 
     [Header("Buff Status")]
+    public bool canBeBuffed = true;
     public bool isBuffed { get; private set; } = false;
     [SerializeField] private GameObject frenzyParticles;
 
 
-    void Start()
+    void Awake()
     {
         currentHealth = maxHealth;
 
@@ -42,7 +43,10 @@ public class EnemyHealth : MonoBehaviour
         }
         else
         {
-            ApplyBuff();
+            if (canBeBuffed)
+            {
+                ApplyBuff();
+            }
         }
     }
 
@@ -74,5 +78,9 @@ public class EnemyHealth : MonoBehaviour
         {
             shieldVisual.SetActive(status);
         }
+    }
+    public int GetCurrentHealth()
+    {
+        return currentHealth;
     }
 }
