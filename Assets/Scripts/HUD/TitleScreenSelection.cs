@@ -207,7 +207,7 @@ public class TitleScreenSelection : MonoBehaviour
 
     public void OnCreditsButton()
     {
-        CheckerboardTransition.LoadScene("Credits");
+        CheckerboardTransition.LoadScene("NewCredits");
     }
 
     private void AddHoverListeners(Button button, string description = null)
