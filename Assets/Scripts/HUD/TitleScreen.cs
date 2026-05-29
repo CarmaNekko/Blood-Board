@@ -9,7 +9,7 @@ public class TitleScreen : MonoBehaviour
 
     [Header("Initial Screen")]
     [SerializeField] private GameObject initialScreenPanel;
-    [SerializeField] private TMP_Text gameTitleText;
+    [SerializeField] private Image gameTitleImage;
     [SerializeField] private TMP_Text initialText;
     [SerializeField] private CheckerboardTransition checkerboardTransition;
 
@@ -66,10 +66,6 @@ public class TitleScreen : MonoBehaviour
             if (initialScreenPanel != null)
             {
                 initialScreenPanel.SetActive(true);
-            }
-            if (gameTitleText != null)
-            {
-                gameTitleText.text = "BLOOD BOARD";
             }
             if (initialText != null)
             {

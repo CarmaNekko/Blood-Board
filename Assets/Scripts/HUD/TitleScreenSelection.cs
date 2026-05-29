@@ -12,7 +12,7 @@ public class TitleScreenSelection : MonoBehaviour
 
     [Header("Referencias")]
     [SerializeField] private GameObject titleBackground;
-    [SerializeField] private TMP_Text titleText;
+    [SerializeField] private Image titleImage;
     [SerializeField] private GameObject modeSelectorPanel;
     [SerializeField] private GameObject modeSelectorContent;
     [SerializeField] private Button normalButton;
