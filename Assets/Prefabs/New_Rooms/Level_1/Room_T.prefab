@@ -2250,7 +2250,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 164235d5a3422c04da9397f87e5bf4fb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RoomEnemySpawner
-  idealEnemiesPerWave: 4
+  idealEnemiesPerWave: 5
   spawnPoints:
   - {fileID: 7283911529849193032}
   - {fileID: 1991142335628647140}

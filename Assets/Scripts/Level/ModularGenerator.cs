@@ -31,6 +31,14 @@ public class ModularGenerator : MonoBehaviour
 
     public DungeonLayout GenerateLevel(int targetRooms)
     {
+        foreach (GameObject piece in allSpawnedPieces)
+        {
+            if (piece != null)
+            {
+                Destroy(piece);
+            }
+        }
+
         maxRooms = targetRooms;
         pendingRoomDoors.Clear();
         pendingCorridorDoors.Clear();
@@ -63,7 +71,6 @@ public class ModularGenerator : MonoBehaviour
             navMesh.BuildNavMesh();
         }
 
-        Debug.Log($"Calabozo generado. Habitaciones: {roomCount}. Intentos: {attempts}");
         return generatedLayout;
     }
 
@@ -188,17 +195,17 @@ public class ModularGenerator : MonoBehaviour
 
                 if (!HasOverlap(newCorridor))
                 {
-                    allSpawnedPieces.Add(newCorridor);
-                    roomDoor.isConnected = true;
-                    corridorDoors[0].isConnected = true;
-                    RegisterStandaloneArea(newCorridor, MapAreaShape.Corridor, false);
+                    if (TryPlaceFinalRoomAtDoor(corridorDoors[1]))
+                    {
+                        allSpawnedPieces.Add(newCorridor);
+                        roomDoor.isConnected = true;
+                        corridorDoors[0].isConnected = true;
+                        RegisterStandaloneArea(newCorridor, MapAreaShape.Corridor, false);
+                        return;
+                    }
+                }
 
-                    if (TryPlaceFinalRoomAtDoor(corridorDoors[1])) return;
-                }
-                else
-                {
-                    Destroy(newCorridor);
-                }
+                Destroy(newCorridor);
             }
         }
     }

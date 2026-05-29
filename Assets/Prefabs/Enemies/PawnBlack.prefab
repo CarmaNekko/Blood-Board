@@ -43,7 +43,7 @@ GameObject:
   - component: {fileID: 6982756281224566831}
   - component: {fileID: 4356738544531443755}
   - component: {fileID: 6010259580245116060}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Shield
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5272,6 +5272,7 @@ MonoBehaviour:
   scoreValue: 100
   isShielded: 0
   shieldVisual: {fileID: 5270852484274944935}
+  canBeBuffed: 1
   frenzyParticles: {fileID: 6318600937171281692}
 --- !u!114 &7409382937165975956
 MonoBehaviour:

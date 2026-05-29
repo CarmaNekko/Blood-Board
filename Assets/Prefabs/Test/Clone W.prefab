@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 4944943811138627613}
   - component: {fileID: 7552737501024555124}
   - component: {fileID: 6658761119694823779}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Clone W
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -166,7 +166,7 @@ GameObject:
   - component: {fileID: 4245835807662078864}
   - component: {fileID: 4376471612006094536}
   - component: {fileID: 29904381251407366}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Particle System
   m_TagString: Untagged
   m_Icon: {fileID: 0}

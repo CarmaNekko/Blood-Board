@@ -93,9 +93,19 @@ public class ColiseumManager : MonoBehaviour
 
         if (eventIndex == 0)
         {
-            if (instructionText != null) instructionText.text = "¡SOBREVIVE A LA ESTAMPIDA INVULNERABLE!";
             SpawnEnemies(knightPrefabs, knightSpawnPoints);
-            yield return new WaitForSeconds(survivalDuration);
+            float timeLeft = survivalDuration;
+
+            while (timeLeft > 0)
+            {
+                if (instructionText != null)
+                {
+                    instructionText.text = $"¡SOBREVIVE A LA ESTAMPIDA INVULNERABLE! ({Mathf.CeilToInt(timeLeft)}s)";
+                }
+                timeLeft -= Time.deltaTime;
+                yield return null;
+            }
+
             ClearEnemies();
         }
         else if (eventIndex == 1)

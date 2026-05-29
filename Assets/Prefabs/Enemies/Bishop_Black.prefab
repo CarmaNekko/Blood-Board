@@ -55,6 +55,7 @@ MonoBehaviour:
   scoreValue: 200
   isShielded: 0
   shieldVisual: {fileID: 4198374055696165504}
+  canBeBuffed: 1
   frenzyParticles: {fileID: 8077295025258911323}
 --- !u!114 &4523647896431927694
 MonoBehaviour:
@@ -122,7 +123,7 @@ GameObject:
   - component: {fileID: 1374646708234316141}
   - component: {fileID: 7156986151918851101}
   - component: {fileID: 5859485039423235551}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Shield
   m_TagString: Untagged
   m_Icon: {fileID: 0}

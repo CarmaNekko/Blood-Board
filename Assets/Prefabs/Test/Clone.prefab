@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 6230558325170538450}
   - component: {fileID: 9173683463495985350}
   - component: {fileID: 1588052499512425041}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Aura_Gaseosa
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4859,7 +4859,7 @@ GameObject:
   - component: {fileID: 3586246471556232897}
   - component: {fileID: 8671894790476447466}
   - component: {fileID: 4505007976259724575}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Clone
   m_TagString: Untagged
   m_Icon: {fileID: 0}
