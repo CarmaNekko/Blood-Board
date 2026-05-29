@@ -2627,8 +2627,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Finish_Level
   playerTag: Player
-  mainLevelScene: Level_1
-  endScene: Credits
+  escenaProcedural: Level_1
+  bossRoutes:
+  - originFloor: 1
+    bossDisplayName: Caballo Campeon
+    bossSceneName: Knigh_Boss
+  - originFloor: 2
+    bossDisplayName: Peon Campeon
+    bossSceneName: Pawn_Boss
+  - originFloor: 3
+    bossDisplayName: Torre Campeona
+    bossSceneName: Rook_Boss
+  - originFloor: 4
+    bossDisplayName: Alfil Campeon
+    bossSceneName: Bishop_Boss
+  - originFloor: 5
+    bossDisplayName: Rey y Reina
+    bossSceneName: KingQueen_Boss
 --- !u!1 &5836899396554946125
 GameObject:
   m_ObjectHideFlags: 0

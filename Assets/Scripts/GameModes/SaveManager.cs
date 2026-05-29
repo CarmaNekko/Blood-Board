@@ -8,11 +8,15 @@ public class SaveData
     public int score;
     public float health;
     public string mode;
+    public string checkpointScene;
+    public bool isBossCheckpoint;
+    public string bossDisplayName;
 }
 
 public abstract class SaveSystem
 {
     public abstract void Save(int slot, int floor, int score, float health, string mode);
+    public abstract void Save(int slot, SaveData data);
     public abstract SaveData Load(int slot);
     public abstract void Delete(int slot);
     public abstract void DeleteAll();
@@ -28,7 +32,26 @@ public class PlayerPrefsSaveSystem : SaveSystem
 
     public override void Save(int slot, int floor, int score, float health, string mode)
     {
-        SaveData data = new SaveData { floor = floor, score = score, health = health, mode = mode };
+        SaveData data = new SaveData
+        {
+            floor = floor,
+            score = score,
+            health = health,
+            mode = mode,
+            checkpointScene = floor == 0 ? BossCheckpointState.TutorialScene : BossCheckpointState.DefaultLevelScene,
+            isBossCheckpoint = false,
+            bossDisplayName = string.Empty
+        };
+        Save(slot, data);
+    }
+
+    public override void Save(int slot, SaveData data)
+    {
+        if (data == null)
+        {
+            return;
+        }
+
         string json = JsonUtility.ToJson(data);
         PlayerPrefs.SetString(GetKey(slot), json);
         PlayerPrefs.Save();
@@ -87,6 +110,24 @@ public class SaveManager : MonoBehaviour
     public static void SaveToSlot(int slot, int floor, int score, float health, string mode)
     {
         saveSystem.Save(slot, floor, score, health, mode);
+        BossCheckpointState.SetLevelCheckpoint();
+    }
+
+    public static void SaveBossCheckpointToSlot(int slot, int floor, int score, float health, string mode, string bossSceneName, string bossDisplayName)
+    {
+        SaveData data = new SaveData
+        {
+            floor = floor,
+            score = score,
+            health = health,
+            mode = mode,
+            checkpointScene = bossSceneName,
+            isBossCheckpoint = true,
+            bossDisplayName = bossDisplayName
+        };
+
+        saveSystem.Save(slot, data);
+        BossCheckpointState.SetBossCheckpoint(bossDisplayName, bossSceneName);
     }
 
     public static SaveData LoadFromSlot(int slot)

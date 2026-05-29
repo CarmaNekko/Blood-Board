@@ -60,6 +60,11 @@ public class SlotsUI : MonoBehaviour
             {
                 var data = SaveManager.LoadFromSlot(slot);
                 string floorText = data.floor == 0 ? "Tutorial" : $"Piso {data.floor}";
+                if (data.isBossCheckpoint && !string.IsNullOrWhiteSpace(data.bossDisplayName))
+                {
+                    floorText = $"{floorText} - {data.bossDisplayName}";
+                }
+
                 slotTexts[i].text = $"{floorText}, Score {data.score}, Modo {data.mode}";
             }
 
@@ -93,16 +98,10 @@ public class SlotsUI : MonoBehaviour
                 GameModeManager.SetSlot(slot);
                 GameModeManager.SetMode(data.mode == "Normal" ? GameModeManager.CreateNormalMode() : GameModeManager.CreateEndlessMode());
                 LevelManager.currentLevel = data.floor;
+                BossCheckpointState.ApplyLoadedSave(data);
                 BloodBoard.GameManagement.ScoreManager.Instance?.SetCurrentScore(data.score);
 
-                if (data.floor == 0)
-                {
-                    CheckerboardTransition.LoadScene("Level_Tuto");
-                }
-                else
-                {
-                    CheckerboardTransition.LoadScene("Level_1");
-                }
+                CheckerboardTransition.LoadScene(BossCheckpointState.ResolveSceneName(data));
             }
             else
             {
