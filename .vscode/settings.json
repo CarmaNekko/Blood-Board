@@ -67,5 +67,6 @@
         "*.sln": "*.csproj",
         "*.slnx": "*.csproj"
     },
-    "dotnet.defaultSolution": "Blood Board.slnx"
+    "dotnet.defaultSolution": "Blood Board.slnx",
+    "CodeGPT.apiKey": "LM Studio"
 }

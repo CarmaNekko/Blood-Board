@@ -105,7 +105,11 @@ public class GameOver : MonoBehaviour
 
     public void OnRetryButton()
     {
-        ScoreManager.Instance?.ResetCurrentScore();
+        if (!BossCheckpointState.IsBossCheckpoint)
+        {
+            ScoreManager.Instance?.ResetCurrentScore();
+        }
+
         Time.timeScale = 1f;
         CheckerboardTransition.LoadScene(SceneManager.GetActiveScene().name);
     }
