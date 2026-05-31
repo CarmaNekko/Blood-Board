@@ -1,0 +1,69 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &8431877421812661790
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1211053355757861182}
+  - component: {fileID: 356376343449723819}
+  m_Layer: 0
+  m_Name: DungeonLightManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1211053355757861182
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8431877421812661790}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 751.9664, y: 459.09454, z: 1.81271}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &356376343449723819
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8431877421812661790}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a1d6b9c2f3046e98b58e80e735ad921, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DungeonLightingManager
+  baseDarkness: 0
+  roomSizeDarknessInfluence: 0.05
+  minRoomArea: 250
+  maxRoomArea: 1600
+  brightAmbientColor: {r: 0.39607847, g: 0.42352945, b: 0.454902, a: 1}
+  darkAmbientColor: {r: 0.025, g: 0.025, b: 0.035, a: 1}
+  brightAmbientIntensity: 0.85
+  darkAmbientIntensity: 0.4
+  mainLight: {fileID: 0}
+  brightMainLightMultiplier: 0.65
+  darkMainLightMultiplier: 0.08
+  useDistanceFog: 1
+  fogColor: {r: 0.01, g: 0.01, b: 0.018, a: 1}
+  fogStartDistance: 18
+  fogEndDistance: 45
+  useSolidDarkBackground: 1
+  backgroundColor: {r: 0.005, g: 0.005, b: 0.012, a: 1}
+  removeSkybox: 1
+  applyToAllCameras: 1
+  targetCamera: {fileID: 0}
+  autoApplySceneRoomsOnStart: 1
+  liveUpdateInPlayMode: 1
+  logAppliedValues: 0
