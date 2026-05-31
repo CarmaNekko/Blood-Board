@@ -26,18 +26,29 @@ public class DungeonLightingManager : MonoBehaviour
     [SerializeField] private float darkMainLightMultiplier = 0.18f;
 
     [Header("Distance Fade")]
+    [SerializeField] private bool controlSceneLighting = true;
+    [SerializeField] private bool controlDistanceFog = true;
     [SerializeField] private bool useDistanceFog = true;
     [SerializeField] private Color fogColor = new Color(0.01f, 0.01f, 0.018f);
     [SerializeField] private float fogStartDistance = 20f;
     [SerializeField] private float fogEndDistance = 55f;
 
+    [Header("Background")]
+    [SerializeField] private bool useSolidDarkBackground = true;
+    [SerializeField] private Color backgroundColor = new Color(0.005f, 0.005f, 0.012f);
+    [SerializeField] private bool removeSkybox = true;
+    [SerializeField] private bool applyToAllCameras = true;
+    [SerializeField] private Camera targetCamera;
+
     [Header("Debug")]
+    [SerializeField] private bool autoApplySceneRoomsOnStart = true;
     [SerializeField] private bool liveUpdateInPlayMode = true;
     [SerializeField] private bool logAppliedValues;
 
     private float originalMainLightIntensity = -1f;
     private float cachedAverageRoomArea;
     private bool hasAppliedLighting;
+    private NativeRoomLightingZone activeNativeRoomZone;
 
     public float CurrentDarkness { get; private set; }
 
@@ -80,7 +91,7 @@ public class DungeonLightingManager : MonoBehaviour
     public void ApplyLighting(IReadOnlyList<GameObject> generatedPieces)
     {
         cachedAverageRoomArea = CalculateAverageRoomArea(generatedPieces);
-        float finalDarkness = CalculateDarknessFromCachedArea();
+        float finalDarkness = CalculateEffectiveDarkness();
 
         hasAppliedLighting = true;
         ApplyDarkness(finalDarkness);
@@ -91,23 +102,43 @@ public class DungeonLightingManager : MonoBehaviour
         }
     }
 
+    public void ApplyLightingFromSceneRooms()
+    {
+        RoomInstance[] sceneRooms = FindObjectsByType<RoomInstance>(FindObjectsSortMode.None);
+        List<GameObject> roomObjects = new List<GameObject>();
+
+        for (int i = 0; i < sceneRooms.Length; i++)
+        {
+            if (sceneRooms[i] != null && sceneRooms[i].AreaShape == MapAreaShape.Room)
+            {
+                roomObjects.Add(sceneRooms[i].gameObject);
+            }
+        }
+
+        ApplyLighting(roomObjects);
+    }
+
     public void ApplyDarkness(float darkness)
     {
         CurrentDarkness = Mathf.Clamp01(darkness);
 
-        RenderSettings.ambientMode = UnityEngine.Rendering.AmbientMode.Flat;
-        RenderSettings.ambientLight = Color.Lerp(brightAmbientColor, darkAmbientColor, CurrentDarkness);
-        RenderSettings.ambientIntensity = Mathf.Lerp(brightAmbientIntensity, darkAmbientIntensity, CurrentDarkness);
-
-        ResolveMainLight();
-        CacheOriginalMainLightIntensity();
-
-        if (mainLight != null)
+        if (controlSceneLighting)
         {
-            float multiplier = Mathf.Lerp(brightMainLightMultiplier, darkMainLightMultiplier, CurrentDarkness);
-            mainLight.intensity = originalMainLightIntensity * multiplier;
+            RenderSettings.ambientMode = UnityEngine.Rendering.AmbientMode.Flat;
+            RenderSettings.ambientLight = Color.Lerp(brightAmbientColor, darkAmbientColor, CurrentDarkness);
+            RenderSettings.ambientIntensity = Mathf.Lerp(brightAmbientIntensity, darkAmbientIntensity, CurrentDarkness);
+
+            ResolveMainLight();
+            CacheOriginalMainLightIntensity();
+
+            if (mainLight != null)
+            {
+                float multiplier = Mathf.Lerp(brightMainLightMultiplier, darkMainLightMultiplier, CurrentDarkness);
+                mainLight.intensity = originalMainLightIntensity * multiplier;
+            }
         }
 
+        ApplyBackground();
         ApplyDistanceFog();
     }
 
@@ -201,6 +232,62 @@ public class DungeonLightingManager : MonoBehaviour
         return hasBounds;
     }
 
+    public void SetNativeRoomZone(NativeRoomLightingZone zone)
+    {
+        if (zone == null)
+        {
+            return;
+        }
+
+        activeNativeRoomZone = zone;
+        ApplyDarkness(CalculateEffectiveDarkness());
+    }
+
+    public void ClearNativeRoomZone(NativeRoomLightingZone zone)
+    {
+        if (activeNativeRoomZone != zone)
+        {
+            return;
+        }
+
+        activeNativeRoomZone = null;
+        ApplyDarkness(CalculateEffectiveDarkness());
+    }
+
+    private float CalculateEffectiveDarkness()
+    {
+        float globalDarkness = CalculateDarknessFromCachedArea();
+
+        if (!controlSceneLighting || activeNativeRoomZone == null || activeNativeRoomZone.UseDungeonManagerBaseLighting)
+        {
+            return globalDarkness;
+        }
+
+        if (activeNativeRoomZone.UseRoomSizeInfluence)
+        {
+            float area = 0f;
+            if (TryGetPieceBounds(activeNativeRoomZone.gameObject, activeNativeRoomZone, out Bounds bounds))
+            {
+                area = Mathf.Abs(bounds.size.x * bounds.size.z);
+            }
+            float sizeFactor = Mathf.InverseLerp(minRoomArea, maxRoomArea, area);
+            float finalDarkness = activeNativeRoomZone.Darkness + (sizeFactor * activeNativeRoomZone.RoomSizeDarknessInfluence);
+            return Mathf.Clamp01(finalDarkness);
+        }
+
+        if (activeNativeRoomZone.OverrideDarkness)
+        {
+            return Mathf.Clamp01(activeNativeRoomZone.Darkness);
+        }
+
+        if (activeNativeRoomZone.AddToGlobalDarkness)
+        {
+            return Mathf.Clamp01(globalDarkness + activeNativeRoomZone.DarknessOffset);
+        }
+
+        return globalDarkness;
+    }
+
     private void ResolveMainLight()
     {
         if (mainLight != null)
@@ -231,16 +318,84 @@ public class DungeonLightingManager : MonoBehaviour
 
     private void ApplyDistanceFog()
     {
-        RenderSettings.fog = useDistanceFog;
+        if (!controlDistanceFog)
+        {
+            return;
+        }
 
+        RenderSettings.fog = useDistanceFog;
         if (!useDistanceFog)
         {
             return;
         }
 
         RenderSettings.fogMode = FogMode.Linear;
+
+        if (activeNativeRoomZone != null)
+        {
+            if (activeNativeRoomZone.OverrideFog)
+            {
+                RenderSettings.fogColor = activeNativeRoomZone.FogColor;
+                RenderSettings.fogStartDistance = activeNativeRoomZone.FogStartDistance;
+                RenderSettings.fogEndDistance = activeNativeRoomZone.FogEndDistance;
+                return;
+            }
+
+            if (activeNativeRoomZone.ModifyFog)
+            {
+                RenderSettings.fogColor = fogColor;
+                float newStart = fogStartDistance + activeNativeRoomZone.FogStartDistanceOffset;
+                float newEnd = fogEndDistance + activeNativeRoomZone.FogEndDistanceOffset;
+                RenderSettings.fogStartDistance = Mathf.Max(0f, newStart);
+                RenderSettings.fogEndDistance = Mathf.Max(RenderSettings.fogStartDistance + 0.01f, newEnd);
+                return;
+            }
+        }
+
         RenderSettings.fogColor = fogColor;
         RenderSettings.fogStartDistance = fogStartDistance;
         RenderSettings.fogEndDistance = fogEndDistance;
+    }
+
+    private void ApplyBackground()
+    {
+        if (!useSolidDarkBackground)
+        {
+            return;
+        }
+
+        if (removeSkybox)
+        {
+            RenderSettings.skybox = null;
+        }
+
+        if (applyToAllCameras)
+        {
+            Camera[] cameras = FindObjectsByType<Camera>(FindObjectsSortMode.None);
+            for (int i = 0; i < cameras.Length; i++)
+            {
+                ApplyBackgroundToCamera(cameras[i]);
+            }
+
+            return;
+        }
+
+        if (targetCamera == null)
+        {
+            targetCamera = Camera.main;
+        }
+
+        ApplyBackgroundToCamera(targetCamera);
+    }
+
+    private void ApplyBackgroundToCamera(Camera cameraToApply)
+    {
+        if (cameraToApply == null)
+        {
+            return;
+        }
+
+        cameraToApply.clearFlags = CameraClearFlags.SolidColor;
+        cameraToApply.backgroundColor = backgroundColor;
     }
 }

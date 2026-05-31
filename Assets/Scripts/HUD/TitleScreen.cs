@@ -1,4 +1,4 @@
-using TMPro;
+﻿using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using BloodBoard.UI;
@@ -41,7 +41,6 @@ public class TitleScreen : MonoBehaviour
         {
             CheckerboardTransition.directToMenu = false; // Consume the flag
 
-            // Go directly to the main menu state
             currentMenuState = MenuState.MainMenu;
 
             if (initialScreenPanel != null)
@@ -57,7 +56,6 @@ public class TitleScreen : MonoBehaviour
         }
         else
         {
-            // Normal startup: show the initial screen
             if (selectionManager != null)
             {
                 selectionManager.HideMainMenu();
