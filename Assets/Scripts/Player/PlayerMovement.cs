@@ -11,6 +11,7 @@ public class PlayerMovement : MonoBehaviour
     [Header("Camera Settings")]
     [SerializeField] private Transform playerCamera;
     [SerializeField] private float mouseSensitivity = 200f;
+    private const float MouseLookMultiplier = 0.05f;
     public static float GlobalMouseSensitivity { get; private set; }
 
     [Header("Ground Radar")]
@@ -48,8 +49,8 @@ public class PlayerMovement : MonoBehaviour
             return;
         }
 
-        float mouseX = Input.GetAxis("Mouse X") * GlobalMouseSensitivity * 0.02f;
-        float mouseY = Input.GetAxis("Mouse Y") * GlobalMouseSensitivity * 0.02f;
+        float mouseX = Input.GetAxisRaw("Mouse X") * GlobalMouseSensitivity * MouseLookMultiplier;
+        float mouseY = Input.GetAxisRaw("Mouse Y") * GlobalMouseSensitivity * MouseLookMultiplier;
 
         xRotation -= mouseY;
         xRotation = Mathf.Clamp(xRotation, -90f, 90f);
@@ -112,6 +113,6 @@ public class PlayerMovement : MonoBehaviour
 
     public static void SetGlobalMouseSensitivity(float sensitivity)
     {
-        GlobalMouseSensitivity = Mathf.Clamp(sensitivity, 0.1f, 50f);
+        GlobalMouseSensitivity = Mathf.Clamp(sensitivity, 0f, 400f);
     }
 }

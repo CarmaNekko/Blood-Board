@@ -6,8 +6,12 @@ public class Options : MonoBehaviour
 {
     public static Options Instance { get; private set; }
     public bool IsOpen { get; private set; }
+
     private const int WindowedWidth = 1280;
     private const int WindowedHeight = 720;
+    private const string WindowedWidthPrefKey = "WindowedResolutionWidth";
+    private const string WindowedHeightPrefKey = "WindowedResolutionHeight";
+
     private static bool SupportsScreenModeOptions
     {
         get
@@ -84,20 +88,14 @@ public class Options : MonoBehaviour
             fpsToggle.onValueChanged.AddListener(OnFPSToggleChanged);
         }
 
-        if (fullscreenButtonOn != null)
+        if (fullscreenButtonOn != null && SupportsScreenModeOptions)
         {
-            if (SupportsScreenModeOptions)
-            {
-                fullscreenButtonOn.onClick.AddListener(SetFullscreen);
-            }
+            fullscreenButtonOn.onClick.AddListener(SetFullscreen);
         }
 
-        if (fullscreenButtonWindowed != null)
+        if (fullscreenButtonWindowed != null && SupportsScreenModeOptions)
         {
-            if (SupportsScreenModeOptions)
-            {
-                fullscreenButtonWindowed.onClick.AddListener(SetWindowed);
-            }
+            fullscreenButtonWindowed.onClick.AddListener(SetWindowed);
         }
 
         gameObject.SetActive(false);
@@ -122,10 +120,12 @@ public class Options : MonoBehaviour
 
         bool showFPS = PlayerPrefs.GetInt("ShowFPS", 1) == 1;
         SetFPSVisibility(showFPS);
+
         if (fpsToggle != null)
         {
             fpsToggle.SetIsOnWithoutNotify(showFPS);
         }
+
         if (fpsTitleText != null)
         {
             fpsTitleText.text = "MOSTRAR FPS";
@@ -149,7 +149,6 @@ public class Options : MonoBehaviour
         Cursor.visible = true;
 
         gameObject.SetActive(true);
-
         transform.SetAsLastSibling();
 
         ShowUIElement(titleText?.gameObject);
@@ -165,6 +164,7 @@ public class Options : MonoBehaviour
 
         IsOpen = true;
     }
+
     public void HideOptions()
     {
         gameObject.SetActive(false);
@@ -175,6 +175,7 @@ public class Options : MonoBehaviour
     {
         PlayerMovement.SetGlobalMouseSensitivity(value);
         PlayerPrefs.SetFloat("MouseSensitivity", value);
+        PlayerPrefs.Save();
         UpdateSensitivityLabel(value);
     }
 
@@ -188,7 +189,10 @@ public class Options : MonoBehaviour
 
     private void ShowUIElement(GameObject go, bool active = true)
     {
-        if (go == null) return;
+        if (go == null)
+        {
+            return;
+        }
 
         go.SetActive(active);
 
@@ -259,7 +263,9 @@ public class Options : MonoBehaviour
             return;
         }
 
+        CacheWindowedResolution();
         PlayerPrefs.SetInt("Fullscreen", 1);
+        PlayerPrefs.Save();
         ApplyScreenMode(true);
     }
 
@@ -271,6 +277,7 @@ public class Options : MonoBehaviour
         }
 
         PlayerPrefs.SetInt("Fullscreen", 0);
+        PlayerPrefs.Save();
         ApplyScreenMode(false);
     }
 
@@ -278,10 +285,35 @@ public class Options : MonoBehaviour
     {
         if (fullscreen)
         {
+            Screen.fullScreenMode = FullScreenMode.FullScreenWindow;
             Screen.SetResolution(Screen.currentResolution.width, Screen.currentResolution.height, FullScreenMode.FullScreenWindow);
             return;
         }
 
-        Screen.SetResolution(WindowedWidth, WindowedHeight, FullScreenMode.Windowed);
+        int windowedWidth = PlayerPrefs.GetInt(WindowedWidthPrefKey, WindowedWidth);
+        int windowedHeight = PlayerPrefs.GetInt(WindowedHeightPrefKey, WindowedHeight);
+
+        Screen.fullScreenMode = FullScreenMode.Windowed;
+        // Only set resolution if it's not currently at the stored windowed size
+        // This prevents the window from reverting to default size if it's already
+        // maximized (which would have its dimensions saved in PlayerPrefs)
+        if (Screen.width != windowedWidth || Screen.height != windowedHeight)
+        {
+            Screen.SetResolution(windowedWidth, windowedHeight, FullScreenMode.Windowed);
+        }
+    }
+
+    private void CacheWindowedResolution()
+    {
+        if (Screen.fullScreenMode == FullScreenMode.Windowed)
+        {
+            PlayerPrefs.SetInt(WindowedWidthPrefKey, Screen.width);
+            PlayerPrefs.SetInt(WindowedHeightPrefKey, Screen.height);
+        }
+        else if (!PlayerPrefs.HasKey(WindowedWidthPrefKey) || !PlayerPrefs.HasKey(WindowedHeightPrefKey))
+        {
+            PlayerPrefs.SetInt(WindowedWidthPrefKey, WindowedWidth);
+            PlayerPrefs.SetInt(WindowedHeightPrefKey, WindowedHeight);
+        }
     }
 }
