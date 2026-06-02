@@ -294,9 +294,6 @@ public class Options : MonoBehaviour
         int windowedHeight = PlayerPrefs.GetInt(WindowedHeightPrefKey, WindowedHeight);
 
         Screen.fullScreenMode = FullScreenMode.Windowed;
-        // Only set resolution if it's not currently at the stored windowed size
-        // This prevents the window from reverting to default size if it's already
-        // maximized (which would have its dimensions saved in PlayerPrefs)
         if (Screen.width != windowedWidth || Screen.height != windowedHeight)
         {
             Screen.SetResolution(windowedWidth, windowedHeight, FullScreenMode.Windowed);
