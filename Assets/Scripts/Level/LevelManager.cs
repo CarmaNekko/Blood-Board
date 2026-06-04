@@ -45,18 +45,22 @@ public class LevelManager : MonoBehaviour
         {
             CurrentLayout = generator.GenerateLevel(roomsToGenerate);
             LayoutGenerated?.Invoke(CurrentLayout);
-
-            int currentScore = ScoreManager.Instance != null ? ScoreManager.Instance.GetCurrentScore() : 0;
-            float initialHealth = FindFirstObjectByType<PlayerHealth>()?.maxHealth ?? 100f;
-            if (SceneManager.GetActiveScene().name == BossCheckpointState.DefaultLevelScene)
-            {
-                SaveManager.SaveToSlot(GameModeManager.CurrentSlot, currentLevel, currentScore, initialHealth, GameModeManager.CurrentMode.GetModeName());
-                Debug.Log("Guardado checkpoint al iniciar piso: " + currentLevel);
-            }
         }
         else
         {
             Debug.LogError("No se encontro el ModularGenerator en la escena.");
+        }
+    }
+
+    private void Start()
+    {
+        // Guarda el checkpoint DESPUÉS de que PlayerHealth cargue la salud persistida
+        int currentScore = ScoreManager.Instance != null ? ScoreManager.Instance.GetCurrentScore() : 0;
+        float currentHealth = FindFirstObjectByType<PlayerHealth>()?.currentHealth ?? 100f;
+        if (SceneManager.GetActiveScene().name == BossCheckpointState.DefaultLevelScene)
+        {
+            SaveManager.SaveToSlot(GameModeManager.CurrentSlot, currentLevel, currentScore, currentHealth, GameModeManager.CurrentMode.GetModeName());
+            Debug.Log($"Guardado checkpoint al iniciar piso: {currentLevel} con salud: {currentHealth}");
         }
     }
 

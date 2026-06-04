@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 4523647896431927694}
   - component: {fileID: 6116089848044857167}
   - component: {fileID: -5114846143936184572}
+  - component: {fileID: 6878974077776783582}
   m_Layer: 8
   m_Name: Bishop_Black
   m_TagString: Untagged
@@ -111,6 +112,36 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemySpawnEffect
   spawnDuration: 2
   yOffset: -3
+--- !u!114 &6878974077776783582
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 217020248887674213}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7aab8e8c59dcd154b8a27648e9eff8f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyShine
+  shineLocalOffset: {x: -0.16, y: 2.5, z: 0.41}
+  whiteShinePrefab: {fileID: 600400026276257940, guid: b7d590c288ddd874ab5d8efd3a9d0c18, type: 3}
+  blackShinePrefab: {fileID: 600400026276257940, guid: 70a6293e775bdfe40aca1b48f9a9928e, type: 3}
+  billboardToCamera: 1
+  preserveLocalRotation: 1
+  enablePulse: 1
+  shinePulseFrequency: 1.5
+  shinePulseAmplitude: 0.2
+  shineEmissionIntensity: 1.5
+  whiteShineEmissionColor: {r: 1, g: 0.95, b: 0.7, a: 1}
+  blackShineEmissionColor: {r: 0.75, g: 0.45, b: 1, a: 1}
+  drawGizmo: 1
+  autoComputeShineOffset: 0
+  useShineScaleMultiplier: 1
+  shineCustomScale: {x: 0.1, y: 0.1, z: 0.1}
+  additionalShineLocalOffsets: []
+  gizmoColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  debugShine: 1
 --- !u!1 &4198374055696165504
 GameObject:
   m_ObjectHideFlags: 0

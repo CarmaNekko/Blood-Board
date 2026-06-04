@@ -6,7 +6,9 @@ public class NativeRoomLightingZone : RoomInstance
 {
     [Header("Native Room")]
     [SerializeField] private bool discoverOnStart;
+#pragma warning disable CS0414
     [SerializeField] private MapAreaShape nativeAreaShape = MapAreaShape.Room;
+#pragma warning restore CS0414
 
     [Header("Collision")]
     [Tooltip("Pone esta zona en el layer Rooms para que los proyectiles existentes la ignoren.")]

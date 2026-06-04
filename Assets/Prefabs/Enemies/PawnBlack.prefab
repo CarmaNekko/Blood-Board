@@ -5183,6 +5183,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 8781a494b72ef2e4d91bd8eb9798e646, type: 3}
       insertIndex: -1
       addedObject: {fileID: 7409382937165975956}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 8781a494b72ef2e4d91bd8eb9798e646, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 54018983427873882}
   m_SourcePrefab: {fileID: 100100000, guid: 8781a494b72ef2e4d91bd8eb9798e646, type: 3}
 --- !u!4 &5910945791519465244 stripped
 Transform:
@@ -5288,3 +5291,31 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemySpawnEffect
   spawnDuration: 2
   yOffset: -3
+--- !u!114 &54018983427873882
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6434576575197070758}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7aab8e8c59dcd154b8a27648e9eff8f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyShine
+  shineLocalOffset: {x: 0, y: 0.005, z: 0.015}
+  whiteShinePrefab: {fileID: 600400026276257940, guid: b7d590c288ddd874ab5d8efd3a9d0c18, type: 3}
+  blackShinePrefab: {fileID: 600400026276257940, guid: 70a6293e775bdfe40aca1b48f9a9928e, type: 3}
+  billboardToCamera: 1
+  preserveLocalRotation: 1
+  enablePulse: 1
+  shinePulseFrequency: 1.5
+  shinePulseAmplitude: 0.2
+  shineEmissionIntensity: 1.5
+  whiteShineEmissionColor: {r: 1, g: 0.95, b: 0.7, a: 1}
+  blackShineEmissionColor: {r: 0.75, g: 0.45, b: 1, a: 1}
+  drawGizmo: 1
+  autoComputeShineOffset: 0
+  additionalShineLocalOffsets: []
+  gizmoColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  debugShine: 0

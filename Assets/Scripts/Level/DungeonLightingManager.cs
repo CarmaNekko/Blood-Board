@@ -41,7 +41,9 @@ public class DungeonLightingManager : MonoBehaviour
     [SerializeField] private Camera targetCamera;
 
     [Header("Debug")]
+#pragma warning disable CS0414
     [SerializeField] private bool autoApplySceneRoomsOnStart = true;
+#pragma warning restore CS0414
     [SerializeField] private bool liveUpdateInPlayMode = true;
     [SerializeField] private bool logAppliedValues;
 
