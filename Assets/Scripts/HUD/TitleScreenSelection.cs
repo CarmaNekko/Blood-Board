@@ -317,6 +317,7 @@ public class TitleScreenSelection : MonoBehaviour
         int selectedSlot = slotsUI.GetSelectedSlot();
         if (selectedSlot == -1) return;
 
+        PlayerHealth.ResetPersistedHealth();
         GameModeManager.SetSlot(selectedSlot);
         GameModeManager.SetMode(GameModeManager.CreateNormalMode());
         LevelManager.currentLevel = 0;
@@ -332,6 +333,7 @@ public class TitleScreenSelection : MonoBehaviour
         int selectedSlot = slotsUI.GetSelectedSlot();
         if (selectedSlot == -1) return;
 
+        PlayerHealth.ResetPersistedHealth();
         GameModeManager.SetSlot(selectedSlot);
         GameModeManager.SetMode(GameModeManager.CreateEndlessMode());
         LevelManager.currentLevel = 1;

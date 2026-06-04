@@ -6,6 +6,9 @@ using BloodBoard.UI;
 
 public class PlayerHealth : MonoBehaviour
 {
+    private static bool persistedHealthAvailable = false;
+    private static float persistedHealth = 0f;
+
     [Header("Health Settings")]
     public float maxHealth = 100f;
     public float currentHealth;
@@ -30,7 +33,17 @@ public class PlayerHealth : MonoBehaviour
 
     void Start()
     {
-        currentHealth = maxHealth;
+        if (persistedHealthAvailable)
+        {
+            currentHealth = Mathf.Min(persistedHealth, maxHealth);
+        }
+        else
+        {
+            currentHealth = maxHealth;
+        }
+
+        PersistHealth(currentHealth);
+
         if (healthBarUI != null)
         {
             healthBarUI.maxValue = maxHealth;
@@ -78,6 +91,7 @@ public class PlayerHealth : MonoBehaviour
         lastHitTime = Time.time;
 
         if (healthBarUI != null) healthBarUI.value = currentHealth;
+        PersistHealth(currentHealth);
         if (damageFlashImage != null) damageFlashImage.color = flashColor;
 
         if (attacker != null && directionalIndicator != null && directionalImage != null)
@@ -135,6 +149,25 @@ public class PlayerHealth : MonoBehaviour
     {
         currentHealth += amount;
         if (currentHealth > maxHealth) currentHealth = maxHealth;
+        PersistHealth(currentHealth);
         if (healthBarUI != null) healthBarUI.value = currentHealth;
+    }
+
+    private static void PersistHealth(float health)
+    {
+        persistedHealth = Mathf.Max(0f, health);
+        persistedHealthAvailable = true;
+    }
+
+    public static void ResetPersistedHealth()
+    {
+        persistedHealthAvailable = false;
+        persistedHealth = 0f;
+    }
+
+    public static void SetPersistedHealth(float health)
+    {
+        persistedHealth = Mathf.Clamp(health, 0f, float.MaxValue);
+        persistedHealthAvailable = true;
     }
 }

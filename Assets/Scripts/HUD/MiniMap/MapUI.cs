@@ -698,26 +698,42 @@ public class MapUI : MonoBehaviour
         image.raycastTarget = false;
     }
 
+    private IEnumerable<Transform> FindEnemyTransforms()
+    {
+        HashSet<Transform> enemies = new HashSet<Transform>();
+
+        foreach (var health in FindObjectsByType<EnemyHealth>(FindObjectsSortMode.None))
+        {
+            if (health != null && health.gameObject.activeInHierarchy)
+            {
+                enemies.Add(health.transform);
+            }
+        }
+
+        foreach (var bossHealth in FindObjectsByType<PawnBossHealth>(FindObjectsSortMode.None))
+        {
+            if (bossHealth != null && bossHealth.gameObject.activeInHierarchy)
+            {
+                enemies.Add(bossHealth.transform);
+            }
+        }
+
+        return enemies;
+    }
+
     private void DrawEnemyMarkers(float pixelsPerWorldUnit, Vector3 mapCenter)
     {
         if (!showEnemies) return;
 
-        // NOTE: Finding all enemies every redraw can impact performance. 
-        // For better performance, consider a central manager to track active enemies.
-        // Using EnemyPawn as it's a known enemy type. If there's a more generic
-        // component like EnemyHealth, it would be better to use that.
-        var enemies = FindObjectsByType<EnemyPawn>(FindObjectsSortMode.None);
         List<RoomInstance> visibleAreas = CollectDiscoveredAreas();
 
-        foreach (var enemy in enemies)
+        foreach (Transform enemyTransform in FindEnemyTransforms())
         {
-            if (!enemy.gameObject.activeInHierarchy) continue;
-
-            if (IsPositionInVisibleArea(enemy.transform.position, visibleAreas))
+            if (IsPositionInVisibleArea(enemyTransform.position, visibleAreas))
             {
                 Vector2 enemyPosLocal = new Vector2(
-                    (enemy.transform.position.x - mapCenter.x) * pixelsPerWorldUnit,
-                    (enemy.transform.position.z - mapCenter.z) * pixelsPerWorldUnit);
+                    (enemyTransform.position.x - mapCenter.x) * pixelsPerWorldUnit,
+                    (enemyTransform.position.z - mapCenter.z) * pixelsPerWorldUnit);
                 CreateEnemyMarker(enemyPosLocal);
             }
         }
@@ -958,14 +974,11 @@ public class MapUI : MonoBehaviour
     {
         if (!showEnemies) return;
 
-        var enemies = FindObjectsByType<EnemyPawn>(FindObjectsSortMode.None);
         int explorationQuarterTurns = GetExplorationQuarterTurns();
 
-        foreach (var enemy in enemies)
+        foreach (Transform enemyTransform in FindEnemyTransforms())
         {
-            if (!enemy.gameObject.activeInHierarchy) continue;
-
-            Vector2Int enemyCell = WorldToExplorationCell(enemy.transform.position);
+            Vector2Int enemyCell = WorldToExplorationCell(enemyTransform.position);
             if (exploredCells.Contains(enemyCell))
             {
                 Vector2Int deltaCell = enemyCell - currentExplorationCell;
