@@ -118,24 +118,9 @@ public class PlayerHealth : MonoBehaviour
             }
             else
             {
-                string modeName = GameModeManager.CurrentMode.GetModeName();
-                if (BossCheckpointState.IsBossCheckpoint)
-                {
-                    SaveManager.SaveBossCheckpointToSlot(
-                        GameModeManager.CurrentSlot,
-                        currentFloor,
-                        finalScore,
-                        finalHealth,
-                        modeName,
-                        BossCheckpointState.CheckpointScene,
-                        BossCheckpointState.BossDisplayName);
-                }
-                else
-                {
-                    SaveManager.SaveToSlot(GameModeManager.CurrentSlot, currentFloor, finalScore, finalHealth, modeName);
-                }
-
-                Object.FindFirstObjectByType<GameOver>().ShowGameOver();
+                // No sobrescribimos el save slot con la salud al morir.
+                // El retry debe restaurar la salud del checkpoint anterior al piso.
+                Object.FindFirstObjectByType<GameOver>()?.ShowGameOver();
             }
         }
     }

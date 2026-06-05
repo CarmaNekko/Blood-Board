@@ -19,6 +19,7 @@ public class Finish_Tuto : MonoBehaviour
             int currentScore = ScoreManager.Instance != null ? ScoreManager.Instance.GetCurrentScore() : 0;
             string currentModeName = GameModeManager.CurrentMode != null ? GameModeManager.CurrentMode.GetModeName() : "Normal";
             SaveManager.SaveToSlot(GameModeManager.CurrentSlot, 1, currentScore, 100f, currentModeName);
+            PlayerHealth.SetPersistedHealth(100f);
             LevelManager.currentLevel = 1;
             BossCheckpointState.SetLevelCheckpoint();
             ScoreManager.Instance?.ResetCurrentScore();

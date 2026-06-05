@@ -3,7 +3,7 @@ using UnityEngine.SceneManagement;
 public static class BossCheckpointState
 {
     public const string DefaultLevelScene = "Level_1";
-    public const string TutorialScene = "Level_Tuto";
+    public const string TutorialScene = "Tutorial";
 
     public static bool IsBossCheckpoint { get; private set; }
     public static string BossDisplayName { get; private set; }

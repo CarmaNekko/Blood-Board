@@ -156,7 +156,7 @@ public class MapUI : MonoBehaviour
         if (activeLayout != null)
         {
             activeLayout.LayoutChanged += Redraw;
-            bool isTutorial = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name == "Level_Tuto";
+            bool isTutorial = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name == "Tutorial";
             if (isTutorial)
             {
                 for (int i = 0; i < activeLayout.Rooms.Count; i++)
@@ -283,7 +283,7 @@ public class MapUI : MonoBehaviour
 
     private bool ShouldUseAreaRendering()
     {
-        bool isTutorial = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name == "Level_Tuto";
+        bool isTutorial = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name == "Tutorial";
         IReadOnlyList<RoomInstance> areas = RoomInstance.ActiveInstances;
         for (int i = 0; i < areas.Count; i++)
         {
@@ -335,7 +335,7 @@ public class MapUI : MonoBehaviour
         }
 
         Vector3 playerPosition = playerTransform.position;
-        bool isTutorial = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name == "Level_Tuto";
+        bool isTutorial = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name == "Tutorial";
 
         if (isTutorial)
         {
@@ -436,7 +436,7 @@ public class MapUI : MonoBehaviour
     {
         List<RoomInstance> discoveredAreas = new List<RoomInstance>();
         IReadOnlyList<RoomInstance> areas = RoomInstance.ActiveInstances;
-        bool isTutorial = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name == "Level_Tuto";
+        bool isTutorial = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name == "Tutorial";
 
         for (int i = 0; i < areas.Count; i++)
         {

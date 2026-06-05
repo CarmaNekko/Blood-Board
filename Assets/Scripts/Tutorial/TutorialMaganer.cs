@@ -14,6 +14,7 @@ public class TutorialManager : MonoBehaviour
     public TextMeshProUGUI textD;
     public TextMeshProUGUI textShift;
     public TextMeshProUGUI textSpace;
+    public TextMeshProUGUI textTab;
 
     public GameObject combatPanel;
     public CanvasGroup combatCanvasGroup;
@@ -26,6 +27,7 @@ public class TutorialManager : MonoBehaviour
     private bool completedD = false;
     private bool completedShift = false;
     private bool completedSpace = false;
+    private bool completedTab = false;
     private bool movementCompleted = false;
 
     private bool combatActive = false;
@@ -41,6 +43,7 @@ public class TutorialManager : MonoBehaviour
         UpdateText(textD, "Presiona \"D\" para moverte a la derecha. (0/1)", Color.yellow);
         UpdateText(textShift, "Presiona \"Shift\" para correr. (0/1)", Color.yellow);
         UpdateText(textSpace, "Presiona \"Space\" para saltar. (0/1)", Color.yellow);
+        if (textTab != null) UpdateText(textTab, "Presiona \"Tab\" para abrir el minimapa. (0/1)", Color.yellow);
 
         UpdateText(textLeftClick, "Presionar \"Click Izquierdo\" para disparar magia blanca al guardia negro. (0/1)", Color.yellow);
         UpdateText(textRightClick, "Presionar \"Click Derecho\" para disparar magia negra al guardia blanco. (0/1)", Color.yellow);
@@ -91,7 +94,13 @@ public class TutorialManager : MonoBehaviour
                 UpdateText(textSpace, "Presiona \"Space\" para saltar. (1/1)", Color.green);
             }
 
-            if (completedW && completedS && completedA && completedD && completedShift && completedSpace)
+            if (!completedTab && Input.GetKeyDown(KeyCode.Tab))
+            {
+                completedTab = true;
+                if (textTab != null) UpdateText(textTab, "Presiona \"Tab\" para abrir el minimapa. (1/1)", Color.green);
+            }
+
+            if (completedW && completedS && completedA && completedD && completedShift && completedSpace && completedTab)
             {
                 movementCompleted = true;
                 StartCoroutine(FadeMovementAndStartCombat());
