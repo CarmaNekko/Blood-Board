@@ -20,10 +20,10 @@ public class Finish_Level : MonoBehaviour
     [Tooltip("Bosses que aparecen al terminar cada piso. El piso guardado sigue siendo el de origen.")]
     [SerializeField] private BossCheckpointRoute[] bossRoutes =
     {
-        new BossCheckpointRoute { originFloor = 1, bossDisplayName = "Caballo Campeon", bossSceneName = "Knigh_Boss" },
-        new BossCheckpointRoute { originFloor = 2, bossDisplayName = "Peon Campeon", bossSceneName = "Pawn_Boss" },
-        new BossCheckpointRoute { originFloor = 3, bossDisplayName = "Torre Campeona", bossSceneName = "Rook_Boss" },
-        new BossCheckpointRoute { originFloor = 4, bossDisplayName = "Alfil Campeon", bossSceneName = "Bishop_Boss" },
+        new BossCheckpointRoute { originFloor = 1, bossDisplayName = "Peon Campeon", bossSceneName = "Pawn_Boss" },
+        new BossCheckpointRoute { originFloor = 2, bossDisplayName = "Caballo Campeon", bossSceneName = "Knigh_Boss" },
+        new BossCheckpointRoute { originFloor = 3, bossDisplayName = "Alfil Campeon", bossSceneName = "Bishop_Boss" },
+        new BossCheckpointRoute { originFloor = 4, bossDisplayName = "Torre Campeona", bossSceneName = "Rook_Boss" },
         new BossCheckpointRoute { originFloor = 5, bossDisplayName = "Rey y Reina", bossSceneName = "KingQueen_Boss" }
     };
 

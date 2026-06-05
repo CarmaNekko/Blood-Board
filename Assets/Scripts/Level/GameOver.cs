@@ -110,6 +110,16 @@ public class GameOver : MonoBehaviour
             ScoreManager.Instance?.ResetCurrentScore();
         }
 
+        var saveData = SaveManager.LoadFromSlot(GameModeManager.CurrentSlot);
+        if (saveData != null)
+        {
+            PlayerHealth.SetPersistedHealth(saveData.health);
+        }
+        else
+        {
+            PlayerHealth.ResetPersistedHealth();
+        }
+
         Time.timeScale = 1f;
         CheckerboardTransition.LoadScene(SceneManager.GetActiveScene().name);
     }
