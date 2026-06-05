@@ -5316,6 +5316,8 @@ MonoBehaviour:
   blackShineEmissionColor: {r: 0.75, g: 0.45, b: 1, a: 1}
   drawGizmo: 1
   autoComputeShineOffset: 0
+  useShineScaleMultiplier: 0
+  shineCustomScale: {x: 1, y: 1, z: 1}
   additionalShineLocalOffsets: []
   gizmoColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   debugShine: 0

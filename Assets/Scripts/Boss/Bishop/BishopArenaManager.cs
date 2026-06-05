@@ -2,42 +2,56 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class BishopArenaManager : MonoBehaviour
 {
-    [Header("Configuración de Supervivencia")]
-    [SerializeField] private float survivalTime = 60f;
-    [SerializeField] private float timeBetweenAttacks = 5f;
-    private float currentTime;
-    private bool battleStarted = false;
+    [Header("Configuración Base")]
+    [SerializeField] private float baseSurvivalDuration = 10f;
+    [SerializeField] private float extraTimePerCrystal = 3f;
+    [SerializeField] private float vulnerabilityDuration = 15f;
+    [SerializeField] private float timeBetweenAttacks = 1.5f;
 
     [Header("UI (Interfaz)")]
     [SerializeField] private TextMeshProUGUI timerText;
     [SerializeField] private GameObject survivalUIPanel;
+    [SerializeField] private Slider bossHealthBar;
 
-    [Header("Puertas y Jefe")]
+    [Header("Referencias del Mapa")]
     [SerializeField] private GameObject entranceGate;
     [SerializeField] private GameObject exitGate;
     [SerializeField] private BishopBossController bishopBoss;
+    [SerializeField] private List<BishopCrystal> arenaCrystals;
 
     private BishopPlatform[] allPlatforms;
-    private Coroutine attackCoroutine;
+    private Transform playerTransform;
+    private PlayerMovement playerMovement;
+
+    private bool battleStarted = false;
+    private int totalCrystals;
+    private int crystalsRemaining;
+    private bool crystalJustDestroyed = false;
 
     void Start()
     {
-        currentTime = survivalTime;
         if (survivalUIPanel != null) survivalUIPanel.SetActive(false);
         if (entranceGate != null) entranceGate.SetActive(false);
         if (exitGate != null) exitGate.SetActive(true);
 
-        if (bishopBoss != null)
-        {
-            bishopBoss.gameObject.SetActive(false);
-        }
+        if (bishopBoss != null) bishopBoss.gameObject.SetActive(false);
+        if (bossHealthBar != null) bossHealthBar.gameObject.SetActive(false);
 
         allPlatforms = FindObjectsByType<BishopPlatform>(FindObjectsSortMode.None);
 
-        UpdateTimerUI();
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+        if (player != null)
+        {
+            playerTransform = player.transform;
+            playerMovement = player.GetComponent<PlayerMovement>();
+        }
+
+        totalCrystals = arenaCrystals.Count;
+        crystalsRemaining = totalCrystals;
     }
 
     void OnTriggerEnter(Collider other)
@@ -53,96 +67,150 @@ public class BishopArenaManager : MonoBehaviour
     {
         if (entranceGate != null) entranceGate.SetActive(true);
 
+        foreach (var crystal in arenaCrystals)
+        {
+            crystal.Initialize(this, bishopBoss.transform);
+        }
+
+        yield return new WaitForSeconds(1.5f);
+
         if (bishopBoss != null)
         {
             bishopBoss.AppearAndGrow();
-
-            while (!bishopBoss.IsReady)
-            {
-                yield return null;
-            }
+            while (!bishopBoss.IsReady) yield return null;
         }
 
         if (survivalUIPanel != null) survivalUIPanel.SetActive(true);
 
-        StartCoroutine(SurvivalRoutine());
-        attackCoroutine = StartCoroutine(AttackOrchestratorRoutine());
+        if (bossHealthBar != null)
+        {
+            bossHealthBar.gameObject.SetActive(true);
+            bossHealthBar.maxValue = totalCrystals;
+            bossHealthBar.value = crystalsRemaining;
+        }
+
+        yield return StartCoroutine(BattleLoop());
     }
 
-    private IEnumerator SurvivalRoutine()
+    private IEnumerator BattleLoop()
     {
-        while (currentTime > 0)
+        while (crystalsRemaining > 0)
         {
-            currentTime -= Time.deltaTime;
-            UpdateTimerUI();
+            crystalJustDestroyed = false;
+            SetCrystalsState(true);
+            yield return StartCoroutine(SurvivalPhase());
+
+            if (crystalsRemaining <= 0) break;
+
+            SetCrystalsState(false);
+            yield return StartCoroutine(VulnerabilityPhase());
+        }
+
+        WinBattle();
+    }
+
+    private void SetCrystalsState(bool protect)
+    {
+        foreach (var crystal in arenaCrystals)
+        {
+            if (crystal != null && crystal.gameObject.activeSelf)
+            {
+                if (!protect) crystal.RandomizeColor();
+                crystal.SetProtected(protect);
+            }
+        }
+    }
+
+    private IEnumerator SurvivalPhase()
+    {
+        int destroyedCount = totalCrystals - crystalsRemaining;
+        float currentSurvivalDuration = baseSurvivalDuration + (destroyedCount * extraTimePerCrystal);
+        int simultaneousAttacks = 1 + destroyedCount;
+
+        float timeLeft = currentSurvivalDuration;
+        float attackTimer = 0f;
+
+        while (timeLeft > 0 && crystalsRemaining > 0)
+        {
+            timeLeft -= Time.deltaTime;
+            attackTimer -= Time.deltaTime;
+
+            if (attackTimer <= 0)
+            {
+                LaunchPredictiveAttacks(simultaneousAttacks);
+                attackTimer = timeBetweenAttacks;
+            }
+
+            UpdateTimerUI("SOBREVIVE", timeLeft);
             yield return null;
         }
-
-        currentTime = 0;
-        UpdateTimerUI();
-        WinSurvival();
     }
 
-    private IEnumerator AttackOrchestratorRoutine()
+    private IEnumerator VulnerabilityPhase()
     {
-        yield return new WaitForSeconds(2f);
+        float timeLeft = vulnerabilityDuration;
 
-        while (currentTime > 0)
+        while (timeLeft > 0 && crystalsRemaining > 0 && !crystalJustDestroyed)
         {
-            int attackCount = CalculateAttackCount();
-            LaunchAttacks(attackCount);
-
-            yield return new WaitForSeconds(timeBetweenAttacks);
+            timeLeft -= Time.deltaTime;
+            UpdateTimerUI("¡DESTRUYE UN CRISTAL!", timeLeft);
+            yield return null;
         }
     }
 
-    private int CalculateAttackCount()
+    private void LaunchPredictiveAttacks(int count)
     {
-        float elapsed = survivalTime - currentTime;
+        if (allPlatforms == null || allPlatforms.Length == 0 || playerTransform == null) return;
 
-        if (elapsed < 15f) return 1;
-        if (elapsed < 30f) return 2;
-        if (elapsed < 45f) return 3;
-        return 4;
-    }
-
-    private void LaunchAttacks(int count)
-    {
-        if (allPlatforms == null || allPlatforms.Length == 0) return;
-
-        List<BishopPlatform> availablePlatforms = new List<BishopPlatform>(allPlatforms);
-        int triggered = 0;
-
-        while (triggered < count && availablePlatforms.Count > 0)
+        Vector3 predictedPos = playerTransform.position;
+        if (playerMovement != null && playerMovement.CurrentVelocity.magnitude > 1f)
         {
-            int randomIndex = Random.Range(0, availablePlatforms.Count);
-            BishopPlatform selected = availablePlatforms[randomIndex];
+            predictedPos += playerMovement.CurrentVelocity * 1.3f;
+        }
 
-            selected.TargetPlatform();
-            availablePlatforms.RemoveAt(randomIndex);
-            triggered++;
+        List<BishopPlatform> availablePlats = new List<BishopPlatform>();
+        foreach (var p in allPlatforms)
+        {
+            if (!p.IsTargeted) availablePlats.Add(p);
+        }
+
+        availablePlats.Sort((a, b) =>
+        {
+            float distA = Vector3.Distance(predictedPos, a.transform.position) + Random.Range(-1f, 1f);
+            float distB = Vector3.Distance(predictedPos, b.transform.position) + Random.Range(-1f, 1f);
+            return distA.CompareTo(distB);
+        });
+
+        for (int i = 0; i < count && i < availablePlats.Count; i++)
+        {
+            availablePlats[i].TargetPlatform();
         }
     }
 
-    private void UpdateTimerUI()
+    public void OnCrystalDestroyed()
+    {
+        crystalsRemaining--;
+        if (bossHealthBar != null) bossHealthBar.value = crystalsRemaining;
+        crystalJustDestroyed = true;
+    }
+
+    private void UpdateTimerUI(string message, float time)
     {
         if (timerText != null)
         {
-            int minutes = Mathf.FloorToInt(Mathf.Max(currentTime, 0) / 60F);
-            int seconds = Mathf.FloorToInt(Mathf.Max(currentTime, 0) - minutes * 60);
-            timerText.text = string.Format("SOBREVIVE\n{0:00}:{1:00}", minutes, seconds);
-
-            if (currentTime <= 10f) timerText.color = Color.red;
-            else timerText.color = Color.white;
+            int seconds = Mathf.CeilToInt(Mathf.Max(time, 0));
+            timerText.text = $"{message}\n{seconds}s";
+            timerText.color = (time <= 5f) ? Color.red : Color.white;
         }
     }
 
-    private void WinSurvival()
+    private void WinBattle()
     {
-        if (attackCoroutine != null) StopCoroutine(attackCoroutine);
+        StopAllCoroutines();
 
         if (survivalUIPanel != null) survivalUIPanel.SetActive(false);
         if (exitGate != null) exitGate.SetActive(false);
+        if (bossHealthBar != null) bossHealthBar.gameObject.SetActive(false);
 
         if (bishopBoss != null)
         {

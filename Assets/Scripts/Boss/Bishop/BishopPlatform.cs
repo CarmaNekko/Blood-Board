@@ -15,7 +15,8 @@ public class BishopPlatform : MonoBehaviour
     private Material originalMaterial;
     private Renderer platformRenderer;
     private Collider platformCollider;
-    private bool isTargeted = false;
+
+    public bool IsTargeted { get; private set; } = false;
 
     void Awake()
     {
@@ -26,9 +27,10 @@ public class BishopPlatform : MonoBehaviour
             originalMaterial = platformRenderer.material;
         }
     }
+
     public void TargetPlatform()
     {
-        if (!isTargeted)
+        if (!IsTargeted)
         {
             StartCoroutine(DestructionSequence());
         }
@@ -36,7 +38,7 @@ public class BishopPlatform : MonoBehaviour
 
     private IEnumerator DestructionSequence()
     {
-        isTargeted = true;
+        IsTargeted = true;
 
         if (platformRenderer != null && warningMaterial != null)
         {
@@ -67,7 +69,7 @@ public class BishopPlatform : MonoBehaviour
         }
         if (platformCollider != null) platformCollider.enabled = true;
 
-        isTargeted = false;
+        IsTargeted = false;
     }
 
     private IEnumerator AnimateBeam(Transform beamTransform)
@@ -75,12 +77,14 @@ public class BishopPlatform : MonoBehaviour
         float t = 0;
         Vector3 originalScale = beamTransform.localScale;
 
+        beamTransform.position += Vector3.down * 40f;
+
         while (t < 1f)
         {
             t += Time.deltaTime / 0.15f;
-            beamTransform.localScale = new Vector3(originalScale.x, Mathf.Lerp(0, 1, t), originalScale.z);
+            beamTransform.localScale = new Vector3(originalScale.x, Mathf.Lerp(0, 150f, t), originalScale.z);
             yield return null;
         }
-        beamTransform.localScale = new Vector3(originalScale.x, 1f, originalScale.z);
+        beamTransform.localScale = new Vector3(originalScale.x, 150f, originalScale.z);
     }
 }
