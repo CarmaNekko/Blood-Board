@@ -17,8 +17,12 @@ public class Finish_Level : MonoBehaviour
     [Tooltip("El nombre exacto de la escena de tu Nivel Procedural base")]
     [SerializeField] private string escenaProcedural = "Level_1";
 
+    [Tooltip("El nombre exacto de tu escena del Menú Principal (Parche Final)")]
+    [SerializeField] private string menuSceneName = "MainMenu";
+
     [Tooltip("Bosses que aparecen al terminar cada piso. El piso guardado sigue siendo el de origen.")]
-    [SerializeField] private BossCheckpointRoute[] bossRoutes =
+    [SerializeField]
+    private BossCheckpointRoute[] bossRoutes =
     {
         new BossCheckpointRoute { originFloor = 1, bossDisplayName = "Peon Campeon", bossSceneName = "Pawn_Boss" },
         new BossCheckpointRoute { originFloor = 2, bossDisplayName = "Caballo Campeon", bossSceneName = "Knigh_Boss" },
@@ -42,6 +46,15 @@ public class Finish_Level : MonoBehaviour
         float health = playerHealth != null ? playerHealth.currentHealth : 100f;
         int currentScore = ScoreManager.Instance != null ? ScoreManager.Instance.GetCurrentScore() : 0;
         string currentModeName = GameModeManager.CurrentMode != null ? GameModeManager.CurrentMode.GetModeName() : "Modo_Historia";
+
+        // Elimar esta cosa cuando tengamos el nivel del jefe final listo :,u
+        if (LevelManager.currentLevel >= 5)
+        {
+            Debug.Log("Fin de la demo. Regresando al menú para evitar el crash.");
+            CheckerboardTransition.LoadScene(menuSceneName);
+            return;
+        }
+        //
 
         if (TryGetBossRoute(LevelManager.currentLevel, out BossCheckpointRoute bossRoute))
         {

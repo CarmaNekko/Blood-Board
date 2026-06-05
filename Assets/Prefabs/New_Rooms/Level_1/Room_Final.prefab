@@ -5555,6 +5555,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Finish_Level
   playerTag: Player
   escenaProcedural: Level_1
+  menuSceneName: NewTitleScreen
   bossRoutes:
   - originFloor: 1
     bossDisplayName: Jefe Peon
