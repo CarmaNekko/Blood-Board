@@ -66,10 +66,18 @@ public class EnemyHealth : MonoBehaviour
         }
     }
 
-    private void Die()
+private void Die()
     {
         ScoreManager.Instance?.AddScoreToCurrent(scoreValue);
-        Destroy(gameObject);
+        
+        if (TryGetComponent<EnemyDissolve>(out var dissolveEffect))
+        {
+            dissolveEffect.TriggerDeath();
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
     }
     public void SetShield(bool status)
     {
