@@ -5186,6 +5186,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 8781a494b72ef2e4d91bd8eb9798e646, type: 3}
       insertIndex: -1
       addedObject: {fileID: 54018983427873882}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 8781a494b72ef2e4d91bd8eb9798e646, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: -6416598452301057255}
   m_SourcePrefab: {fileID: 100100000, guid: 8781a494b72ef2e4d91bd8eb9798e646, type: 3}
 --- !u!4 &5910945791519465244 stripped
 Transform:
@@ -5321,3 +5324,19 @@ MonoBehaviour:
   additionalShineLocalOffsets: []
   gizmoColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   debugShine: 0
+--- !u!114 &-6416598452301057255
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6434576575197070758}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a2cad06930a3ec54897e243617097a44, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyGlow
+  blackOutlineColor: {r: 0.8, g: 0.3, b: 1, a: 1}
+  whiteOutlineColor: {r: 1, g: 0.98597234, b: 0.8349056, a: 1}
+  outlineWidth: 0.05
+  outlineShaderName: Custom/EnemyOutline

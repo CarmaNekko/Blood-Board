@@ -153,6 +153,7 @@ MonoBehaviour:
   knightScene: Knigh_Boss
   bishopScene: Bishop_Boss
   rookScene: Rock_Boss
+  kingQueenScene: KingQueen_Boss
 --- !u!4 &136552438
 Transform:
   m_ObjectHideFlags: 0
@@ -508,6 +509,8 @@ MonoBehaviour:
   - {fileID: 6045825802650325582, guid: f691004411479bb4c8c9a758650aa775, type: 3}
   - {fileID: 1059234749075372331, guid: 4942a9f1aca1d8543b410a8a3b94fca5, type: 3}
   - {fileID: 1059234749075372331, guid: 4942a9f1aca1d8543b410a8a3b94fca5, type: 3}
+  - {fileID: 1059234749075372331, guid: 3fa95c8af715cd74da682444c1f0bfcb, type: 3}
+  - {fileID: 1059234749075372331, guid: 3fa95c8af715cd74da682444c1f0bfcb, type: 3}
   corridorPrefabs:
   - {fileID: 4158632963112747052, guid: 1e3689983ac3d534197e07eb1e178728, type: 3}
   deadEndPrefabs:
@@ -681,10 +684,18 @@ MonoBehaviour:
   mainLight: {fileID: 332619939}
   brightMainLightMultiplier: 0.65
   darkMainLightMultiplier: 0.08
+  controlSceneLighting: 1
+  controlDistanceFog: 1
   useDistanceFog: 1
   fogColor: {r: 0.01, g: 0.01, b: 0.018, a: 1}
   fogStartDistance: 18
   fogEndDistance: 45
+  useSolidDarkBackground: 1
+  backgroundColor: {r: 0.005, g: 0.005, b: 0.012, a: 1}
+  removeSkybox: 1
+  applyToAllCameras: 1
+  targetCamera: {fileID: 0}
+  autoApplySceneRoomsOnStart: 1
   liveUpdateInPlayMode: 1
   logAppliedValues: 0
 --- !u!114 &1776039908 stripped

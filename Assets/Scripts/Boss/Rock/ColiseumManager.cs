@@ -135,6 +135,13 @@ public class ColiseumManager : MonoBehaviour
                 if (randomColorPrefab != null)
                 {
                     GameObject enemy = Instantiate(randomColorPrefab, spawnPoint.position, spawnPoint.rotation);
+                    
+                    // Agregar componente EnemyGlow para brillo sutil
+                    if (enemy.GetComponent<EnemyGlow>() == null)
+                    {
+                        enemy.AddComponent<EnemyGlow>();
+                    }
+                    
                     activeEnemies.Add(enemy);
                 }
             }

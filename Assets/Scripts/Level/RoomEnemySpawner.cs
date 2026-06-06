@@ -150,6 +150,13 @@ public class RoomEnemySpawner : MonoBehaviour
             }
 
             GameObject spawnedEnemy = Instantiate(chosenEnemyPrefab, spawnPos, spawnLocation.rotation);
+            
+            // Agregar componente EnemyGlow para brillo sutil
+            if (spawnedEnemy.GetComponent<EnemyGlow>() == null)
+            {
+                spawnedEnemy.AddComponent<EnemyGlow>();
+            }
+            
             activeEnemiesList.Add(spawnedEnemy);
         }
 
