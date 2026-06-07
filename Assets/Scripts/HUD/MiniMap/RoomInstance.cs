@@ -143,6 +143,22 @@ public class RoomInstance : MonoBehaviour
         if (MarkDiscovered())
         {
             changed = true;
+
+            if (RoomEventDirector.Instance != null && RoomEventDirector.Instance.TryStartUnexpectedEvent(this))
+            {
+                if (SetAsCurrentArea())
+                {
+                    changed = true;
+                }
+
+                if (changed)
+                {
+                    AreasChanged?.Invoke();
+                }
+
+                return;
+            }
+
             RoomEnemySpawner spawner = GetComponent<RoomEnemySpawner>();
             if (spawner != null) spawner.TriggerRoomEvent();
         }

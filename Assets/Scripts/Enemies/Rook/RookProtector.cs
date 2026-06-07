@@ -28,7 +28,10 @@ public class RookProtector : MonoBehaviour
             if (protectedTargets.Count >= maxProtectedEnemies) break;
 
             EnemyHealth enemy = hit.GetComponent<EnemyHealth>();
-            if (enemy != null && enemy.gameObject != this.gameObject && !protectedTargets.Contains(enemy))
+            if (enemy != null &&
+                enemy.gameObject != gameObject &&
+                enemy.GetComponent<RookProtector>() == null &&
+                !protectedTargets.Contains(enemy))
             {
                 enemy.SetShield(true);
                 protectedTargets.Add(enemy);
