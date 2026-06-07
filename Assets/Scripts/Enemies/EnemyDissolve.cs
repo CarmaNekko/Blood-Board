@@ -112,6 +112,7 @@ public class EnemyDissolve : MonoBehaviour
 
         if (dissolveMaterial == null)
         {
+            ClearEditorSelectionIfSelected();
             Destroy(gameObject);
             return;
         }
@@ -278,6 +279,65 @@ public class EnemyDissolve : MonoBehaviour
         }
 
         dissolveMaterials.Clear();
+        ClearEditorSelectionIfSelected();
         Destroy(gameObject);
     }
+
+    private void ClearEditorSelectionIfSelected()
+    {
+#if UNITY_EDITOR
+        if (UnityEditor.Selection.activeGameObject == gameObject)
+        {
+            UnityEditor.Selection.activeGameObject = null;
+        }
+#endif
+    }
 }
+
+#if UNITY_EDITOR
+[UnityEditor.InitializeOnLoad]
+internal static class EditorInspectorSelectionGuard
+{
+    static EditorInspectorSelectionGuard()
+    {
+        UnityEditor.Compilation.CompilationPipeline.compilationStarted += _ => ClearSelection();
+        UnityEditor.AssemblyReloadEvents.beforeAssemblyReload += ClearSelection;
+        UnityEditor.AssemblyReloadEvents.afterAssemblyReload += ClearSelectionDelayed;
+        UnityEditor.EditorApplication.delayCall += ClearInvalidSelectionDelayed;
+    }
+
+    private static void ClearSelectionDelayed()
+    {
+        UnityEditor.EditorApplication.delayCall += ClearSelection;
+    }
+
+    private static void ClearInvalidSelectionDelayed()
+    {
+        UnityEditor.EditorApplication.delayCall += ClearInvalidSelection;
+    }
+
+    private static void ClearInvalidSelection()
+    {
+        UnityEngine.Object[] selectedObjects = UnityEditor.Selection.objects;
+        if (selectedObjects == null || selectedObjects.Length == 0)
+        {
+            return;
+        }
+
+        for (int i = 0; i < selectedObjects.Length; i++)
+        {
+            if (selectedObjects[i] == null)
+            {
+                ClearSelection();
+                return;
+            }
+        }
+    }
+
+    private static void ClearSelection()
+    {
+        UnityEditor.Selection.objects = System.Array.Empty<UnityEngine.Object>();
+        UnityEditor.Selection.activeObject = null;
+    }
+}
+#endif

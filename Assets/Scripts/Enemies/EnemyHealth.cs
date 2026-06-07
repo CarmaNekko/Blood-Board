@@ -76,9 +76,21 @@ private void Die()
         }
         else
         {
+            ClearEditorSelectionIfSelected();
             Destroy(gameObject);
         }
     }
+
+    private void ClearEditorSelectionIfSelected()
+    {
+#if UNITY_EDITOR
+        if (UnityEditor.Selection.activeGameObject == gameObject)
+        {
+            UnityEditor.Selection.activeGameObject = null;
+        }
+#endif
+    }
+
     public void SetShield(bool status)
     {
         isShielded = status;
