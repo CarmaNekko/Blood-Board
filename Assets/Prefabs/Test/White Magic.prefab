@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 4944943811138627613}
   - component: {fileID: 7552737501024555124}
   - component: {fileID: -8764795551053696983}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: White Magic
   m_TagString: WhiteMagic
   m_Icon: {fileID: 0}
@@ -169,7 +169,7 @@ GameObject:
   - component: {fileID: 4245835807662078864}
   - component: {fileID: 4376471612006094536}
   - component: {fileID: 29904381251407366}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: Particle System
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5002,6 +5002,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 7896813087836222614}
     m_Modifications:
+    - target: {fileID: 2314734387770562612, guid: a3f4a5d5821c0f642a4b326b2b6a5e23, type: 3}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
     - target: {fileID: 5941724225406207372, guid: a3f4a5d5821c0f642a4b326b2b6a5e23, type: 3}
       propertyPath: m_Enabled
       value: 0
@@ -5010,9 +5014,21 @@ PrefabInstance:
       propertyPath: m_Name
       value: Light Magic
       objectReference: {fileID: 0}
+    - target: {fileID: 6269966883804200812, guid: a3f4a5d5821c0f642a4b326b2b6a5e23, type: 3}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: 6643126886001409011, guid: a3f4a5d5821c0f642a4b326b2b6a5e23, type: 3}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
     - target: {fileID: 6643126886001409011, guid: a3f4a5d5821c0f642a4b326b2b6a5e23, type: 3}
       propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8723641515884280095, guid: a3f4a5d5821c0f642a4b326b2b6a5e23, type: 3}
+      propertyPath: m_Layer
+      value: 13
       objectReference: {fileID: 0}
     - target: {fileID: 9190920827093838102, guid: a3f4a5d5821c0f642a4b326b2b6a5e23, type: 3}
       propertyPath: m_LocalPosition.x

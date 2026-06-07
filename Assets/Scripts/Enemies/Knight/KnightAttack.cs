@@ -32,6 +32,8 @@ public class KnightAttack : MonoBehaviour
     [Header("Colisiones de Salto")]
     public LayerMask wallMask;
 
+    private GameObject currentDangerZone;
+
     void Start()
     {
         playerTarget = GameObject.FindGameObjectWithTag("Player")?.transform;
@@ -45,28 +47,32 @@ public class KnightAttack : MonoBehaviour
 
     IEnumerator AttackRoutine()
     {
+        yield return new WaitForSeconds(Random.Range(0f, 2.5f));
+
         while (true)
         {
+            if (healthScript != null && healthScript.GetCurrentHealth() <= 0) yield break;
+
             if (playerTarget != null && !isAttacking)
             {
                 yield return StartCoroutine(PerformSlamAttack());
             }
-            float currentCooldown = healthScript.isBuffed ? cooldown / 2f : cooldown;
-            yield return new WaitForSeconds(currentCooldown);
+            float currentCooldown = healthScript != null && healthScript.isBuffed ? cooldown / 2f : cooldown;
+            yield return new WaitForSeconds(currentCooldown + Random.Range(0f, 1f));
         }
     }
 
     private Vector3 GetValidJumpPosition(Vector3 startPos, Vector3 targetPos)
     {
-        Vector3 rayStart = startPos + Vector3.up * 0.5f;
-        Vector3 rayEnd = targetPos + Vector3.up * 0.5f;
+        Vector3 rayStart = startPos + Vector3.up * 1f;
+        Vector3 rayEnd = targetPos + Vector3.up * 1f;
 
         Vector3 direction = rayEnd - rayStart;
         float distance = direction.magnitude;
 
-        if (Physics.Raycast(rayStart, direction.normalized, out RaycastHit hit, distance, wallMask))
+        if (Physics.SphereCast(rayStart, 0.5f, direction.normalized, out RaycastHit hit, distance, wallMask))
         {
-            Vector3 safePosition = hit.point - (direction.normalized * 0.5f);
+            Vector3 safePosition = rayStart + direction.normalized * Mathf.Max(0, hit.distance - 0.5f);
             safePosition.y = targetPos.y;
             return safePosition;
         }
@@ -86,6 +92,7 @@ public class KnightAttack : MonoBehaviour
         float t = 0;
         while (t < 1)
         {
+            if (healthScript != null && healthScript.GetCurrentHealth() <= 0) { CleanUpAttack(); yield break; }
             t += Time.deltaTime / 0.5f;
             transform.position = Vector3.Lerp(startPosition, peakPosition, t);
             float stretchY = Mathf.Lerp(1.2f, 1f, t);
@@ -122,11 +129,10 @@ public class KnightAttack : MonoBehaviour
             floorPoint.y = startPosition.y - offsetCentroModelo;
         }
 
-        GameObject dangerZone = null;
         if (dangerZonePrefab != null)
         {
-            dangerZone = Instantiate(dangerZonePrefab, floorPoint + new Vector3(0, 0.05f, 0), Quaternion.identity);
-            if (healthScript.isBuffed) dangerZone.transform.localScale *= 1.5f;
+            currentDangerZone = Instantiate(dangerZonePrefab, floorPoint + new Vector3(0, 0.05f, 0), Quaternion.identity);
+            if (healthScript.isBuffed) currentDangerZone.transform.localScale *= 1.5f;
         }
 
         Vector3 targetAirPosition = new Vector3(targetDropPosition.x, peakPosition.y, targetDropPosition.z);
@@ -134,19 +140,21 @@ public class KnightAttack : MonoBehaviour
         t = 0;
         while (t < 1)
         {
+            if (healthScript != null && healthScript.GetCurrentHealth() <= 0) { CleanUpAttack(); yield break; }
             t += Time.deltaTime / hangTime;
             transform.position = Vector3.Lerp(peakPosition, targetAirPosition, t);
             yield return null;
         }
 
         if (alertIcon != null) alertIcon.SetActive(false);
-        if (dangerZone != null) Destroy(dangerZone);
+        if (currentDangerZone != null) Destroy(currentDangerZone);
 
         if (myCollider != null) myCollider.enabled = false;
 
         t = 0;
         while (t < 1)
         {
+            if (healthScript != null && healthScript.GetCurrentHealth() <= 0) { CleanUpAttack(); yield break; }
             t += Time.deltaTime / dropDuration;
             transform.position = Vector3.Lerp(targetAirPosition, targetDropPosition, t);
             transform.localScale = new Vector3(baseScale.x * 0.6f, baseScale.y * 1.5f, baseScale.z * 0.6f);
@@ -156,14 +164,17 @@ public class KnightAttack : MonoBehaviour
         transform.position = targetDropPosition;
         transform.localScale = new Vector3(baseScale.x * 1.6f, baseScale.y * 0.4f, baseScale.z * 1.6f);
 
-        float currentDamage = healthScript.isBuffed ? baseDamage * 2f : baseDamage;
-        float currentImpactRadius = healthScript.isBuffed ? baseRadius * 1.5f : baseRadius;
-
-        damageArea.DealSlamDamage(currentDamage, currentImpactRadius, transform);
+        if (healthScript != null && healthScript.GetCurrentHealth() > 0)
+        {
+            float currentDamage = healthScript.isBuffed ? baseDamage * 2f : baseDamage;
+            float currentImpactRadius = healthScript.isBuffed ? baseRadius * 1.5f : baseRadius;
+            damageArea.DealSlamDamage(currentDamage, currentImpactRadius, transform);
+        }
 
         t = 0;
         while (t < 1)
         {
+            if (healthScript != null && healthScript.GetCurrentHealth() <= 0) { CleanUpAttack(); yield break; }
             t += Time.deltaTime / 0.2f;
             transform.localScale = Vector3.Lerp(
                 new Vector3(baseScale.x * 1.6f, baseScale.y * 0.4f, baseScale.z * 1.6f),
@@ -174,6 +185,14 @@ public class KnightAttack : MonoBehaviour
         }
 
         transform.localScale = baseScale;
+        if (myCollider != null) myCollider.enabled = true;
+        isAttacking = false;
+    }
+
+    private void CleanUpAttack()
+    {
+        if (alertIcon != null) alertIcon.SetActive(false);
+        if (currentDangerZone != null) Destroy(currentDangerZone);
         if (myCollider != null) myCollider.enabled = true;
         isAttacking = false;
     }

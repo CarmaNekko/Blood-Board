@@ -50,10 +50,6 @@ public class RoomEnemySpawner : MonoBehaviour
             waveText = uiTextObj.GetComponent<TextMeshProUGUI>();
             waveText.text = "";
         }
-        else
-        {
-            Debug.LogWarning("No se encontró el objeto en el Canvas.");
-        }
     }
 
     public void TriggerRoomEvent()
@@ -114,13 +110,7 @@ public class RoomEnemySpawner : MonoBehaviour
 
             if (warningVisualPrefab != null)
             {
-                Vector3 visualPosition = chosenSpawn.position;
-                if (Physics.Raycast(chosenSpawn.position, Vector3.down, out RaycastHit hit, 50f, groundMask))
-                {
-                    visualPosition = hit.point + new Vector3(0, 0.05f, 0);
-                }
-
-                GameObject warning = Instantiate(warningVisualPrefab, visualPosition, Quaternion.identity);
+                GameObject warning = Instantiate(warningVisualPrefab, chosenSpawn.position, Quaternion.identity);
                 activeWarnings.Add(warning);
             }
         }
@@ -147,19 +137,13 @@ public class RoomEnemySpawner : MonoBehaviour
             else if (chosenEnemyPrefab.GetComponent<RookProtector>() != null) currentRooks++;
 
             Vector3 spawnPos = spawnLocation.position;
-            if (Physics.Raycast(spawnLocation.position, Vector3.down, out RaycastHit hitEnemy, 50f, groundMask))
-            {
-                spawnPos = hitEnemy.point;
-            }
-
             GameObject spawnedEnemy = Instantiate(chosenEnemyPrefab, spawnPos, spawnLocation.rotation);
-            
-            // Agregar componente EnemyGlow para brillo sutil
+
             if (spawnedEnemy.GetComponent<EnemyGlow>() == null)
             {
                 spawnedEnemy.AddComponent<EnemyGlow>();
             }
-            
+
             activeEnemiesList.Add(spawnedEnemy);
         }
 
@@ -200,7 +184,7 @@ public class RoomEnemySpawner : MonoBehaviour
 
             if (warningVisualPrefab != null)
             {
-                Vector3 visualPosition = GetGroundedPosition(chosenSpawn.position, 0.05f);
+                Vector3 visualPosition = chosenSpawn.position + new Vector3(0f, 0.05f, 0f);
                 GameObject warning = Instantiate(warningVisualPrefab, visualPosition, Quaternion.identity);
                 activeWarnings.Add(warning);
             }
@@ -231,7 +215,7 @@ public class RoomEnemySpawner : MonoBehaviour
             else if (chosenEnemyPrefab.GetComponent<BishopAttack>() != null) spawnedBishops++;
             else if (chosenEnemyPrefab.GetComponent<RookProtector>() != null) spawnedRooks++;
 
-            Vector3 spawnPos = GetGroundedPosition(spawnLocation.position, 0f);
+            Vector3 spawnPos = spawnLocation.position;
             GameObject spawnedEnemy = Instantiate(chosenEnemyPrefab, spawnPos, spawnLocation.rotation);
 
             EnemyHealth enemyHealth = spawnedEnemy.GetComponent<EnemyHealth>();
@@ -247,16 +231,6 @@ public class RoomEnemySpawner : MonoBehaviour
 
             spawnedEnemies?.Add(spawnedEnemy);
         }
-    }
-
-    private Vector3 GetGroundedPosition(Vector3 origin, float yOffset)
-    {
-        if (Physics.Raycast(origin, Vector3.down, out RaycastHit hit, 50f, groundMask))
-        {
-            return hit.point + new Vector3(0f, yOffset, 0f);
-        }
-
-        return origin;
     }
 
     private void Update()
