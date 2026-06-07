@@ -8,6 +8,10 @@ public class EnemySpawnEffect : MonoBehaviour
     public float spawnDuration = 2.0f;
     public float yOffset = -3f;
 
+    [Header("Ajuste para enemigos sin NavMesh")]
+    public float surfaceOffset = 0f;
+    public LayerMask groundMask = Physics.AllLayers;
+
     private MonoBehaviour[] scriptsToDisable;
     private NavMeshAgent agent;
     private Collider[] allColliders;
@@ -43,16 +47,27 @@ public class EnemySpawnEffect : MonoBehaviour
         {
             r.enabled = false;
         }
-
     }
 
     IEnumerator Start()
     {
-        yield return null;
-
         Vector3 finalPos = transform.position;
 
-        if (agent != null) agent.enabled = false;
+        if (agent != null)
+        {
+            agent.enabled = true;
+            agent.Warp(transform.position);
+            yield return null;
+            finalPos = transform.position;
+            agent.enabled = false;
+        }
+        else
+        {
+            if (Physics.Raycast(transform.position + Vector3.up * 2f, Vector3.down, out RaycastHit hit, 10f, groundMask, QueryTriggerInteraction.Ignore))
+            {
+                finalPos.y = hit.point.y + surfaceOffset;
+            }
+        }
 
         Vector3 startPos = finalPos + new Vector3(0, yOffset, 0);
         transform.position = startPos;
@@ -67,10 +82,7 @@ public class EnemySpawnEffect : MonoBehaviour
         {
             elapsed += Time.deltaTime;
             float t = elapsed / spawnDuration;
-
-            // Suavizado Ease-Out
             t = Mathf.Sin(t * Mathf.PI * 0.5f);
-
             transform.position = Vector3.Lerp(startPos, finalPos, t);
             yield return null;
         }
@@ -79,10 +91,10 @@ public class EnemySpawnEffect : MonoBehaviour
 
         if (agent != null)
         {
-            agent.Warp(finalPos);
             agent.enabled = true;
+            agent.Warp(finalPos);
             yield return null;
-            agent.ResetPath();
+            if (agent.isOnNavMesh) agent.ResetPath();
         }
 
         foreach (var script in scriptsToDisable)

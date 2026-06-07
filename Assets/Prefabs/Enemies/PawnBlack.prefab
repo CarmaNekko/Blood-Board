@@ -5297,6 +5297,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemySpawnEffect
   spawnDuration: 2
   yOffset: -3
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 64
 --- !u!114 &54018983427873882
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5386,7 +5389,10 @@ MonoBehaviour:
     m_RotationOrder: 4
   whiteDissolveColor: {r: 1, g: 0.95, b: 0.7, a: 1}
   blackDissolveColor: {r: 0.75, g: 0.45, b: 1, a: 1}
-  magicIntensity: 1.8
+  whiteMagicIntensity: 1.8
+  blackMagicIntensity: 0.85
+  whiteBaseBrightness: 1
+  blackBaseBrightness: 0.42
   enableMagicPulse: 1
   magicPulseFrequency: 2.2
   magicPulseAmplitude: 0.25

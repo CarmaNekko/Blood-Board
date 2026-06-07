@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 6230558325170538450}
   - component: {fileID: 9173683463495985350}
   - component: {fileID: 1588052499512425041}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Aura_Gaseosa
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4859,7 +4859,7 @@ GameObject:
   - component: {fileID: 3586246471556232897}
   - component: {fileID: 8671894790476447466}
   - component: {fileID: 3255904632370627433}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Black Magic
   m_TagString: BlackMagic
   m_Icon: {fileID: 0}
@@ -5014,6 +5014,22 @@ PrefabInstance:
     - target: {fileID: 1434814870875656255, guid: 5c27945b0a23fee4f9c7bcdc6c51112d, type: 3}
       propertyPath: m_Name
       value: Dark Magic
+      objectReference: {fileID: 0}
+    - target: {fileID: 1434814870875656255, guid: 5c27945b0a23fee4f9c7bcdc6c51112d, type: 3}
+      propertyPath: m_Layer
+      value: 14
+      objectReference: {fileID: 0}
+    - target: {fileID: 1710448177993220482, guid: 5c27945b0a23fee4f9c7bcdc6c51112d, type: 3}
+      propertyPath: m_Layer
+      value: 14
+      objectReference: {fileID: 0}
+    - target: {fileID: 4793376944646823586, guid: 5c27945b0a23fee4f9c7bcdc6c51112d, type: 3}
+      propertyPath: m_Layer
+      value: 14
+      objectReference: {fileID: 0}
+    - target: {fileID: 6253822124585244652, guid: 5c27945b0a23fee4f9c7bcdc6c51112d, type: 3}
+      propertyPath: m_Layer
+      value: 14
       objectReference: {fileID: 0}
     - target: {fileID: 7933432997156662556, guid: 5c27945b0a23fee4f9c7bcdc6c51112d, type: 3}
       propertyPath: m_LocalScale.x

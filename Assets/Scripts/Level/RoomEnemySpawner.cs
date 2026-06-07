@@ -39,6 +39,9 @@ public class RoomEnemySpawner : MonoBehaviour
 
     private List<GameObject> activeEnemiesList = new List<GameObject>();
 
+    public IReadOnlyList<Transform> SpawnPoints => spawnPoints;
+    public LayerMask GroundMask => groundMask;
+
     private void Start()
     {
         GameObject uiTextObj = GameObject.Find("WaveCounterText");
@@ -46,10 +49,6 @@ public class RoomEnemySpawner : MonoBehaviour
         {
             waveText = uiTextObj.GetComponent<TextMeshProUGUI>();
             waveText.text = "";
-        }
-        else
-        {
-            Debug.LogWarning("No se encontró el objeto en el Canvas.");
         }
     }
 
@@ -111,13 +110,7 @@ public class RoomEnemySpawner : MonoBehaviour
 
             if (warningVisualPrefab != null)
             {
-                Vector3 visualPosition = chosenSpawn.position;
-                if (Physics.Raycast(chosenSpawn.position, Vector3.down, out RaycastHit hit, 50f, groundMask))
-                {
-                    visualPosition = hit.point + new Vector3(0, 0.05f, 0);
-                }
-
-                GameObject warning = Instantiate(warningVisualPrefab, visualPosition, Quaternion.identity);
+                GameObject warning = Instantiate(warningVisualPrefab, chosenSpawn.position, Quaternion.identity);
                 activeWarnings.Add(warning);
             }
         }
@@ -144,24 +137,100 @@ public class RoomEnemySpawner : MonoBehaviour
             else if (chosenEnemyPrefab.GetComponent<RookProtector>() != null) currentRooks++;
 
             Vector3 spawnPos = spawnLocation.position;
-            if (Physics.Raycast(spawnLocation.position, Vector3.down, out RaycastHit hitEnemy, 50f, groundMask))
-            {
-                spawnPos = hitEnemy.point;
-            }
-
             GameObject spawnedEnemy = Instantiate(chosenEnemyPrefab, spawnPos, spawnLocation.rotation);
-            
-            // Agregar componente EnemyGlow para brillo sutil
+
             if (spawnedEnemy.GetComponent<EnemyGlow>() == null)
             {
                 spawnedEnemy.AddComponent<EnemyGlow>();
             }
-            
+
             activeEnemiesList.Add(spawnedEnemy);
         }
 
         isSpawning = false;
         UpdateUI();
+    }
+
+    public IEnumerator SpawnExternalEnemiesRoutine(
+        int enemiesToSpawn,
+        List<GameObject> enemyPool,
+        bool buffEnemies,
+        List<GameObject> spawnedEnemies)
+    {
+        if (spawnedEnemies != null)
+        {
+            spawnedEnemies.Clear();
+        }
+
+        if (enemyPool == null || enemyPool.Count == 0 || spawnPoints == null || spawnPoints.Count == 0)
+        {
+            yield break;
+        }
+
+        List<GameObject> pool = new List<GameObject>(enemyPool);
+        List<Transform> availableSpawns = new List<Transform>(spawnPoints);
+        List<Transform> chosenSpawns = new List<Transform>();
+        List<GameObject> activeWarnings = new List<GameObject>();
+
+        int spawnCount = Mathf.Min(enemiesToSpawn, availableSpawns.Count);
+        for (int i = 0; i < spawnCount; i++)
+        {
+            if (availableSpawns.Count == 0) break;
+
+            int randomSpawnIndex = Random.Range(0, availableSpawns.Count);
+            Transform chosenSpawn = availableSpawns[randomSpawnIndex];
+            chosenSpawns.Add(chosenSpawn);
+            availableSpawns.RemoveAt(randomSpawnIndex);
+
+            if (warningVisualPrefab != null)
+            {
+                Vector3 visualPosition = chosenSpawn.position + new Vector3(0f, 0.05f, 0f);
+                GameObject warning = Instantiate(warningVisualPrefab, visualPosition, Quaternion.identity);
+                activeWarnings.Add(warning);
+            }
+        }
+
+        yield return new WaitForSeconds(spawnDelay);
+
+        foreach (GameObject warning in activeWarnings)
+        {
+            if (warning != null) Destroy(warning);
+        }
+
+        int spawnedKnights = 0;
+        int spawnedBishops = 0;
+        int spawnedRooks = 0;
+
+        foreach (Transform spawnLocation in chosenSpawns)
+        {
+            if (spawnedKnights >= maxKnights) pool.RemoveAll(e => e.GetComponent<KnightAttack>() != null);
+            if (spawnedBishops >= maxBishops) pool.RemoveAll(e => e.GetComponent<BishopAttack>() != null);
+            if (spawnedRooks >= maxRooks) pool.RemoveAll(e => e.GetComponent<RookProtector>() != null);
+
+            if (pool.Count == 0) break;
+
+            GameObject chosenEnemyPrefab = pool[Random.Range(0, pool.Count)];
+
+            if (chosenEnemyPrefab.GetComponent<KnightAttack>() != null) spawnedKnights++;
+            else if (chosenEnemyPrefab.GetComponent<BishopAttack>() != null) spawnedBishops++;
+            else if (chosenEnemyPrefab.GetComponent<RookProtector>() != null) spawnedRooks++;
+
+            Vector3 spawnPos = spawnLocation.position;
+            GameObject spawnedEnemy = Instantiate(chosenEnemyPrefab, spawnPos, spawnLocation.rotation);
+
+            EnemyHealth enemyHealth = spawnedEnemy.GetComponent<EnemyHealth>();
+            if (enemyHealth != null && buffEnemies)
+            {
+                enemyHealth.TakeDamage(0, enemyHealth.myColor);
+            }
+
+            if (spawnedEnemy.GetComponent<EnemyGlow>() == null)
+            {
+                spawnedEnemy.AddComponent<EnemyGlow>();
+            }
+
+            spawnedEnemies?.Add(spawnedEnemy);
+        }
     }
 
     private void Update()
@@ -260,5 +329,31 @@ public class RoomEnemySpawner : MonoBehaviour
                 door.SetLock(lockState);
             }
         }
+    }
+
+    public void SetDoorsLockedForExternalEvent(bool lockState)
+    {
+        LockAllDoors(lockState);
+    }
+
+    public void DebugClearWaves()
+    {
+        StopAllCoroutines();
+
+        foreach (GameObject enemy in activeEnemiesList)
+        {
+            if (enemy != null)
+            {
+                Destroy(enemy);
+            }
+        }
+
+        activeEnemiesList.Clear();
+        isWaitingForPlayer = false;
+        isSpawning = false;
+        hasTriggered = true;
+        roomCleared = true;
+        LockAllDoors(false);
+        UpdateUI();
     }
 }
