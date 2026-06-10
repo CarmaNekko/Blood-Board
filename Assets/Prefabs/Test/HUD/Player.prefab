@@ -377,6 +377,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MagicShooter
   whiteMagicPrefab: {fileID: 6653451336201665546, guid: 477c3a856c90f0742b5daad78d603d0b, type: 3}
   blackMagicPrefab: {fileID: 8704798185733213193, guid: d895a193937f5534f9fef31172878c0a, type: 3}
+  harmonicMagicPrefab: {fileID: 6653451336201665546, guid: f08b9556715ddfd4480818093a57cab1, type: 3}
+  whiteSlashPrefab: {fileID: 4196008582005932241, guid: 231dfd9f3edf483428d9957693187f22, type: 3}
+  blackSlashPrefab: {fileID: 6090206308156702687, guid: 5b77fd4af1800b74db7a7ec4c88969dc, type: 3}
+  harmonicSlashPrefab: {fileID: 3537563102514347109, guid: 032000ac57a7a7548bfc53a65f0d1c35, type: 3}
+  maxChargePercent: 0.2
+  chargeSpeed: 40
+  doubleTapWindow: 0.3
   firePoint: {fileID: 8885997691368852185}
   shootForce: 30
   cameraEffects: {fileID: 0}

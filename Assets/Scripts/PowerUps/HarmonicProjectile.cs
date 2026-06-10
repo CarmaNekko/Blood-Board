@@ -1,12 +1,9 @@
 using UnityEngine;
 
-public enum MagicColor { White, Black, Harmonic }
-
-public class MagicProjectile : MonoBehaviour
+public class HarmonicProjectile : MonoBehaviour
 {
     [Header("Projectile Stats")]
-    [SerializeField] private MagicColor projectileColor;
-    [SerializeField] private int damage = 10;
+    [SerializeField] private int damage = 15;
     [SerializeField] private GameObject explosionParticlesPrefab;
 
     public bool appliesVampirism = false;
@@ -19,13 +16,13 @@ public class MagicProjectile : MonoBehaviour
         }
 
         EnemyHealth enemy = other.GetComponent<EnemyHealth>();
-        if (enemy != null) enemy.TakeDamage(damage, projectileColor, appliesVampirism);
+        if (enemy != null) enemy.TakeDamage(damage, MagicColor.Harmonic, appliesVampirism);
 
         PawnBossHealth boss = other.GetComponent<PawnBossHealth>();
-        if (boss != null) boss.TakeDamage(damage, projectileColor);
+        if (boss != null) boss.TakeDamage(damage, MagicColor.Harmonic);
 
         BishopCrystal crystal = other.GetComponent<BishopCrystal>();
-        if (crystal != null) crystal.TakeDamage(projectileColor);
+        if (crystal != null) crystal.TakeDamage(MagicColor.Harmonic);
 
         if (explosionParticlesPrefab != null)
         {
