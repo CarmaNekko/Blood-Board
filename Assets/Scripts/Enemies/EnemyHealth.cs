@@ -1,5 +1,14 @@
 using BloodBoard.GameManagement;
+using System.Collections;
 using UnityEngine;
+
+[System.Serializable]
+public struct DropItem
+{
+    public GameObject prefab;
+    [Range(0f, 1f)]
+    public float dropChance;
+}
 
 public class EnemyHealth : MonoBehaviour
 {
@@ -20,6 +29,10 @@ public class EnemyHealth : MonoBehaviour
     public bool isBuffed { get; private set; } = false;
     [SerializeField] private GameObject frenzyParticles;
 
+    [Header("Drops")]
+    [SerializeField] private DropItem[] possibleDrops;
+
+    private bool isBleeding = false;
 
     void Awake()
     {
@@ -32,13 +45,19 @@ public class EnemyHealth : MonoBehaviour
         if (shieldVisual != null) shieldVisual.SetActive(false);
     }
 
-    public void TakeDamage(int damageAmount, MagicColor incomingMagicColor)
+    public void TakeDamage(int damageAmount, MagicColor incomingMagicColor, bool applyBleed = false)
     {
         if (isShielded) return;
 
-        if (myColor != incomingMagicColor)
+        if (myColor != incomingMagicColor || incomingMagicColor == MagicColor.Harmonic)
         {
             currentHealth -= damageAmount;
+
+            if (applyBleed && !isBleeding && currentHealth > 0)
+            {
+                StartCoroutine(BleedRoutine());
+            }
+
             if (currentHealth <= 0) Die();
         }
         else
@@ -48,6 +67,36 @@ public class EnemyHealth : MonoBehaviour
                 ApplyBuff();
             }
         }
+    }
+
+    private IEnumerator BleedRoutine()
+    {
+        isBleeding = true;
+        PlayerHealth playerObj = Object.FindAnyObjectByType<PlayerHealth>();
+
+        int bleedTicks = 5;
+        int bleedDamage = 2;
+
+        for (int i = 0; i < bleedTicks; i++)
+        {
+            yield return new WaitForSeconds(1f);
+
+            if (currentHealth <= 0) break;
+
+            currentHealth -= bleedDamage;
+
+            if (playerObj != null)
+            {
+                playerObj.RestoreHealth(bleedDamage);
+            }
+
+            if (currentHealth <= 0)
+            {
+                Die();
+                break;
+            }
+        }
+        isBleeding = false;
     }
 
     private void ApplyBuff()
@@ -66,10 +115,21 @@ public class EnemyHealth : MonoBehaviour
         }
     }
 
-private void Die()
+    private void Die()
     {
         ScoreManager.Instance?.AddScoreToCurrent(scoreValue);
-        
+
+        if (possibleDrops != null)
+        {
+            foreach (var drop in possibleDrops)
+            {
+                if (drop.prefab != null && Random.value <= drop.dropChance)
+                {
+                    Instantiate(drop.prefab, transform.position, Quaternion.identity);
+                }
+            }
+        }
+
         if (TryGetComponent<EnemyDissolve>(out var dissolveEffect))
         {
             dissolveEffect.TriggerDeath();
@@ -99,6 +159,7 @@ private void Die()
             shieldVisual.SetActive(status);
         }
     }
+
     public int GetCurrentHealth()
     {
         return currentHealth;

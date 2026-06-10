@@ -484,6 +484,9 @@ MonoBehaviour:
   minimumNormalRoomsBetweenEvents: 2
   baseChance: 0.15
   pityIncrement: 0.15
+  showDebugButtons: 0
+  debugStartEventKey: 105
+  debugClearWavesKey: 108
 --- !u!114 &857786599 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 31464315642660107, guid: d9fad25a5ba93d54da34f557342663f8, type: 3}
@@ -1323,6 +1326,10 @@ PrefabInstance:
       propertyPath: movingShootDelay
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1156367064293503880, guid: 5e95e756df1eba343ba25da4ed081cbb, type: 3}
+      propertyPath: harmonicMagicPrefab
+      value: 
+      objectReference: {fileID: 6653451336201665546, guid: f08b9556715ddfd4480818093a57cab1, type: 3}
     - target: {fileID: 3012492991059933004, guid: 5e95e756df1eba343ba25da4ed081cbb, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

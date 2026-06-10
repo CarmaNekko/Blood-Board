@@ -7,6 +7,15 @@ public class MagicShooter : MonoBehaviour
     [Header("Projectiles")]
     [SerializeField] private GameObject whiteMagicPrefab;
     [SerializeField] private GameObject blackMagicPrefab;
+    [SerializeField] private GameObject harmonicMagicPrefab;
+
+    [Header("Slash Attack Setup")]
+    [SerializeField] private GameObject whiteSlashPrefab;
+    [SerializeField] private GameObject blackSlashPrefab;
+    [SerializeField] private GameObject harmonicSlashPrefab;
+    [SerializeField] private float maxChargePercent = 0.20f;
+    [SerializeField] private float chargeSpeed = 40f;
+    [SerializeField] private float timeToStartCharge = 0.2f;
 
     [Header("Shooting Setup")]
     [SerializeField] private Transform firePoint;
@@ -44,6 +53,17 @@ public class MagicShooter : MonoBehaviour
 
     private PlayerHealth playerHealth;
 
+    private bool isHarmonicActive = false;
+    private float harmonicTimer = 0f;
+
+    private bool isVampirismActive = false;
+    private float vampirismTimer = 0f;
+
+    private bool isChargingSlash = false;
+    private float currentChargeManaDrained = 0f;
+    private MagicColor chargingMagicColor;
+    private float holdTimer = 0f;
+
     void Start()
     {
         currentWhiteMana = maxWhiteMana;
@@ -70,16 +90,197 @@ public class MagicShooter : MonoBehaviour
     {
         if (PauseScreen.IsPaused || TutorialMessage.IsTutorialActive || isPreparingToShoot) return;
 
-        RegenerateMana();
+        HandleHarmonicTimer();
+        HandleVampirismTimer();
 
-        if (Input.GetButtonDown("Fire1") && !isWhiteOverheated && currentWhiteMana >= whiteManaCost)
+        if (!isChargingSlash)
         {
-            StartCoroutine(HandleShootRequest(whiteMagicPrefab, true));
+            RegenerateMana();
         }
-        else if (Input.GetButtonDown("Fire2") && !isBlackOverheated && currentBlackMana >= blackManaCost)
+
+        HandleInput();
+    }
+
+    private void HandleInput()
+    {
+        bool fire1Held = Input.GetButton("Fire1");
+        bool fire2Held = Input.GetButton("Fire2");
+        bool fire1Up = Input.GetButtonUp("Fire1");
+        bool fire2Up = Input.GetButtonUp("Fire2");
+
+        if (!isChargingSlash)
         {
-            StartCoroutine(HandleShootRequest(blackMagicPrefab, false));
+            if (fire1Held)
+            {
+                holdTimer += Time.deltaTime;
+                if (holdTimer >= timeToStartCharge)
+                {
+                    StartCharging(isHarmonicActive ? MagicColor.Harmonic : MagicColor.White);
+                }
+            }
+            else if (fire2Held)
+            {
+                holdTimer += Time.deltaTime;
+                if (holdTimer >= timeToStartCharge)
+                {
+                    StartCharging(isHarmonicActive ? MagicColor.Harmonic : MagicColor.Black);
+                }
+            }
+            else
+            {
+                holdTimer = 0f;
+            }
+
+            if (fire1Up && holdTimer < timeToStartCharge)
+            {
+                if (isHarmonicActive) StartCoroutine(HandleHarmonicShoot());
+                else if (!isWhiteOverheated && currentWhiteMana >= whiteManaCost) StartCoroutine(HandleShootRequest(whiteMagicPrefab, true));
+                holdTimer = 0f;
+            }
+            else if (fire2Up && holdTimer < timeToStartCharge)
+            {
+                if (isHarmonicActive) StartCoroutine(HandleHarmonicShoot());
+                else if (!isBlackOverheated && currentBlackMana >= blackManaCost) StartCoroutine(HandleShootRequest(blackMagicPrefab, false));
+                holdTimer = 0f;
+            }
         }
+        else
+        {
+            ProcessCharging();
+
+            if ((chargingMagicColor == MagicColor.White && fire1Up) ||
+                (chargingMagicColor == MagicColor.Black && fire2Up) ||
+                (chargingMagicColor == MagicColor.Harmonic && (fire1Up || fire2Up)))
+            {
+                FireSlash();
+                ResetCharge();
+            }
+        }
+    }
+
+    private void StartCharging(MagicColor color)
+    {
+        if ((color == MagicColor.White && (isWhiteOverheated || currentWhiteMana <= 0)) ||
+            (color == MagicColor.Black && (isBlackOverheated || currentBlackMana <= 0)))
+        {
+            return;
+        }
+
+        isChargingSlash = true;
+        chargingMagicColor = color;
+        currentChargeManaDrained = 0f;
+    }
+
+    private void ProcessCharging()
+    {
+        if (chargingMagicColor == MagicColor.White)
+        {
+            float maxDrain = maxWhiteMana * maxChargePercent;
+            float allowedDrain = maxDrain - currentChargeManaDrained;
+            if (allowedDrain > 0 && currentWhiteMana > 0)
+            {
+                float drainThisFrame = Mathf.Min(chargeSpeed * Time.deltaTime, allowedDrain, currentWhiteMana);
+                currentWhiteMana -= drainThisFrame;
+                currentChargeManaDrained += drainThisFrame;
+                if (currentWhiteMana < whiteManaCost) isWhiteOverheated = true;
+            }
+        }
+        else if (chargingMagicColor == MagicColor.Black)
+        {
+            float maxDrain = maxBlackMana * maxChargePercent;
+            float allowedDrain = maxDrain - currentChargeManaDrained;
+            if (allowedDrain > 0 && currentBlackMana > 0)
+            {
+                float drainThisFrame = Mathf.Min(chargeSpeed * Time.deltaTime, allowedDrain, currentBlackMana);
+                currentBlackMana -= drainThisFrame;
+                currentChargeManaDrained += drainThisFrame;
+                if (currentBlackMana < blackManaCost) isBlackOverheated = true;
+            }
+        }
+        else if (chargingMagicColor == MagicColor.Harmonic)
+        {
+            float maxDrain = 100f * maxChargePercent;
+            float allowedDrain = maxDrain - currentChargeManaDrained;
+            if (allowedDrain > 0)
+            {
+                currentChargeManaDrained += chargeSpeed * Time.deltaTime;
+            }
+        }
+
+        UpdateUI();
+    }
+
+    private void ResetCharge()
+    {
+        isChargingSlash = false;
+        holdTimer = 0f;
+        currentChargeManaDrained = 0f;
+    }
+
+    private void FireSlash()
+    {
+        GameObject slashPrefab = null;
+        if (chargingMagicColor == MagicColor.White) slashPrefab = whiteSlashPrefab;
+        else if (chargingMagicColor == MagicColor.Black) slashPrefab = blackSlashPrefab;
+        else if (chargingMagicColor == MagicColor.Harmonic) slashPrefab = harmonicSlashPrefab;
+
+        if (slashPrefab != null)
+        {
+            GameObject projectile = Instantiate(slashPrefab, firePoint.position, firePoint.rotation * slashPrefab.transform.rotation);
+
+            if (isVampirismActive)
+            {
+                MagicProjectile mp = projectile.GetComponent<MagicProjectile>();
+                if (mp != null) mp.appliesVampirism = true;
+
+                HarmonicProjectile hp = projectile.GetComponent<HarmonicProjectile>();
+                if (hp != null) hp.appliesVampirism = true;
+            }
+
+            Rigidbody rb = projectile.GetComponent<Rigidbody>();
+            if (rb != null) rb.linearVelocity = firePoint.forward * shootForce;
+            Destroy(projectile, 2f);
+
+            if (cameraEffects != null) cameraEffects.ApplyShootRecoil();
+        }
+    }
+
+    private void HandleHarmonicTimer()
+    {
+        if (isHarmonicActive)
+        {
+            harmonicTimer -= Time.deltaTime;
+            if (harmonicTimer <= 0f)
+            {
+                isHarmonicActive = false;
+            }
+        }
+    }
+
+    private void HandleVampirismTimer()
+    {
+        if (isVampirismActive)
+        {
+            vampirismTimer -= Time.deltaTime;
+            if (vampirismTimer <= 0f)
+            {
+                isVampirismActive = false;
+            }
+        }
+    }
+
+    private IEnumerator HandleHarmonicShoot()
+    {
+        isPreparingToShoot = true;
+        bool isMoving = (playerMovement != null && playerMovement.CurrentVelocity.magnitude > 0.5f);
+
+        if (isMoving)
+        {
+            yield return new WaitForSeconds(movingShootDelay);
+        }
+
+        Shoot(harmonicMagicPrefab);
+        isPreparingToShoot = false;
     }
 
     private IEnumerator HandleShootRequest(GameObject magicPrefab, bool isWhiteMagic)
@@ -107,6 +308,29 @@ public class MagicShooter : MonoBehaviour
 
         UpdateUI();
         isPreparingToShoot = false;
+    }
+
+    private void Shoot(GameObject magicPrefab)
+    {
+        if (magicPrefab != null)
+        {
+            GameObject projectile = Instantiate(magicPrefab, firePoint.position, firePoint.rotation);
+
+            if (isVampirismActive)
+            {
+                MagicProjectile mp = projectile.GetComponent<MagicProjectile>();
+                if (mp != null) mp.appliesVampirism = true;
+
+                HarmonicProjectile hp = projectile.GetComponent<HarmonicProjectile>();
+                if (hp != null) hp.appliesVampirism = true;
+            }
+
+            Rigidbody rb = projectile.GetComponent<Rigidbody>();
+            if (rb != null) rb.linearVelocity = firePoint.forward * shootForce;
+            Destroy(projectile, 2f);
+
+            if (cameraEffects != null) cameraEffects.ApplyShootRecoil();
+        }
     }
 
     private void RegenerateMana()
@@ -182,18 +406,6 @@ public class MagicShooter : MonoBehaviour
         }
     }
 
-    private void Shoot(GameObject magicPrefab)
-    {
-        if (magicPrefab != null)
-        {
-            GameObject projectile = Instantiate(magicPrefab, firePoint.position, firePoint.rotation);
-            Rigidbody rb = projectile.GetComponent<Rigidbody>();
-            if (rb != null) rb.linearVelocity = firePoint.forward * shootForce;
-            Destroy(projectile, 2f);
-
-            if (cameraEffects != null) cameraEffects.ApplyShootRecoil();
-        }
-    }
     public void RefillManaToMax()
     {
         currentWhiteMana = maxWhiteMana;
@@ -201,5 +413,17 @@ public class MagicShooter : MonoBehaviour
         isWhiteOverheated = false;
         isBlackOverheated = false;
         UpdateUI();
+    }
+
+    public void ActivateHarmonicPowerUp(float duration)
+    {
+        isHarmonicActive = true;
+        harmonicTimer = duration;
+    }
+
+    public void ActivateVampirism(float duration)
+    {
+        isVampirismActive = true;
+        vampirismTimer = duration;
     }
 }
