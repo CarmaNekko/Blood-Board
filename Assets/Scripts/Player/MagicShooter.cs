@@ -14,7 +14,7 @@ public class MagicShooter : MonoBehaviour
     [SerializeField] private PlayerCameraEffects cameraEffects;
     [SerializeField] private PlayerMovement playerMovement;
 
-    [Header("Arma Pesada (Inercia)")]
+    [Header("Delay Setup")]
     [SerializeField] private float movingShootDelay = 0.25f;
     private bool isPreparingToShoot = false;
 
