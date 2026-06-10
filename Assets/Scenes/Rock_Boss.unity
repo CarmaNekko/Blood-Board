@@ -11082,10 +11082,18 @@ MonoBehaviour:
   mainLight: {fileID: 332619939}
   brightMainLightMultiplier: 0.65
   darkMainLightMultiplier: 0.08
+  controlSceneLighting: 1
+  controlDistanceFog: 1
   useDistanceFog: 1
   fogColor: {r: 0.01, g: 0.01, b: 0.018, a: 1}
   fogStartDistance: 18
   fogEndDistance: 45
+  useSolidDarkBackground: 1
+  backgroundColor: {r: 0.005, g: 0.005, b: 0.012, a: 1}
+  removeSkybox: 1
+  applyToAllCameras: 1
+  targetCamera: {fileID: 0}
+  autoApplySceneRoomsOnStart: 1
   liveUpdateInPlayMode: 1
   logAppliedValues: 0
 --- !u!1 &1740990114
@@ -11700,6 +11708,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1859290339}
   - component: {fileID: 1859290340}
+  - component: {fileID: 1859290341}
+  - component: {fileID: 1859290342}
   m_Layer: 0
   m_Name: Rock_Boss
   m_TagString: Untagged
@@ -11744,6 +11754,58 @@ MonoBehaviour:
   healthSlider: {fileID: 871487657}
   healthBarUI: {fileID: 871487655}
   isDead: 0
+--- !u!114 &1859290341
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1859290338}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b7ef59ea86bf36649a24090e5f12d05b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BossShine
+  shineLocalOffset: {x: 2.5, y: 9.025115, z: 0}
+  whiteShinePrefab: {fileID: 600400026276257940, guid: b7d590c288ddd874ab5d8efd3a9d0c18, type: 3}
+  blackShinePrefab: {fileID: 600400026276257940, guid: 70a6293e775bdfe40aca1b48f9a9928e, type: 3}
+  billboardToCamera: 1
+  preserveLocalRotation: 1
+  enablePulse: 1
+  shinePulseFrequency: 1.5
+  shinePulseAmplitude: 0.2
+  shineEmissionIntensity: 1.5
+  whiteShineEmissionColor: {r: 1, g: 0.95, b: 0.7, a: 1}
+  blackShineEmissionColor: {r: 0.6745098, g: 0.29803923, b: 1, a: 1}
+  hitboxTransform: {fileID: 1859290339}
+  whiteModelTransform: {fileID: 0}
+  blackModelTransform: {fileID: 1645419369}
+  vulnerableShineEmissionColor: {r: 1, g: 0.5, b: 0.5, a: 1}
+  blinkWhenVulnerable: 1
+  drawGizmo: 1
+  useShineScaleMultiplier: 1
+  shineCustomScale: {x: 0.4, y: 0.4, z: 0.4}
+  gizmoColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+--- !u!114 &1859290342
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1859290338}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ce6238b1e6d4a8b4493d3fa5b112099d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BossGlow
+  blackOutlineColor: {r: 0.67344755, g: 0.2980392, b: 1, a: 1}
+  whiteOutlineColor: {r: 1, g: 0.95, b: 0.4, a: 1}
+  outlineWidth: 0.08
+  outlineShaderName: Custom/EnemyOutline
+  whiteModelTransform: {fileID: 0}
+  blackModelTransform: {fileID: 1645419369}
+  hitboxTransform: {fileID: 1859290339}
+  vulnerableOutlineColor: {r: 1, g: 0.3, b: 0.3, a: 1}
 --- !u!1 &1884477960
 GameObject:
   m_ObjectHideFlags: 0
@@ -12418,6 +12480,7 @@ MonoBehaviour:
   shieldVisual: {fileID: 0}
   canBeBuffed: 0
   frenzyParticles: {fileID: 0}
+  possibleDrops: []
 --- !u!65 &1985750172
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -12616,6 +12679,7 @@ MonoBehaviour:
   knightScene: Knigh_Boss
   bishopScene: Bishop_Boss
   rookScene: Rock_Boss
+  kingQueenScene: KingQueen_Boss
 --- !u!4 &2022445503
 Transform:
   m_ObjectHideFlags: 0

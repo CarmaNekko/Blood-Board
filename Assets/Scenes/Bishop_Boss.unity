@@ -7215,6 +7215,8 @@ GameObject:
   m_Component:
   - component: {fileID: 892492157}
   - component: {fileID: 892492158}
+  - component: {fileID: 892492159}
+  - component: {fileID: 892492160}
   m_Layer: 0
   m_Name: Bishop_Boss
   m_TagString: Untagged
@@ -7256,6 +7258,58 @@ MonoBehaviour:
   flySpeed: 1.5
   flyWidth: 20
   flyHeight: 5
+--- !u!114 &892492159
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 892492156}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ce6238b1e6d4a8b4493d3fa5b112099d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BossGlow
+  blackOutlineColor: {r: 0.67344755, g: 0.2980392, b: 1, a: 1}
+  whiteOutlineColor: {r: 1, g: 0.95, b: 0.4, a: 1}
+  outlineWidth: 0.08
+  outlineShaderName: Custom/EnemyOutline
+  whiteModelTransform: {fileID: 167370606}
+  blackModelTransform: {fileID: 0}
+  hitboxTransform: {fileID: 892492157}
+  vulnerableOutlineColor: {r: 1, g: 0.3, b: 0.3, a: 1}
+--- !u!114 &892492160
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 892492156}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b7ef59ea86bf36649a24090e5f12d05b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BossShine
+  shineLocalOffset: {x: 0.011790741, y: -0.0083806915, z: 0}
+  whiteShinePrefab: {fileID: 600400026276257940, guid: b7d590c288ddd874ab5d8efd3a9d0c18, type: 3}
+  blackShinePrefab: {fileID: 600400026276257940, guid: 70a6293e775bdfe40aca1b48f9a9928e, type: 3}
+  billboardToCamera: 1
+  preserveLocalRotation: 1
+  enablePulse: 1
+  shinePulseFrequency: 1.5
+  shinePulseAmplitude: 0.2
+  shineEmissionIntensity: 1.5
+  whiteShineEmissionColor: {r: 1, g: 0.95, b: 0.7, a: 1}
+  blackShineEmissionColor: {r: 0.6745098, g: 0.29803923, b: 1, a: 1}
+  hitboxTransform: {fileID: 0}
+  whiteModelTransform: {fileID: 0}
+  blackModelTransform: {fileID: 0}
+  vulnerableShineEmissionColor: {r: 1, g: 0.5, b: 0.5, a: 1}
+  blinkWhenVulnerable: 1
+  drawGizmo: 1
+  useShineScaleMultiplier: 0
+  shineCustomScale: {x: 0.4, y: 0.4, z: 0.4}
+  gizmoColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
 --- !u!1 &906279920
 GameObject:
   m_ObjectHideFlags: 0
