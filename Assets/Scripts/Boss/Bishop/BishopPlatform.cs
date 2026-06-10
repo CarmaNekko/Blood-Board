@@ -8,6 +8,10 @@ public class BishopPlatform : MonoBehaviour
     [SerializeField] private float warningDuration = 1.5f;
     [SerializeField] private float brokenDuration = 4f;
 
+    [Header("Efecto de Temblor")]
+    [SerializeField] private float shakeIntensity = 0.1f;
+    [SerializeField] private float shakeSpeed = 50f;
+
     [Header("El Castigo Divino")]
     [SerializeField] private GameObject beamPrefab;
     [SerializeField] private float beamDuration = 1f;
@@ -15,6 +19,7 @@ public class BishopPlatform : MonoBehaviour
     private Material originalMaterial;
     private Renderer platformRenderer;
     private Collider platformCollider;
+    private Vector3 originalPosition;
 
     public bool IsTargeted { get; private set; } = false;
 
@@ -22,6 +27,8 @@ public class BishopPlatform : MonoBehaviour
     {
         platformRenderer = GetComponent<Renderer>();
         platformCollider = GetComponent<Collider>();
+        originalPosition = transform.position;
+
         if (platformRenderer != null)
         {
             originalMaterial = platformRenderer.material;
@@ -45,7 +52,17 @@ public class BishopPlatform : MonoBehaviour
             platformRenderer.material = warningMaterial;
         }
 
-        yield return new WaitForSeconds(warningDuration);
+        float elapsed = 0f;
+        while (elapsed < warningDuration)
+        {
+            elapsed += Time.deltaTime;
+            float offsetX = Mathf.PerlinNoise(Time.time * shakeSpeed, 0) * 2f - 1f;
+            float offsetZ = Mathf.PerlinNoise(0, Time.time * shakeSpeed) * 2f - 1f;
+            transform.position = originalPosition + new Vector3(offsetX, 0, offsetZ) * shakeIntensity;
+            yield return null;
+        }
+
+        transform.position = originalPosition;
 
         GameObject beamInstance = null;
         if (beamPrefab != null)

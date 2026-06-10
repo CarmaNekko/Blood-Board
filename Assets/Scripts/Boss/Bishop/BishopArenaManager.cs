@@ -11,6 +11,8 @@ public class BishopArenaManager : MonoBehaviour
     [SerializeField] private float extraTimePerCrystal = 3f;
     [SerializeField] private float vulnerabilityDuration = 15f;
     [SerializeField] private float timeBetweenAttacks = 1.5f;
+    [SerializeField] private int maxSimultaneousAttacks = 3;
+    [SerializeField] private float timeBetweenPatterns = 4f;
 
     [Header("UI (Interfaz)")]
     [SerializeField] private TextMeshProUGUI timerText;
@@ -31,6 +33,7 @@ public class BishopArenaManager : MonoBehaviour
     private int totalCrystals;
     private int crystalsRemaining;
     private bool crystalJustDestroyed = false;
+    private Vector3 arenaCenter;
 
     void Start()
     {
@@ -42,6 +45,16 @@ public class BishopArenaManager : MonoBehaviour
         if (bossHealthBar != null) bossHealthBar.gameObject.SetActive(false);
 
         allPlatforms = FindObjectsByType<BishopPlatform>(FindObjectsSortMode.None);
+
+        if (allPlatforms != null && allPlatforms.Length > 0)
+        {
+            Vector3 sum = Vector3.zero;
+            foreach (var p in allPlatforms)
+            {
+                sum += p.transform.position;
+            }
+            arenaCenter = sum / allPlatforms.Length;
+        }
 
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         if (player != null)
@@ -104,6 +117,11 @@ public class BishopArenaManager : MonoBehaviour
 
             SetCrystalsState(false);
             yield return StartCoroutine(VulnerabilityPhase());
+
+            if (crystalJustDestroyed && crystalsRemaining > 0)
+            {
+                yield return StartCoroutine(CounterAttackPhase());
+            }
         }
 
         WinBattle();
@@ -125,7 +143,8 @@ public class BishopArenaManager : MonoBehaviour
     {
         int destroyedCount = totalCrystals - crystalsRemaining;
         float currentSurvivalDuration = baseSurvivalDuration + (destroyedCount * extraTimePerCrystal);
-        int simultaneousAttacks = 1 + destroyedCount;
+
+        int simultaneousAttacks = Mathf.Min(1 + destroyedCount, maxSimultaneousAttacks);
 
         float timeLeft = currentSurvivalDuration;
         float attackTimer = 0f;
@@ -158,6 +177,70 @@ public class BishopArenaManager : MonoBehaviour
         }
     }
 
+    private IEnumerator CounterAttackPhase()
+    {
+        int attackWaves = Random.Range(2, 4);
+
+        for (int i = 0; i < attackWaves; i++)
+        {
+            if (timerText != null)
+            {
+                timerText.text = $"¡CONTRAATAQUE!\nPATRÓN {i + 1}/{attackWaves}";
+                timerText.color = Color.red;
+            }
+
+            int randomPattern = Random.Range(0, 4);
+            ExecuteGeometricPattern(randomPattern);
+
+            yield return new WaitForSeconds(timeBetweenPatterns);
+        }
+
+        if (timerText != null) timerText.color = Color.white;
+        yield return new WaitForSeconds(1f);
+    }
+
+    private void ExecuteGeometricPattern(int patternIndex)
+    {
+        if (allPlatforms == null || allPlatforms.Length == 0) return;
+
+        float tolerance = 2.0f;
+
+        foreach (var platform in allPlatforms)
+        {
+            if (platform == null || platform.IsTargeted) continue;
+
+            float dx = Mathf.Abs(platform.transform.position.x - arenaCenter.x);
+            float dz = Mathf.Abs(platform.transform.position.z - arenaCenter.z);
+            bool triggerThis = false;
+
+            switch (patternIndex)
+            {
+                case 0:
+                    if (Mathf.Abs(dx - dz) < tolerance) triggerThis = true;
+                    break;
+
+                case 1:
+                    if (dx < tolerance || dz < tolerance) triggerThis = true;
+                    break;
+
+                case 2:
+                    int row = Mathf.RoundToInt(platform.transform.position.z / 4f);
+                    if (row % 2 == 0) triggerThis = true;
+                    break;
+
+                case 3:
+                    int col = Mathf.RoundToInt(platform.transform.position.x / 4f);
+                    if (col % 2 == 0) triggerThis = true;
+                    break;
+            }
+
+            if (triggerThis)
+            {
+                platform.TargetPlatform();
+            }
+        }
+    }
+
     private void LaunchPredictiveAttacks(int count)
     {
         if (allPlatforms == null || allPlatforms.Length == 0 || playerTransform == null) return;
@@ -176,8 +259,8 @@ public class BishopArenaManager : MonoBehaviour
 
         availablePlats.Sort((a, b) =>
         {
-            float distA = Vector3.Distance(predictedPos, a.transform.position) + Random.Range(-1f, 1f);
-            float distB = Vector3.Distance(predictedPos, b.transform.position) + Random.Range(-1f, 1f);
+            float distA = Vector3.Distance(predictedPos, a.transform.position) + Random.Range(-2.5f, 2.5f);
+            float distB = Vector3.Distance(predictedPos, b.transform.position) + Random.Range(-2.5f, 2.5f);
             return distA.CompareTo(distB);
         });
 
