@@ -16,6 +16,11 @@ public class RookBossController : MonoBehaviour
     [SerializeField] private Slider healthSlider;
     [SerializeField] private GameObject healthBarUI;
 
+    [Header("Escudo Dinámico")]
+    [SerializeField] private float maxShield = 100f;
+    [SerializeField] private Slider shieldSlider;
+    private float currentShield;
+
     [HideInInspector] public bool isDead = false;
     private ColiseumManager coliseumManager;
     private bool battleStarted = false;
@@ -26,6 +31,14 @@ public class RookBossController : MonoBehaviour
         visiblePos = transform.position;
         hiddenPos = visiblePos + Vector3.down * riseHeight;
         transform.position = hiddenPos;
+
+        currentShield = maxShield;
+        if (shieldSlider != null)
+        {
+            shieldSlider.maxValue = maxShield;
+            shieldSlider.value = currentShield;
+            shieldSlider.gameObject.SetActive(false);
+        }
 
         SetShield(true);
         if (healthBarUI != null) healthBarUI.SetActive(false);
@@ -50,6 +63,8 @@ public class RookBossController : MonoBehaviour
                 healthSlider.value = enemyHealth.maxHealth;
             }
         }
+
+        if (shieldSlider != null) shieldSlider.gameObject.SetActive(true);
 
         StartCoroutine(RiseRoutine());
     }
@@ -88,11 +103,36 @@ public class RookBossController : MonoBehaviour
         if (bossHitbox != null) bossHitbox.SetActive(!isActive);
     }
 
+    public void DamageShield(float amount)
+    {
+        currentShield -= amount;
+        if (currentShield < 0) currentShield = 0;
+        if (shieldSlider != null) shieldSlider.value = currentShield;
+    }
+
+    public void HealShield(float amount)
+    {
+        currentShield += amount;
+        if (currentShield > maxShield) currentShield = maxShield;
+        if (shieldSlider != null) shieldSlider.value = currentShield;
+    }
+
+    public bool IsShieldBroken()
+    {
+        return currentShield <= 0;
+    }
+
+    public bool IsShieldFull()
+    {
+        return currentShield >= maxShield;
+    }
+
     private void Die()
     {
         isDead = true;
         if (healthSlider != null) healthSlider.value = 0;
         if (healthBarUI != null) healthBarUI.SetActive(false);
+        if (shieldSlider != null) shieldSlider.gameObject.SetActive(false);
         if (coliseumManager != null) coliseumManager.BossDefeated();
         StartCoroutine(FallRoutine());
     }

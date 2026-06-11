@@ -33,6 +33,14 @@ public class MagicProjectile : MonoBehaviour
             Destroy(explosion, 1.5f);
         }
 
+        PawnShield pawnShield = other.GetComponent<PawnShield>();
+        if (pawnShield != null)
+        {
+            pawnShield.TakeDamage(projectileColor);
+            Destroy(gameObject);
+            return;
+        }
+
         Destroy(gameObject);
     }
 }
