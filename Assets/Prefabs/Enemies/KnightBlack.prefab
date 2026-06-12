@@ -5361,6 +5361,7 @@ MonoBehaviour:
   shieldVisual: {fileID: 4121905479049911094}
   canBeBuffed: 1
   frenzyParticles: {fileID: 8032103425494684486}
+  possibleDrops: []
 --- !u!114 &6149398818689934667
 MonoBehaviour:
   m_ObjectHideFlags: 0

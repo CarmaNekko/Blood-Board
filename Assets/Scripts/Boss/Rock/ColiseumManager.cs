@@ -20,7 +20,11 @@ public class ColiseumManager : MonoBehaviour
     [SerializeField] private int horsesPerWave = 12;
     [SerializeField] private float stampedeSpeed = 15f;
     [SerializeField] private int stampedeWaves = 4;
-    [SerializeField] private float horseYOffset = 3f;
+    [SerializeField] private float horseYOffset = 0f;
+
+    [Header("Settings Visuales de Galope")]
+    [SerializeField] private float horseJumpHeight = 2.5f;
+    [SerializeField] private float horseJumpSpeed = 10f;
 
     [Header("Evento 2: Peones (Arena)")]
     [SerializeField] private GameObject[] pawnPrefabs;
@@ -188,47 +192,17 @@ public class ColiseumManager : MonoBehaviour
             if (i == gapIndex || i == gapIndex + 1) continue;
 
             Vector3 spawnPos = startPos + (rightDir * (i * spacing));
-
             spawnPos.y = arenaCenter.position.y + horseYOffset;
 
             GameObject prefab = knightPrefabs[Random.Range(0, knightPrefabs.Length)];
-
             GameObject horse = Instantiate(prefab, spawnPos, Quaternion.LookRotation(moveDir));
 
-            EnemyHealth eh = horse.GetComponent<EnemyHealth>();
-            if (eh != null) eh.SetShield(true);
-
-            UnityEngine.AI.NavMeshAgent agent = horse.GetComponent<UnityEngine.AI.NavMeshAgent>();
-            if (agent != null) Destroy(agent);
-
-            Rigidbody rb = horse.GetComponent<Rigidbody>();
-            if (rb != null)
-            {
-                rb.useGravity = false;
-                rb.isKinematic = true;
-            }
-
-            Collider[] cols = horse.GetComponentsInChildren<Collider>();
-            foreach (Collider c in cols) c.isTrigger = true;
-
-            MonoBehaviour[] scripts = horse.GetComponentsInChildren<MonoBehaviour>();
-            foreach (var script in scripts)
-            {
-                string name = script.GetType().Name;
-                if (name.Contains("Move") || name.Contains("AI") || name.Contains("Attack") || name.Contains("Knight"))
-                {
-                    Destroy(script);
-                }
-            }
-
-            if (horse.GetComponent<EnemyGlow>() == null) horse.AddComponent<EnemyGlow>();
-            if (horse.GetComponent<BishopBeam>() == null) horse.AddComponent<BishopBeam>();
-
             waveHorses.Add(horse);
-            activeEnemies.Add(horse);
         }
 
         float distanceMoved = 0f;
+        float startTime = Time.time;
+
         while (distanceMoved < arenaSize + 15f)
         {
             if (rookBoss.isDead) break;
@@ -236,11 +210,17 @@ public class ColiseumManager : MonoBehaviour
             float step = stampedeSpeed * Time.deltaTime;
             distanceMoved += step;
 
+            float waveTime = Time.time - startTime;
+            float currentHopY = Mathf.Abs(Mathf.Sin(waveTime * horseJumpSpeed)) * horseJumpHeight;
+
             foreach (GameObject horse in waveHorses)
             {
                 if (horse != null)
                 {
                     horse.transform.position += moveDir * step;
+                    Vector3 targetPos = horse.transform.position;
+                    targetPos.y = (arenaCenter.position.y + horseYOffset) + currentHopY;
+                    horse.transform.position = targetPos;
                 }
             }
             yield return null;
@@ -248,11 +228,7 @@ public class ColiseumManager : MonoBehaviour
 
         foreach (GameObject horse in waveHorses)
         {
-            if (horse != null)
-            {
-                activeEnemies.Remove(horse);
-                Destroy(horse);
-            }
+            if (horse != null) Destroy(horse);
         }
     }
 
@@ -269,12 +245,7 @@ public class ColiseumManager : MonoBehaviour
                 if (randomColorPrefab != null)
                 {
                     GameObject enemy = Instantiate(randomColorPrefab, spawnPoint.position, spawnPoint.rotation);
-
-                    if (enemy.GetComponent<EnemyGlow>() == null)
-                    {
-                        enemy.AddComponent<EnemyGlow>();
-                    }
-
+                    if (enemy.GetComponent<EnemyGlow>() == null) enemy.AddComponent<EnemyGlow>();
                     activeEnemies.Add(enemy);
                 }
             }

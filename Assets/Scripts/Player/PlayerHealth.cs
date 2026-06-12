@@ -118,8 +118,6 @@ public class PlayerHealth : MonoBehaviour
             }
             else
             {
-                // No sobrescribimos el save slot con la salud al morir.
-                // El retry debe restaurar la salud del checkpoint anterior al piso.
                 Object.FindFirstObjectByType<GameOver>()?.ShowGameOver();
             }
         }

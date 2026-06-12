@@ -40,7 +40,9 @@ public class RookBossController : MonoBehaviour
             shieldSlider.gameObject.SetActive(false);
         }
 
-        SetShield(true);
+        if (shieldVisual != null) shieldVisual.SetActive(false);
+        if (bossHitbox != null) bossHitbox.SetActive(false);
+
         if (healthBarUI != null) healthBarUI.SetActive(false);
 
         if (bossHitbox != null)
@@ -93,6 +95,8 @@ public class RookBossController : MonoBehaviour
             transform.position = Vector3.Lerp(hiddenPos, visiblePos, t);
             yield return null;
         }
+
+        SetShield(true);
 
         if (coliseumManager != null) coliseumManager.StartEvents();
     }
