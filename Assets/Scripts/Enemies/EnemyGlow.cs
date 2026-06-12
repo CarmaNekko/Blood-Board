@@ -19,14 +19,17 @@ public class EnemyGlow : MonoBehaviour
     [Tooltip("Ancho del contorno (0.01 - 0.3 recomendado).")]
     [SerializeField] private float outlineWidth = 0.08f;
 
-    [Tooltip("Nombre del shader a usar para el outline.")]
-    [SerializeField] private string outlineShaderName = "Custom/EnemyOutline";
+    [Tooltip("Shader a usar para el outline (arrastrar desde Assets/Shaders/EnemyOutline.shader).")]
+    [SerializeField] private Shader outlineShader;
+
+    // Compatibilidad con prefabs existentes
+    [SerializeField, HideInInspector]
+    private string outlineShaderName = "Custom/EnemyOutline";
 
     private EnemyHealth enemyHealth;
     private Renderer[] bodyRenderers;
     private Material[] outlineMaterials;
     private MagicColor? cachedColor;
-    private Shader outlineShader;
 
     private void Awake()
     {
@@ -38,11 +41,23 @@ public class EnemyGlow : MonoBehaviour
             return;
         }
 
-        // Cargar el shader de outline
-        outlineShader = Shader.Find(outlineShaderName);
+        // Usar shader asignado desde el inspector (garantizado en build)
+        // Fallback: buscar en caso de no estar asignado
         if (outlineShader == null)
         {
-            Debug.LogWarning($"[EnemyGlow] Shader '{outlineShaderName}' no encontrado. Outline deshabilitado.");
+            outlineShader = Shader.Find(outlineShaderName);
+        }
+        
+        // Fallback: cargar desde Resources (garantizado en build)
+        if (outlineShader == null)
+        {
+            Material outlineMat = Resources.Load<Material>("EnemyOutlineMat");
+            if (outlineMat != null) outlineShader = outlineMat.shader;
+        }
+        
+        if (outlineShader == null)
+        {
+            Debug.LogWarning($"[EnemyGlow] Shader no asignado. Asignar desde Assets/Shaders/EnemyOutline.shader.");
             enabled = false;
             return;
         }

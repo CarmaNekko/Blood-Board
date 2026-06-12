@@ -76,6 +76,7 @@ MonoBehaviour:
   shieldVisual: {fileID: 0}
   canBeBuffed: 1
   frenzyParticles: {fileID: 4159541582662744387}
+  possibleDrops: []
 --- !u!65 &1518101093947906420
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -160,6 +161,7 @@ MonoBehaviour:
   blackOutlineColor: {r: 0.8, g: 0.3, b: 1, a: 1}
   whiteOutlineColor: {r: 1, g: 0.98597234, b: 0.8349056, a: 1}
   outlineWidth: 0.05
+  outlineShader: {fileID: 4800000, guid: 37018de42c4549848861574b9688b1b0, type: 3}
   outlineShaderName: Custom/EnemyOutline
 --- !u!114 &5032320369508318147
 MonoBehaviour:

@@ -5421,6 +5421,8 @@ MonoBehaviour:
     dropChance: 0.01
   - prefab: {fileID: 246719132695152999, guid: 0b62ebb95f0539945832d1519db359dc, type: 3}
     dropChance: 0.02
+  - prefab: {fileID: 246719132695152999, guid: e744d245b8c8c1e4590ee6ed5e4697be, type: 3}
+    dropChance: 0.03
 --- !u!114 &7409382937165975956
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5484,6 +5486,7 @@ MonoBehaviour:
   blackOutlineColor: {r: 0.8, g: 0.3, b: 1, a: 1}
   whiteOutlineColor: {r: 1, g: 0.98597234, b: 0.8349056, a: 1}
   outlineWidth: 0.05
+  outlineShader: {fileID: 4800000, guid: 37018de42c4549848861574b9688b1b0, type: 3}
   outlineShaderName: Custom/EnemyOutline
 --- !u!114 &6153318089627696613
 MonoBehaviour:
