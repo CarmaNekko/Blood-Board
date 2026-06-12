@@ -482,6 +482,7 @@ MonoBehaviour:
   earlyFloorEventLimit: 1
   advancedFloorEventLimit: 3
   minimumNormalRoomsBetweenEvents: 2
+  limitToProceduralScene: 1
   baseChance: 0.15
   pityIncrement: 0.15
   showDebugButtons: 0

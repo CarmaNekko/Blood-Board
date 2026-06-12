@@ -4,6 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using BloodBoard.GameManagement;
 
 public class RoomEventDirector : MonoBehaviour
 {
@@ -15,6 +16,10 @@ public class RoomEventDirector : MonoBehaviour
     [SerializeField] private int earlyFloorEventLimit = 1;
     [SerializeField] private int advancedFloorEventLimit = 2;
     [SerializeField] private int minimumNormalRoomsBetweenEvents = 2;
+
+    [Header("Scene Rules")]
+    [Tooltip("Si está activo, los eventos solo pueden ocurrir en la escena procedural principal (ej. Level_1).")]
+    [SerializeField] private bool limitToProceduralScene = true;
 
     [Header("Probability")]
     [SerializeField, Range(0f, 1f)] private float baseChance = 0.15f;
@@ -159,6 +164,18 @@ public class RoomEventDirector : MonoBehaviour
 
     public void DebugStartUnexpectedEventInCurrentRoom()
     {
+        if (limitToProceduralScene && SceneManager.GetActiveScene().name != BossCheckpointState.DefaultLevelScene)
+        {
+            Debug.LogWarning($"Debug evento inesperado: No se puede invocar en la escena '{SceneManager.GetActiveScene().name}'. Solo en '{BossCheckpointState.DefaultLevelScene}'.");
+            return;
+        }
+
+        if (SceneManager.GetActiveScene().name == "Tutorial")
+        {
+            Debug.LogWarning("Debug evento inesperado: No se puede invocar en la escena de Tutorial.");
+            return;
+        }
+
         RoomInstance room = GetCurrentRoom();
         if (room == null)
         {
@@ -179,6 +196,18 @@ public class RoomEventDirector : MonoBehaviour
 
     public void DebugClearCurrentRoomWaves()
     {
+        if (limitToProceduralScene && SceneManager.GetActiveScene().name != BossCheckpointState.DefaultLevelScene)
+        {
+            Debug.LogWarning($"Debug limpiar oleadas: No se puede invocar en la escena '{SceneManager.GetActiveScene().name}'. Solo en '{BossCheckpointState.DefaultLevelScene}'.");
+            return;
+        }
+
+        if (SceneManager.GetActiveScene().name == "Tutorial")
+        {
+            Debug.LogWarning("Debug limpiar oleadas: No se puede invocar en la escena de Tutorial.");
+            return;
+        }
+
         RoomInstance room = GetCurrentRoom();
         if (room == null)
         {
@@ -204,6 +233,11 @@ public class RoomEventDirector : MonoBehaviour
 
     private bool CanRollForRoom(RoomInstance room)
     {
+        if (limitToProceduralScene && SceneManager.GetActiveScene().name != BossCheckpointState.DefaultLevelScene)
+        {
+            return false;
+        }
+
         if (room == null)
         {
             return false;
@@ -215,7 +249,6 @@ public class RoomEventDirector : MonoBehaviour
         {
             return false;
         }
-
         if (SceneManager.GetActiveScene().name == "Tutorial")
         {
             return false;

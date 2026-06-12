@@ -168,7 +168,8 @@ public class RoomEventRunner : MonoBehaviour
             PlayerHealth playerHealth = FindFirstObjectByType<PlayerHealth>();
             if (playerHealth != null)
             {
-                playerHealth.TakeDamage(15f);
+                float damageToDeal = playerHealth.currentHealth * 0.5f;
+                playerHealth.TakeDamage(damageToDeal);
             }
 
             EventAnnouncementUI.ShowMessage(
