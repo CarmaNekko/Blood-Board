@@ -129,6 +129,22 @@ public class TitleScreen : MonoBehaviour
     public void OnBackToMenu() { if (selectionManager != null) selectionManager.OnBackToMenu(); }
     public void OnCreditsButton() { if (selectionManager != null) selectionManager.OnCreditsButton(); }
 
+    public void ShowSelectorDirectly()
+    {
+        if (initialScreenPanel != null)
+        {
+            initialScreenPanel.SetActive(false);
+        }
+        
+        if (selectionManager != null)
+        {
+            selectionManager.SetupMainMenu();
+            selectionManager.ShowMainMenu();
+        }
+        
+        currentMenuState = MenuState.MainMenu;
+    }
+
     public SlotAction GetCurrentSlotAction() { return selectionManager != null ? selectionManager.GetCurrentSlotAction() : SlotAction.None; }
 
     private MenuState currentMenuState = MenuState.Initial;

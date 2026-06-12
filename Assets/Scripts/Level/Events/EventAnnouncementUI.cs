@@ -101,7 +101,11 @@ public class EventAnnouncementUI : MonoBehaviour
         canvas = gameObject.AddComponent<Canvas>();
         canvas.renderMode = RenderMode.ScreenSpaceOverlay;
         canvas.sortingOrder = 1000;
-        gameObject.AddComponent<CanvasScaler>().uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+        CanvasScaler scaler = gameObject.AddComponent<CanvasScaler>();
+        scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+        scaler.referenceResolution = new Vector2(1920, 1080);
+        scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
+        scaler.matchWidthOrHeight = 0.5f;
         gameObject.AddComponent<GraphicRaycaster>();
 
         GameObject panelObject = new GameObject("EventPanel", typeof(RectTransform), typeof(Image), typeof(CanvasGroup));

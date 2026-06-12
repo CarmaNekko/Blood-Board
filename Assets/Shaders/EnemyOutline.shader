@@ -8,88 +8,69 @@ Shader "Custom/EnemyOutline"
 
     SubShader
     {
-        Tags { "RenderType"="Opaque" "Queue"="Geometry+1" }
+        Tags 
+        { 
+            "RenderType"="Opaque" 
+            "Queue"="Geometry+1"
+            "RenderPipeline" = "UniversalPipeline"
+            "IgnoreProjector" = "True"
+            "LightMode" = "UniversalForwardOnly"
+        }
 
         Pass
         {
             Name "OUTLINE"
+            
             Cull Front
-            ZWrite Off
+            ZWrite On
             ZTest LEqual
+            Blend SrcAlpha OneMinusSrcAlpha
 
-            CGPROGRAM
+            HLSLPROGRAM
             #pragma vertex vert
             #pragma fragment frag
-            #include "UnityCG.cginc"
+            #pragma multi_compile_instancing
+            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
 
             float _OutlineWidth;
-            fixed4 _OutlineColor;
+            float4 _OutlineColor;
 
-            struct appdata
+            struct Attributes
             {
-                float4 vertex : POSITION;
-                float3 normal : NORMAL;
+                float4 positionOS : POSITION;
+                float3 normalOS : NORMAL;
+                UNITY_VERTEX_INPUT_INSTANCE_ID
             };
 
-            struct v2f
+            struct Varyings
             {
-                float4 pos : SV_POSITION;
+                float4 positionCS : SV_POSITION;
+                UNITY_VERTEX_OUTPUT_STEREO
             };
 
-            v2f vert(appdata v)
+            Varyings vert(Attributes input)
             {
-                v2f o;
-
-                 float3 viewNormal = normalize(mul((float3x3)UNITY_MATRIX_IT_MV, v.normal));
-                 float4 viewPos = mul(UNITY_MATRIX_MV, v.vertex);
-                 viewPos.xyz += viewNormal * _OutlineWidth;
-                 o.pos = mul(UNITY_MATRIX_P, viewPos);
-                return o;
+                Varyings output;
+                UNITY_SETUP_INSTANCE_ID(input);
+                UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(output);
+                
+                float3 worldPos = TransformObjectToWorld(input.positionOS.xyz);
+                float3 worldNormal = TransformObjectToWorldNormal(input.normalOS);
+                float3 viewNormal = worldNormal;
+                float3 viewPos = mul(UNITY_MATRIX_V, float4(worldPos, 1.0)).xyz;
+                viewPos.xyz += viewNormal * _OutlineWidth;
+                output.positionCS = mul(UNITY_MATRIX_P, float4(viewPos, 1.0));
+                return output;
             }
 
-            fixed4 frag(v2f i) : SV_Target
+            half4 frag(Varyings input) : SV_Target
             {
                 return _OutlineColor;
             }
-            ENDCG
-        }
-
-        Pass
-        {
-            Name "BASE"
-            Cull Back
-            ZWrite On
-            ZTest LEqual
-
-            CGPROGRAM
-            #pragma vertex vert
-            #pragma fragment frag
-            #include "UnityCG.cginc"
-
-            struct appdata
-            {
-                float4 vertex : POSITION;
-            };
-
-            struct v2f
-            {
-                float4 pos : SV_POSITION;
-            };
-
-            v2f vert(appdata v)
-            {
-                v2f o;
-                o.pos = UnityObjectToClipPos(v.vertex);
-                return o;
-            }
-
-            fixed4 frag(v2f i) : SV_Target
-            {
-                return fixed4(0, 0, 0, 1);
-            }
-            ENDCG
+            ENDHLSL
         }
     }
 
-    FallBack "Diffuse"
+    FallBack "Universal Forward"
 }

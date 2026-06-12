@@ -10,6 +10,18 @@ public class TitleScreenSelection : MonoBehaviour
 {
     public static TitleScreenSelection Instance { get; private set; }
 
+    private static bool IsPCBuild
+    {
+        get
+        {
+#if UNITY_WEBGL
+            return false;
+#else
+            return true;
+#endif
+        }
+    }
+
     [Header("Referencias")]
     [SerializeField] private GameObject titleBackground;
     [SerializeField] private Image titleImage;
@@ -26,6 +38,7 @@ public class TitleScreenSelection : MonoBehaviour
     [SerializeField] private Button optionsButton;
     [SerializeField] private Button leaderboardButton;
     [SerializeField] private Button creditsButton;
+    [SerializeField] private Button exitPCButton;
 
     private SlotAction currentSlotAction = SlotAction.None;
 
@@ -119,6 +132,12 @@ public class TitleScreenSelection : MonoBehaviour
             creditsButton.onClick.AddListener(OnCreditsButton);
             AddHoverListeners(creditsButton);
         }
+
+        if (exitPCButton != null && IsPCBuild)
+        {
+            exitPCButton.onClick.AddListener(OnExitPCButton);
+            AddHoverListeners(exitPCButton);
+        }
     }
 
     public void HideMainMenu()
@@ -129,6 +148,7 @@ public class TitleScreenSelection : MonoBehaviour
         if (optionsButton != null) optionsButton.gameObject.SetActive(false);
         if (leaderboardButton != null) leaderboardButton.gameObject.SetActive(false);
         if (creditsButton != null) creditsButton.gameObject.SetActive(false);
+        if (exitPCButton != null) exitPCButton.gameObject.SetActive(false);
     }
 
     public void ShowMainMenu()
@@ -160,6 +180,11 @@ public class TitleScreenSelection : MonoBehaviour
         {
             creditsButton.gameObject.SetActive(true);
             SetButtonDimmed(creditsButton);
+        }
+        if (exitPCButton != null)
+        {
+            exitPCButton.gameObject.SetActive(IsPCBuild);
+            if (IsPCBuild) SetButtonDimmed(exitPCButton);
         }
     }
     public void ShowModeSelector()
@@ -310,6 +335,7 @@ public class TitleScreenSelection : MonoBehaviour
         if (optionsButton != null) optionsButton.gameObject.SetActive(false);
         if (leaderboardButton != null) leaderboardButton.gameObject.SetActive(false);
         if (creditsButton != null) creditsButton.gameObject.SetActive(false);
+        if (exitPCButton != null) exitPCButton.gameObject.SetActive(false);
     }
 
     public void OnNormalButton()
@@ -370,6 +396,12 @@ public class TitleScreenSelection : MonoBehaviour
         if (optionsButton != null) optionsButton.gameObject.SetActive(false);
         if (leaderboardButton != null) leaderboardButton.gameObject.SetActive(false);
         if (creditsButton != null) creditsButton.gameObject.SetActive(false);
+        if (exitPCButton != null) exitPCButton.gameObject.SetActive(false);
+    }
+
+    public void OnExitPCButton()
+    {
+        Application.Quit();
     }
 
     public SlotAction GetCurrentSlotAction() { return currentSlotAction; }

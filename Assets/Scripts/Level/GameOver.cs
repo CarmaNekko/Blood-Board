@@ -13,7 +13,7 @@ public class GameOver : MonoBehaviour
     [SerializeField] private Button retryButton;
     [SerializeField] private Button exitButton;
 
-    private const string creditsSceneName = "Credits";
+    private const string creditsSceneName = "NewCredits";
 
     private void Start()
     {
@@ -127,6 +127,7 @@ public class GameOver : MonoBehaviour
     public void OnMenuButton()
     {
         Time.timeScale = 1f;
+        CheckerboardTransition.directToMenu = true;
         CheckerboardTransition.LoadScene("NewTitleScreen");
     }
 }
