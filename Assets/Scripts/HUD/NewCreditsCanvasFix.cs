@@ -6,13 +6,16 @@ using UnityEngine.SceneManagement;
 
 public class NewCreditsCanvasFix : MonoBehaviour
 {
-    [Header("Exit Button (PC only)")]
+    [Header("Buttons")]
+    [SerializeField] private Button backButton;
     [SerializeField] private Button exitPCButton;
 
-    [Header("Manual UI Elements")]
-    [SerializeField] private List<GameObject> uiElementsToReposition = new List<GameObject>();
+    [Header("Credits")]
+    [SerializeField] private TMP_Text creditsTitleText;
+    [SerializeField] private TMP_Text[] creditsNameTexts;
 
     [Header("Dynamic Creation")]
+    [SerializeField] private bool createBackButtonIfNotAssigned = true;
     [SerializeField] private bool createExitButtonIfNotAssigned = true;
 
     private Canvas creditsCanvas;
@@ -22,6 +25,7 @@ public class NewCreditsCanvasFix : MonoBehaviour
     {
         SceneManager.sceneLoaded += OnSceneLoaded;
         InitializeCanvas();
+        gameObject.SetActive(false);
     }
 
     private void OnDestroy()
@@ -33,33 +37,27 @@ public class NewCreditsCanvasFix : MonoBehaviour
     {
         if (scene.name == "NewCredits")
         {
-            ForceRefreshAllCanvases();
-            RepositionUIElements();
+            SetupButtons();
         }
     }
 
     private void Start()
     {
-        ForceRefreshAllCanvases();
-        if (createExitButtonIfNotAssigned && exitPCButton == null && !IsWebGLBuild())
-        {
-            CreateExitButton();
-        }
-        SetupExitButton();
-        RepositionUIElements();
+        SetupButtons();
+        PopulateCredits();
     }
 
     private void OnEnable()
     {
-        ForceRefreshAllCanvases();
-        SetupExitButton();
-        RepositionUIElements();
+        PopulateCredits();
     }
 
-    private void OnRectTransformDimensionsChange()
+    private void Update()
     {
-        ForceRefreshAllCanvases();
-        RepositionUIElements();
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            OnBackButton();
+        }
     }
 
     private void InitializeCanvas()
@@ -94,35 +92,35 @@ public class NewCreditsCanvasFix : MonoBehaviour
         scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
         scaler.matchWidthOrHeight = 0.5f;
 
-        GraphicRaycaster raycaster = GetComponent<GraphicRaycaster>();
-        if (raycaster == null)
+        if (GetComponent<GraphicRaycaster>() == null)
         {
             gameObject.AddComponent<GraphicRaycaster>();
         }
     }
 
-    private void RepositionUIElements()
+    private void SetupButtons()
     {
-        if (canvasRect == null) return;
-        
-        Canvas.ForceUpdateCanvases();
-        
-        foreach (var element in uiElementsToReposition)
-        {
-            if (element != null)
-            {
-                var rect = element.GetComponent<RectTransform>();
-                if (rect != null)
-                {
-                    LayoutRebuilder.ForceRebuildLayoutImmediate(rect);
-                }
-            }
-        }
-    }
+        CreditsManager credits = Object.FindFirstObjectByType<CreditsManager>();
+        bool inSameScene = credits != null;
 
-    private void SetupExitButton()
-    {
         bool isPCBuild = !IsWebGLBuild();
+
+        if (createBackButtonIfNotAssigned && backButton == null)
+        {
+            backButton = CreateButton("BackButton", new Vector2(200, 60), new Vector2(20, -20), new Vector2(0, 0), new Vector2(0, 0));
+        }
+
+        if (createExitButtonIfNotAssigned && exitPCButton == null && isPCBuild)
+        {
+            exitPCButton = CreateButton("ExitPCButton", new Vector2(200, 60), new Vector2(-20, 20), new Vector2(1, 0), new Vector2(1, 0));
+        }
+
+        if (backButton != null)
+        {
+            backButton.onClick.RemoveAllListeners();
+            backButton.onClick.AddListener(() => OnBackButton());
+        }
+
         if (exitPCButton != null)
         {
             exitPCButton.gameObject.SetActive(isPCBuild);
@@ -133,71 +131,57 @@ public class NewCreditsCanvasFix : MonoBehaviour
         }
     }
 
-    private void CreateExitButton()
+    private Button CreateButton(string buttonName, Vector2 size, Vector2 position, Vector2 anchorMin, Vector2 anchorMax)
     {
-        GameObject exitGO = new GameObject("ExitPCButton");
-        exitGO.transform.SetParent(transform, false);
-        exitGO.tag = "ExitButton";
-        
-        var exitRect = exitGO.AddComponent<RectTransform>();
-        exitRect.anchorMin = new Vector2(1, 0);
-        exitRect.anchorMax = new Vector2(1, 0);
-        exitRect.pivot = new Vector2(1, 0);
-        exitRect.anchoredPosition = new Vector2(-20, 20);
-        exitRect.sizeDelta = new Vector2(200, 60);
+        GameObject buttonGO = new GameObject(buttonName);
+        buttonGO.transform.SetParent(transform, false);
 
-        var exitImage = exitGO.AddComponent<Image>();
-        exitImage.color = new Color(0.2f, 0.2f, 0.2f, 0.8f);
+        var buttonRect = buttonGO.AddComponent<RectTransform>();
+        buttonRect.anchorMin = anchorMin;
+        buttonRect.anchorMax = anchorMax;
+        buttonRect.pivot = anchorMin;
+        buttonRect.anchoredPosition = position;
+        buttonRect.sizeDelta = size;
 
-        var exitBtn = exitGO.AddComponent<Button>();
-        exitPCButton = exitBtn;
+        var buttonImage = buttonGO.AddComponent<Image>();
+        buttonImage.color = new Color(0.2f, 0.2f, 0.2f, 0.8f);
 
-        GameObject textGO = new GameObject("Text");
-        textGO.transform.SetParent(exitGO.transform, false);
-        var textRect = textGO.AddComponent<RectTransform>();
-        textRect.anchorMin = Vector2.zero;
-        textRect.anchorMax = Vector2.one;
-        textRect.offsetMin = Vector2.zero;
-        textRect.offsetMax = Vector2.zero;
-
-        var tmpText = textGO.AddComponent<TextMeshProUGUI>();
-        tmpText.text = "SALIR";
-        tmpText.alignment = TextAlignmentOptions.Center;
-        tmpText.color = Color.white;
-        tmpText.fontSize = 24;
-        
-        LayoutRebuilder.ForceRebuildLayoutImmediate(exitRect);
+        return buttonGO.AddComponent<Button>();
     }
 
-    private static void ForceRefreshAllCanvases()
+    private void OnBackButton()
     {
-        Canvas[] canvases = Object.FindObjectsOfType<Canvas>();
-        foreach (var canvas in canvases)
+        CreditsManager credits = Object.FindFirstObjectByType<CreditsManager>();
+        if (credits != null)
         {
-            canvas.enabled = false;
-            canvas.enabled = true;
+            credits.HideCredits();
         }
-        Canvas.ForceUpdateCanvases();
-    }
-
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Escape))
+        else
         {
-            ReturnToSelector();
+            CheckerboardTransition.directToMenu = true;
+            SceneManager.LoadScene("NewTitleScreen");
         }
     }
 
     private void OnExitPCButton()
     {
-        Application.Quit();
+        CreditsManager credits = Object.FindFirstObjectByType<CreditsManager>();
+        if (credits != null)
+        {
+            credits.HideCredits();
+        }
+        else
+        {
+            Application.Quit();
+        }
     }
 
-    private void ReturnToSelector()
+    private void PopulateCredits()
     {
-        Time.timeScale = 1f;
-        CheckerboardTransition.directToMenu = true;
-        SceneManager.LoadScene("NewTitleScreen");
+        if (creditsTitleText != null)
+        {
+            creditsTitleText.text = "CRÉDITOS";
+        }
     }
 
     private static bool IsWebGLBuild()

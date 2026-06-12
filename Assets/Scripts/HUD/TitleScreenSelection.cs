@@ -232,7 +232,15 @@ public class TitleScreenSelection : MonoBehaviour
 
     public void OnCreditsButton()
     {
-        CheckerboardTransition.LoadScene("NewCredits");
+        CreditsManager credits = Object.FindFirstObjectByType<CreditsManager>();
+        if (credits != null)
+        {
+            credits.ShowCredits();
+        }
+        else
+        {
+            Debug.LogWarning("CreditsManager not found in scene. Credits will not activate.");
+        }
     }
 
     private void AddHoverListeners(Button button, string description = null)

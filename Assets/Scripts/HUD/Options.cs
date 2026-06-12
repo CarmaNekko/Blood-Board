@@ -1,4 +1,3 @@
-using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -43,10 +42,9 @@ public class Options : MonoBehaviour
     [SerializeField] private Button fullscreenButtonWindowed;
 
     [Header("Sensibilidad")]
-    [SerializeField] private float minSensitivity = 0.1f;
-    [SerializeField] private float maxSensitivity = 10f;
-    [SerializeField] private float defaultSensitivity = 1f;
-    [SerializeField] private float sensitivityExponent = 2f;
+    [SerializeField] private float minSensitivity = 50f;
+    [SerializeField] private float maxSensitivity = 400f;
+    [SerializeField] private float defaultSensitivity = 200f;
 
     private void Awake()
     {
@@ -75,9 +73,9 @@ public class Options : MonoBehaviour
 
         if (sensitivitySlider != null)
         {
-            sensitivitySlider.minValue = 0f;
-            sensitivitySlider.maxValue = 1f;
-            sensitivitySlider.onValueChanged.AddListener(OnSensitivitySliderChanged);
+            sensitivitySlider.minValue = minSensitivity;
+            sensitivitySlider.maxValue = maxSensitivity;
+            sensitivitySlider.onValueChanged.AddListener(OnSensitivityChanged);
         }
 
         if (backButton != null)
@@ -105,13 +103,14 @@ public class Options : MonoBehaviour
 
     private void Start()
     {
-        float savedSliderValue = PlayerPrefs.GetFloat("MouseSensitivity", defaultSensitivity);
-        float actualSensitivity = CalculateActualSensitivity(savedSliderValue);
-        PlayerMovement.SetGlobalMouseSensitivity(actualSensitivity);
+        float savedSensitivity = PlayerPrefs.GetFloat("MouseSensitivity", defaultSensitivity);
+        PlayerMovement.SetGlobalMouseSensitivity(savedSensitivity);
 
         if (sensitivitySlider != null)
         {
-            sensitivitySlider.value = savedSliderValue;
+            sensitivitySlider.minValue = minSensitivity;
+            sensitivitySlider.maxValue = maxSensitivity;
+            sensitivitySlider.value = savedSensitivity;
         }
 
         if (sensitivityTitleText != null)
@@ -119,7 +118,7 @@ public class Options : MonoBehaviour
             sensitivityTitleText.text = "SENSIBILIDAD DE LA CÁMARA";
         }
 
-        UpdateSensitivityLabel(savedSliderValue);
+        UpdateSensitivityLabel(savedSensitivity);
 
         bool showFPS = PlayerPrefs.GetInt("ShowFPS", 1) == 1;
         SetFPSVisibility(showFPS);
@@ -143,53 +142,6 @@ public class Options : MonoBehaviour
         if (fullscreenTitleText != null)
         {
             fullscreenTitleText.text = "MODO DE PANTALLA";
-        }
-    }
-
-    private float CalculateActualSensitivity(float sliderValue)
-    {
-        sliderValue = Mathf.Clamp01(sliderValue);
-        float normalized = Mathf.Pow(sliderValue, sensitivityExponent);
-        float actual = Mathf.Lerp(minSensitivity, maxSensitivity, normalized);
-        return actual;
-    }
-
-    public void OnSensitivitySliderChanged(float sliderValue)
-    {
-        float actualSensitivity = CalculateActualSensitivity(sliderValue);
-        PlayerMovement.SetGlobalMouseSensitivity(actualSensitivity);
-        PlayerPrefs.SetFloat("MouseSensitivity", sliderValue);
-        PlayerPrefs.Save();
-        UpdateSensitivityLabel(sliderValue);
-    }
-
-    private void UpdateSensitivityLabel(float sliderValue)
-    {
-        if (sensitivityLabel != null)
-        {
-            float actual = CalculateActualSensitivity(sliderValue);
-            sensitivityLabel.text = $"{actual:F0}";
-        }
-    }
-
-    private void ShowUIElement(GameObject go, bool active = true)
-    {
-        if (go == null)
-        {
-            return;
-        }
-
-        go.SetActive(active);
-
-        if (active)
-        {
-            CanvasGroup cg = go.GetComponent<CanvasGroup>();
-            if (cg != null)
-            {
-                cg.alpha = 1f;
-                cg.interactable = true;
-                cg.blocksRaycasts = true;
-            }
         }
     }
 
@@ -219,6 +171,43 @@ public class Options : MonoBehaviour
     {
         gameObject.SetActive(false);
         IsOpen = false;
+    }
+
+    public void OnSensitivityChanged(float value)
+    {
+        PlayerMovement.SetGlobalMouseSensitivity(value);
+        PlayerPrefs.SetFloat("MouseSensitivity", value);
+        PlayerPrefs.Save();
+        UpdateSensitivityLabel(value);
+    }
+
+    private void UpdateSensitivityLabel(float value)
+    {
+        if (sensitivityLabel != null)
+        {
+            sensitivityLabel.text = $"{value:0}";
+        }
+    }
+
+    private void ShowUIElement(GameObject go, bool active = true)
+    {
+        if (go == null)
+        {
+            return;
+        }
+
+        go.SetActive(active);
+
+        if (active)
+        {
+            CanvasGroup cg = go.GetComponent<CanvasGroup>();
+            if (cg != null)
+            {
+                cg.alpha = 1f;
+                cg.interactable = true;
+                cg.blocksRaycasts = true;
+            }
+        }
     }
 
     public void OnFPSToggleChanged(bool isOn)
@@ -300,7 +289,6 @@ public class Options : MonoBehaviour
         {
             Screen.fullScreenMode = FullScreenMode.FullScreenWindow;
             Screen.SetResolution(Screen.currentResolution.width, Screen.currentResolution.height, FullScreenMode.FullScreenWindow);
-            StartCoroutine(RefreshCanvasesNextFrame());
             return;
         }
 
@@ -312,15 +300,6 @@ public class Options : MonoBehaviour
         {
             Screen.SetResolution(windowedWidth, windowedHeight, FullScreenMode.Windowed);
         }
-        StartCoroutine(RefreshCanvasesNextFrame());
-    }
-
-    private IEnumerator RefreshCanvasesNextFrame()
-    {
-        yield return null;
-        Canvas.ForceUpdateCanvases();
-        yield return null;
-        Canvas.ForceUpdateCanvases();
     }
 
     private void CacheWindowedResolution()

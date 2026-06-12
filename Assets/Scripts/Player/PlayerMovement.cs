@@ -10,7 +10,6 @@ public class PlayerMovement : MonoBehaviour
 
     [Header("Camera Settings")]
     [SerializeField] private Transform playerCamera;
-    [SerializeField] private float mouseSensitivity = 200f;
     private const float MouseLookMultiplier = 0.05f;
     public static float GlobalMouseSensitivity { get; private set; }
 
@@ -39,7 +38,8 @@ public class PlayerMovement : MonoBehaviour
     {
         controller = GetComponent<CharacterController>();
         Cursor.lockState = CursorLockMode.Locked;
-        GlobalMouseSensitivity = PlayerPrefs.GetFloat("MouseSensitivity", mouseSensitivity);
+        float savedSensitivity = PlayerPrefs.GetFloat("MouseSensitivity", 200f);
+        SetGlobalMouseSensitivity(savedSensitivity);
     }
 
     void Update()
