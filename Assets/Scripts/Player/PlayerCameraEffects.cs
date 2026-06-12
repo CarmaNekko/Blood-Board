@@ -22,6 +22,7 @@ public class PlayerCameraEffects : MonoBehaviour
     [SerializeField] private float sprintBobSpeed = 18f;
     [SerializeField] private float sprintBobAmount = 0.1f;
     private float defaultYPos;
+    private float defaultZPos;
     private float bobTimer;
 
     [Header("4. Impacto de Caída (Landing Dip)")]
@@ -39,6 +40,7 @@ public class PlayerCameraEffects : MonoBehaviour
     {
         cam = GetComponent<Camera>();
         defaultYPos = transform.localPosition.y;
+        defaultZPos = transform.localPosition.z;
         wasGrounded = playerMovement.IsGrounded;
 
         if (playerMovement == null)
@@ -71,7 +73,6 @@ public class PlayerCameraEffects : MonoBehaviour
 
     private void HandleHeadBobbing()
     {
-
         if (playerMovement.IsGrounded && playerMovement.CurrentVelocity.magnitude > 0.1f)
         {
             float speed = playerMovement.IsSprinting ? sprintBobSpeed : walkBobSpeed;
@@ -80,13 +81,13 @@ public class PlayerCameraEffects : MonoBehaviour
             bobTimer += Time.deltaTime * speed;
             float newY = defaultYPos + Mathf.Sin(bobTimer) * amount;
 
-            transform.localPosition = new Vector3(transform.localPosition.x, newY + currentDip, currentRecoilZ);
+            transform.localPosition = new Vector3(transform.localPosition.x, newY + currentDip, defaultZPos + currentRecoilZ);
         }
         else
         {
             bobTimer = 0;
             float newY = Mathf.Lerp(transform.localPosition.y, defaultYPos + currentDip, Time.deltaTime * 5f);
-            transform.localPosition = new Vector3(transform.localPosition.x, newY, currentRecoilZ);
+            transform.localPosition = new Vector3(transform.localPosition.x, newY, defaultZPos + currentRecoilZ);
         }
         currentRecoilZ = Mathf.Lerp(currentRecoilZ, 0f, Time.deltaTime * recoilRecoverySpeed);
     }
@@ -101,6 +102,7 @@ public class PlayerCameraEffects : MonoBehaviour
         currentDip = Mathf.Lerp(currentDip, 0f, Time.deltaTime * dipRecoverySpeed);
         wasGrounded = playerMovement.IsGrounded;
     }
+
     public void ApplyShootRecoil()
     {
         currentRecoilZ = -recoilKickAmount;
