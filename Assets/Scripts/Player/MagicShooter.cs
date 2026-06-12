@@ -17,13 +17,20 @@ public class MagicShooter : MonoBehaviour
     [SerializeField] private float chargeSpeed = 40f;
     [SerializeField] private float timeToStartCharge = 0.2f;
 
+    [Header("Bullet Rain Attack Setup")]
+    [SerializeField] private GameObject whiteBulletRainPrefab;
+    [SerializeField] private GameObject blackBulletRainPrefab;
+    [SerializeField] private GameObject harmonicBulletRainPrefab;
+    [SerializeField] private float bulletRainSpawnHeight = 15f;
+    [SerializeField] private float bulletRainDistance = 15f;
+
     [Header("Shooting Setup")]
     [SerializeField] private Transform firePoint;
     [SerializeField] private float shootForce = 30f;
     [SerializeField] private PlayerCameraEffects cameraEffects;
     [SerializeField] private PlayerMovement playerMovement;
 
-    [Header("Delay Setup")]
+    [Header("Arma Pesada (Inercia)")]
     [SerializeField] private float movingShootDelay = 0.25f;
     private bool isPreparingToShoot = false;
 
@@ -59,6 +66,9 @@ public class MagicShooter : MonoBehaviour
     private bool isVampirismActive = false;
     private float vampirismTimer = 0f;
 
+    private bool isBulletRainActive = false;
+    private float bulletRainTimer = 0f;
+
     private bool isChargingSlash = false;
     private float currentChargeManaDrained = 0f;
     private MagicColor chargingMagicColor;
@@ -92,6 +102,7 @@ public class MagicShooter : MonoBehaviour
 
         HandleHarmonicTimer();
         HandleVampirismTimer();
+        HandleBulletRainTimer();
 
         if (!isChargingSlash)
         {
@@ -107,6 +118,26 @@ public class MagicShooter : MonoBehaviour
         bool fire2Held = Input.GetButton("Fire2");
         bool fire1Up = Input.GetButtonUp("Fire1");
         bool fire2Up = Input.GetButtonUp("Fire2");
+
+        if (isBulletRainActive)
+        {
+            if (Input.GetButtonDown("Fire1") || Input.GetButtonDown("Fire2"))
+            {
+                if (isHarmonicActive)
+                {
+                    StartCoroutine(HandleBulletRainShoot(MagicColor.Harmonic));
+                }
+                else if (Input.GetButtonDown("Fire1") && !isWhiteOverheated && currentWhiteMana >= whiteManaCost)
+                {
+                    StartCoroutine(HandleBulletRainShoot(MagicColor.White));
+                }
+                else if (Input.GetButtonDown("Fire2") && !isBlackOverheated && currentBlackMana >= blackManaCost)
+                {
+                    StartCoroutine(HandleBulletRainShoot(MagicColor.Black));
+                }
+            }
+            return;
+        }
 
         if (!isChargingSlash)
         {
@@ -230,11 +261,8 @@ public class MagicShooter : MonoBehaviour
 
             if (isVampirismActive)
             {
-                MagicProjectile mp = projectile.GetComponent<MagicProjectile>();
-                if (mp != null) mp.appliesVampirism = true;
-
-                HarmonicProjectile hp = projectile.GetComponent<HarmonicProjectile>();
-                if (hp != null) hp.appliesVampirism = true;
+                SlashProjectile sp = projectile.GetComponent<SlashProjectile>();
+                if (sp != null) sp.appliesVampirism = true;
             }
 
             Rigidbody rb = projectile.GetComponent<Rigidbody>();
@@ -243,6 +271,81 @@ public class MagicShooter : MonoBehaviour
 
             if (cameraEffects != null) cameraEffects.ApplyShootRecoil();
         }
+    }
+
+    private IEnumerator HandleBulletRainShoot(MagicColor color)
+    {
+        isPreparingToShoot = true;
+        bool isMoving = (playerMovement != null && playerMovement.CurrentVelocity.magnitude > 0.5f);
+
+        if (isMoving)
+        {
+            yield return new WaitForSeconds(movingShootDelay);
+        }
+
+        if (color == MagicColor.White)
+        {
+            currentWhiteMana -= whiteManaCost;
+            if (currentWhiteMana < whiteManaCost) isWhiteOverheated = true;
+        }
+        else if (color == MagicColor.Black)
+        {
+            currentBlackMana -= blackManaCost;
+            if (currentBlackMana < blackManaCost) isBlackOverheated = true;
+        }
+
+        UpdateUI();
+
+        GameObject prefab = null;
+        if (color == MagicColor.White) prefab = whiteBulletRainPrefab;
+        else if (color == MagicColor.Black) prefab = blackBulletRainPrefab;
+        else if (color == MagicColor.Harmonic) prefab = harmonicBulletRainPrefab;
+
+        if (prefab != null)
+        {
+            Vector3 targetPoint;
+            Camera mainCam = Camera.main;
+
+            if (mainCam != null)
+            {
+                Ray ray = mainCam.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
+                if (Physics.Raycast(ray, out RaycastHit hit, 100f))
+                {
+                    targetPoint = hit.point;
+                }
+                else
+                {
+                    targetPoint = ray.GetPoint(bulletRainDistance);
+                }
+            }
+            else
+            {
+                if (Physics.Raycast(firePoint.position, firePoint.forward, out RaycastHit hit, 100f))
+                {
+                    targetPoint = hit.point;
+                }
+                else
+                {
+                    targetPoint = firePoint.position + firePoint.forward * bulletRainDistance;
+                }
+            }
+
+            Vector3 spawnPos = targetPoint + Vector3.up * bulletRainSpawnHeight;
+
+            GameObject projectile = Instantiate(prefab, spawnPos, Quaternion.identity);
+
+            if (isVampirismActive)
+            {
+                BulletRainProjectile brp = projectile.GetComponent<BulletRainProjectile>();
+                if (brp != null) brp.appliesVampirism = true;
+            }
+
+            Destroy(projectile, 4f);
+
+            if (cameraEffects != null) cameraEffects.ApplyShootRecoil();
+        }
+
+        isPreparingToShoot = false;
     }
 
     private void HandleHarmonicTimer()
@@ -265,6 +368,18 @@ public class MagicShooter : MonoBehaviour
             if (vampirismTimer <= 0f)
             {
                 isVampirismActive = false;
+            }
+        }
+    }
+
+    private void HandleBulletRainTimer()
+    {
+        if (isBulletRainActive)
+        {
+            bulletRainTimer -= Time.deltaTime;
+            if (bulletRainTimer <= 0f)
+            {
+                isBulletRainActive = false;
             }
         }
     }
@@ -425,5 +540,11 @@ public class MagicShooter : MonoBehaviour
     {
         isVampirismActive = true;
         vampirismTimer = duration;
+    }
+
+    public void ActivateBulletRainAttack(float duration)
+    {
+        isBulletRainActive = true;
+        bulletRainTimer = duration;
     }
 }

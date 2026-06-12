@@ -383,7 +383,12 @@ MonoBehaviour:
   harmonicSlashPrefab: {fileID: 3537563102514347109, guid: 032000ac57a7a7548bfc53a65f0d1c35, type: 3}
   maxChargePercent: 0.2
   chargeSpeed: 40
-  doubleTapWindow: 0.3
+  timeToStartCharge: 0.2
+  whiteBulletRainPrefab: {fileID: 1191917644595795746, guid: 0d97b7248d6fa4a47a837a548f8ceb83, type: 3}
+  blackBulletRainPrefab: {fileID: 689271266387066930, guid: 28dcb7e00cc24264e95e4a1a2956ed3b, type: 3}
+  harmonicBulletRainPrefab: {fileID: 3930489931310870866, guid: 606e720476fcb124b9c8f8492e8701d4, type: 3}
+  bulletRainSpawnHeight: 15
+  bulletRainDistance: 15
   firePoint: {fileID: 8885997691368852185}
   shootForce: 30
   cameraEffects: {fileID: 0}
