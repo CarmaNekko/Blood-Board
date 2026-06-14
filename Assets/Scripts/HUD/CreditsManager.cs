@@ -31,7 +31,11 @@ public class CreditsManager : MonoBehaviour
     private IEnumerator ShowCreditsWithTransition()
     {
         Debug.Log($"[CreditsManager] ShowCreditsWithTransition. transition={transition != null}");
-        
+        if (transition == null)
+        {
+            transition = CheckerboardTransition.Instance;
+        }
+
         if (transition != null)
         {
             Debug.Log("[CreditsManager] Using CheckerboardTransition");
@@ -39,7 +43,7 @@ public class CreditsManager : MonoBehaviour
         }
         else
         {
-            Debug.Log("[CreditsManager] No transition, calling ActivateCreditsUI directly");
+            Debug.LogError("[CreditsManager] CheckerboardTransition instance not found. Cannot perform transition.");
             ActivateCreditsUI();
         }
 
@@ -70,12 +74,18 @@ public class CreditsManager : MonoBehaviour
 
     private IEnumerator HideCreditsWithTransition()
     {
+        if (transition == null)
+        {
+            transition = CheckerboardTransition.Instance;
+        }
+
         if (transition != null)
         {
             transition.StartTransition(DeactivateCreditsUI, false);
         }
         else
         {
+            Debug.LogError("[CreditsManager] CheckerboardTransition instance not found. Cannot perform transition.");
             DeactivateCreditsUI();
         }
 

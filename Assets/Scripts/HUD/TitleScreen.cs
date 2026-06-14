@@ -39,7 +39,7 @@ public class TitleScreen : MonoBehaviour
     {
         if (CheckerboardTransition.Instance != null && CheckerboardTransition.directToMenu)
         {
-            CheckerboardTransition.directToMenu = false; // Consume the flag
+            CheckerboardTransition.directToMenu = false;
 
             currentMenuState = MenuState.MainMenu;
 
@@ -91,6 +91,10 @@ public class TitleScreen : MonoBehaviour
     private void StartTransition()
     {
         currentMenuState = MenuState.Transition;
+        if (checkerboardTransition == null)
+        {
+            checkerboardTransition = CheckerboardTransition.Instance;
+        }
 
         if (checkerboardTransition != null)
         {
@@ -107,6 +111,7 @@ public class TitleScreen : MonoBehaviour
         }
         else
         {
+            Debug.LogError("[TitleScreen] CheckerboardTransition instance not found. Cannot perform transition.");
             if (initialScreenPanel != null) initialScreenPanel.SetActive(false);
             if (selectionManager != null) selectionManager.ShowMainMenu();
             OnTransitionComplete();

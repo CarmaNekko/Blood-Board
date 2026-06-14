@@ -4106,7 +4106,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.86666673, g: 0.29803923, b: 0.43529415, a: 1}
+  m_Color: {r: 0.2980392, g: 0.8666667, b: 0.48756227, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -4287,14 +4287,14 @@ RectTransform:
   m_GameObject: {fileID: 6462298863980385427}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: -7}
-  m_LocalScale: {x: 0.38745716, y: 0.38745716, z: 0.38745716}
+  m_LocalScale: {x: 0.24704269, y: 0.24704269, z: 0.24704269}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8699285923834245643}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -393.3, y: -48.99994}
+  m_AnchoredPosition: {x: -393.3, y: -31}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8013262302426763362
@@ -4391,7 +4391,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: -197.48633, y: 0, z: -28.885612, w: 0}
+  m_margin: {x: -676.21075, y: 0, z: -137.97041, w: -60.92865}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
