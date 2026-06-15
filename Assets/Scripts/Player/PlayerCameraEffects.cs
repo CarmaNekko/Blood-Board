@@ -59,7 +59,8 @@ public class PlayerCameraEffects : MonoBehaviour
 
     private void HandleDynamicFOV()
     {
-        float targetFOV = playerMovement.IsSprinting ? sprintFOV : normalFOV;
+        bool disableSprintFOV = PlayerPrefs.GetInt("DisableSprintFOV", 0) == 1;
+        float targetFOV = (playerMovement.IsSprinting && !disableSprintFOV) ? sprintFOV : normalFOV;
         cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, targetFOV, Time.deltaTime * fovTransitionSpeed);
     }
 

@@ -1,75 +1,56 @@
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Audio;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
 
 public class Options : MonoBehaviour
 {
     public static Options Instance { get; private set; }
     public bool IsOpen { get; private set; }
 
-    private const int WindowedWidth = 1280;
-    private const int WindowedHeight = 720;
-    private const string WindowedWidthPrefKey = "WindowedResolutionWidth";
-    private const string WindowedHeightPrefKey = "WindowedResolutionHeight";
-
-    private static bool SupportsScreenModeOptions
-    {
-        get
-        {
-#if UNITY_WEBGL
-            return false;
-#else
-            return true;
-#endif
-        }
-    }
-
-    [Header("Referencias")]
+    [Header("Referencias UI")]
     [SerializeField] private TMP_Text titleText;
-    [SerializeField] private TMP_Text sensitivityTitleText;
-    [SerializeField] private Slider sensitivitySlider;
-    [SerializeField] private TMP_Text sensitivityLabel;
     [SerializeField] private Button backButton;
 
-    [Header("FPS")]
+    [Header("Video & Pantalla")]
+    [SerializeField] private TMP_Dropdown resolutionDropdown;
+    [SerializeField] private TMP_Dropdown screenModeDropdown;
     [SerializeField] private TMP_Text fpsTitleText;
     [SerializeField] private Toggle fpsToggle;
     [SerializeField] private GameObject fpsDisplay;
+    [SerializeField] private VolumeProfile globalVolumeProfile;
+    [SerializeField] private Toggle motionBlurToggle;
 
-    [Header("Pantalla Completa")]
-    [SerializeField] private TMP_Text fullscreenTitleText;
-    [SerializeField] private Button fullscreenButtonOn;
-    [SerializeField] private Button fullscreenButtonWindowed;
+    [Header("Audio")]
+    [SerializeField] private AudioMixer mainAudioMixer;
+    [SerializeField] private Slider masterVolumeSlider;
+    [SerializeField] private Slider sfxVolumeSlider;
+    [SerializeField] private Slider bgmVolumeSlider;
 
-    [Header("Sensibilidad")]
+    [Header("Controles & Sensibilidad")]
+    [SerializeField] private TMP_Text sensitivityTitleText;
+    [SerializeField] private Slider sensitivitySlider;
+    [SerializeField] private TMP_Text sensitivityLabel;
+    [SerializeField] private Toggle disableSprintFovToggle;
+
     [SerializeField] private float minSensitivity = 50f;
     [SerializeField] private float maxSensitivity = 400f;
     [SerializeField] private float defaultSensitivity = 200f;
 
+    private List<Resolution> filteredResolutions;
+
     private void Awake()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-        }
-        else if (Instance != this)
-        {
-            Destroy(gameObject);
-            return;
-        }
+        if (Instance == null) Instance = this;
+        else { Destroy(gameObject); return; }
 
-#if UNITY_EDITOR
-        if (titleText == null) Debug.LogWarning("Options: 'titleText' no está asignado en el Inspector.", this);
-        if (sensitivityTitleText == null) Debug.LogWarning("Options: 'sensitivityTitleText' no está asignado en el Inspector.", this);
-        if (sensitivitySlider == null) Debug.LogWarning("Options: 'sensitivitySlider' no está asignado en el Inspector.", this);
-        if (sensitivityLabel == null) Debug.LogWarning("Options: 'sensitivityLabel' no está asignado en el Inspector.", this);
-        if (backButton == null) Debug.LogWarning("Options: 'backButton' no está asignado en el Inspector.", this);
-        if (fpsTitleText == null) Debug.LogWarning("Options: 'fpsTitleText' no está asignado en el Inspector.", this);
-        if (fpsToggle == null) Debug.LogWarning("Options: 'fpsToggle' no está asignado en el Inspector.", this);
-        if (fullscreenTitleText == null) Debug.LogWarning("Options: 'fullscreenTitleText' no está asignado en el Inspector.", this);
-        if (fullscreenButtonOn == null) Debug.LogWarning("Options: 'fullscreenButtonOn' no está asignado en el Inspector.", this);
-        if (fullscreenButtonWindowed == null) Debug.LogWarning("Options: 'fullscreenButtonWindowed' no está asignado en el Inspector.", this);
-#endif
+        if (resolutionDropdown != null) resolutionDropdown.onValueChanged.AddListener(OnResolutionChanged);
+        if (screenModeDropdown != null) screenModeDropdown.onValueChanged.AddListener(OnScreenModeChanged);
+        if (fpsToggle != null) fpsToggle.onValueChanged.AddListener(OnFPSToggleChanged);
+        if (motionBlurToggle != null) motionBlurToggle.onValueChanged.AddListener(OnMotionBlurChanged);
 
         if (sensitivitySlider != null)
         {
@@ -77,93 +58,106 @@ public class Options : MonoBehaviour
             sensitivitySlider.maxValue = maxSensitivity;
             sensitivitySlider.onValueChanged.AddListener(OnSensitivityChanged);
         }
+        if (disableSprintFovToggle != null) disableSprintFovToggle.onValueChanged.AddListener(OnDisableFovChanged);
 
-        if (backButton != null)
-        {
-            backButton.onClick.AddListener(HideOptions);
-        }
+        if (masterVolumeSlider != null) masterVolumeSlider.onValueChanged.AddListener(SetMasterVolume);
+        if (sfxVolumeSlider != null) sfxVolumeSlider.onValueChanged.AddListener(SetSFXVolume);
+        if (bgmVolumeSlider != null) bgmVolumeSlider.onValueChanged.AddListener(SetBGMVolume);
 
-        if (fpsToggle != null)
-        {
-            fpsToggle.onValueChanged.AddListener(OnFPSToggleChanged);
-        }
-
-        if (fullscreenButtonOn != null && SupportsScreenModeOptions)
-        {
-            fullscreenButtonOn.onClick.AddListener(SetFullscreen);
-        }
-
-        if (fullscreenButtonWindowed != null && SupportsScreenModeOptions)
-        {
-            fullscreenButtonWindowed.onClick.AddListener(SetWindowed);
-        }
+        if (backButton != null) backButton.onClick.AddListener(HideOptions);
 
         gameObject.SetActive(false);
     }
 
     private void Start()
     {
+        LoadSettings();
+    }
+
+    private void LoadSettings()
+    {
+        InitializeResolutions();
+
+        int screenModeIndex = PlayerPrefs.GetInt("ScreenMode", 0);
+        if (screenModeDropdown != null) screenModeDropdown.SetValueWithoutNotify(screenModeIndex);
+        ApplyScreenMode(screenModeIndex);
+
         float savedSensitivity = PlayerPrefs.GetFloat("MouseSensitivity", defaultSensitivity);
         PlayerMovement.SetGlobalMouseSensitivity(savedSensitivity);
-
-        if (sensitivitySlider != null)
-        {
-            sensitivitySlider.minValue = minSensitivity;
-            sensitivitySlider.maxValue = maxSensitivity;
-            sensitivitySlider.value = savedSensitivity;
-        }
-
-        if (sensitivityTitleText != null)
-        {
-            sensitivityTitleText.text = "SENSIBILIDAD DE LA CÁMARA";
-        }
-
+        if (sensitivitySlider != null) sensitivitySlider.value = savedSensitivity;
         UpdateSensitivityLabel(savedSensitivity);
+
+        bool disableFov = PlayerPrefs.GetInt("DisableSprintFOV", 0) == 1;
+        if (disableSprintFovToggle != null) disableSprintFovToggle.SetIsOnWithoutNotify(disableFov);
 
         bool showFPS = PlayerPrefs.GetInt("ShowFPS", 1) == 1;
         SetFPSVisibility(showFPS);
+        if (fpsToggle != null) fpsToggle.SetIsOnWithoutNotify(showFPS);
 
-        if (fpsToggle != null)
+        bool motionBlurOn = PlayerPrefs.GetInt("MotionBlur", 1) == 1;
+        if (motionBlurToggle != null) motionBlurToggle.SetIsOnWithoutNotify(motionBlurOn);
+        ApplyMotionBlur(motionBlurOn);
+
+        float masterVol = PlayerPrefs.GetFloat("MasterVolume", 1f);
+        float sfxVol = PlayerPrefs.GetFloat("SFXVolume", 1f);
+        float bgmVol = PlayerPrefs.GetFloat("BGMVolume", 1f);
+
+        if (masterVolumeSlider != null) masterVolumeSlider.SetValueWithoutNotify(masterVol);
+        if (sfxVolumeSlider != null) sfxVolumeSlider.SetValueWithoutNotify(sfxVol);
+        if (bgmVolumeSlider != null) bgmVolumeSlider.SetValueWithoutNotify(bgmVol);
+
+        SetMasterVolume(masterVol);
+        SetSFXVolume(sfxVol);
+        SetBGMVolume(bgmVol);
+    }
+
+    private void InitializeResolutions()
+    {
+        if (resolutionDropdown == null) return;
+
+        Resolution[] allResolutions = Screen.resolutions;
+        filteredResolutions = new List<Resolution>();
+        resolutionDropdown.ClearOptions();
+        List<string> options = new List<string>();
+        int currentResolutionIndex = 0;
+
+        for (int i = 0; i < allResolutions.Length; i++)
         {
-            fpsToggle.SetIsOnWithoutNotify(showFPS);
+            if (i == 0 || allResolutions[i].width != allResolutions[i - 1].width || allResolutions[i].height != allResolutions[i - 1].height)
+            {
+                filteredResolutions.Add(allResolutions[i]);
+                options.Add(allResolutions[i].width + " x " + allResolutions[i].height);
+
+                if (allResolutions[i].width == Screen.currentResolution.width &&
+                    allResolutions[i].height == Screen.currentResolution.height)
+                {
+                    currentResolutionIndex = filteredResolutions.Count - 1;
+                }
+            }
         }
 
-        if (fpsTitleText != null)
+        resolutionDropdown.AddOptions(options);
+
+        int savedResolutionIndex = PlayerPrefs.GetInt("ResolutionIndex", currentResolutionIndex);
+        if (savedResolutionIndex >= 0 && savedResolutionIndex < filteredResolutions.Count)
         {
-            fpsTitleText.text = "MOSTRAR FPS";
+            resolutionDropdown.SetValueWithoutNotify(savedResolutionIndex);
+            ApplyResolution(savedResolutionIndex);
+        }
+        else
+        {
+            resolutionDropdown.SetValueWithoutNotify(currentResolutionIndex);
         }
 
-        if (SupportsScreenModeOptions)
-        {
-            bool isFullscreen = PlayerPrefs.GetInt("Fullscreen", 1) == 1;
-            ApplyScreenMode(isFullscreen);
-        }
-
-        if (fullscreenTitleText != null)
-        {
-            fullscreenTitleText.text = "MODO DE PANTALLA";
-        }
+        resolutionDropdown.RefreshShownValue();
     }
 
     public void ShowOptions()
     {
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
-
         gameObject.SetActive(true);
         transform.SetAsLastSibling();
-
-        ShowUIElement(titleText?.gameObject);
-        ShowUIElement(sensitivityTitleText?.gameObject);
-        ShowUIElement(sensitivitySlider?.gameObject);
-        ShowUIElement(sensitivityLabel?.gameObject);
-        ShowUIElement(backButton?.gameObject);
-        ShowUIElement(fpsTitleText?.gameObject);
-        ShowUIElement(fpsToggle?.gameObject);
-        ShowUIElement(fullscreenTitleText?.gameObject, SupportsScreenModeOptions);
-        ShowUIElement(fullscreenButtonOn?.gameObject, SupportsScreenModeOptions);
-        ShowUIElement(fullscreenButtonWindowed?.gameObject, SupportsScreenModeOptions);
-
         IsOpen = true;
     }
 
@@ -171,6 +165,37 @@ public class Options : MonoBehaviour
     {
         gameObject.SetActive(false);
         IsOpen = false;
+    }
+
+    public void OnResolutionChanged(int index)
+    {
+        PlayerPrefs.SetInt("ResolutionIndex", index);
+        PlayerPrefs.Save();
+        ApplyResolution(index);
+    }
+
+    private void ApplyResolution(int index)
+    {
+        if (filteredResolutions == null || index < 0 || index >= filteredResolutions.Count) return;
+        Resolution resolution = filteredResolutions[index];
+        Screen.SetResolution(resolution.width, resolution.height, Screen.fullScreenMode);
+    }
+
+    public void OnScreenModeChanged(int index)
+    {
+        PlayerPrefs.SetInt("ScreenMode", index);
+        PlayerPrefs.Save();
+        ApplyScreenMode(index);
+    }
+
+    private void ApplyScreenMode(int index)
+    {
+        switch (index)
+        {
+            case 0: Screen.fullScreenMode = FullScreenMode.ExclusiveFullScreen; break;
+            case 1: Screen.fullScreenMode = FullScreenMode.FullScreenWindow; break;
+            case 2: Screen.fullScreenMode = FullScreenMode.Windowed; break;
+        }
     }
 
     public void OnSensitivityChanged(float value)
@@ -183,30 +208,27 @@ public class Options : MonoBehaviour
 
     private void UpdateSensitivityLabel(float value)
     {
-        if (sensitivityLabel != null)
-        {
-            sensitivityLabel.text = $"{value:0}";
-        }
+        if (sensitivityLabel != null) sensitivityLabel.text = $"{value:0}";
     }
 
-    private void ShowUIElement(GameObject go, bool active = true)
+    public void OnDisableFovChanged(bool isOn)
     {
-        if (go == null)
-        {
-            return;
-        }
+        PlayerPrefs.SetInt("DisableSprintFOV", isOn ? 1 : 0);
+        PlayerPrefs.Save();
+    }
 
-        go.SetActive(active);
+    public void OnMotionBlurChanged(bool isOn)
+    {
+        PlayerPrefs.SetInt("MotionBlur", isOn ? 1 : 0);
+        PlayerPrefs.Save();
+        ApplyMotionBlur(isOn);
+    }
 
-        if (active)
+    private void ApplyMotionBlur(bool isOn)
+    {
+        if (globalVolumeProfile != null && globalVolumeProfile.TryGet(out MotionBlur motionBlur))
         {
-            CanvasGroup cg = go.GetComponent<CanvasGroup>();
-            if (cg != null)
-            {
-                cg.alpha = 1f;
-                cg.interactable = true;
-                cg.blocksRaycasts = true;
-            }
+            motionBlur.active = isOn;
         }
     }
 
@@ -219,100 +241,24 @@ public class Options : MonoBehaviour
 
     private void SetFPSVisibility(bool isVisible)
     {
-        GameObject target = GetFPSDisplayObject();
-        if (target == null)
-        {
-            return;
-        }
-
-        target.SetActive(true);
-
-        FPSDisplay display = target.GetComponent<FPSDisplay>();
-        if (display == null)
-        {
-            display = target.AddComponent<FPSDisplay>();
-        }
-
-        display.SetVisible(isVisible);
+        if (fpsDisplay != null) fpsDisplay.SetActive(isVisible);
     }
 
-    private GameObject GetFPSDisplayObject()
+    public void SetMasterVolume(float sliderValue)
     {
-        if (fpsDisplay != null)
-        {
-            return fpsDisplay;
-        }
-
-        if (FPSDisplay.Instance != null)
-        {
-            return FPSDisplay.Instance.gameObject;
-        }
-
-        GameObject foundFPS = GameObject.Find("FPS");
-        if (foundFPS != null)
-        {
-            fpsDisplay = foundFPS;
-            return fpsDisplay;
-        }
-
-        return null;
+        PlayerPrefs.SetFloat("MasterVolume", sliderValue);
+        if (mainAudioMixer != null) mainAudioMixer.SetFloat("MasterVolume", Mathf.Log10(Mathf.Clamp(sliderValue, 0.0001f, 1f)) * 20);
     }
 
-    public void SetFullscreen()
+    public void SetSFXVolume(float sliderValue)
     {
-        if (!SupportsScreenModeOptions)
-        {
-            return;
-        }
-
-        CacheWindowedResolution();
-        PlayerPrefs.SetInt("Fullscreen", 1);
-        PlayerPrefs.Save();
-        ApplyScreenMode(true);
+        PlayerPrefs.SetFloat("SFXVolume", sliderValue);
+        if (mainAudioMixer != null) mainAudioMixer.SetFloat("SFXVolume", Mathf.Log10(Mathf.Clamp(sliderValue, 0.0001f, 1f)) * 20);
     }
 
-    public void SetWindowed()
+    public void SetBGMVolume(float sliderValue)
     {
-        if (!SupportsScreenModeOptions)
-        {
-            return;
-        }
-
-        PlayerPrefs.SetInt("Fullscreen", 0);
-        PlayerPrefs.Save();
-        ApplyScreenMode(false);
-    }
-
-    private void ApplyScreenMode(bool fullscreen)
-    {
-        if (fullscreen)
-        {
-            Screen.fullScreenMode = FullScreenMode.FullScreenWindow;
-            Screen.SetResolution(Screen.currentResolution.width, Screen.currentResolution.height, FullScreenMode.FullScreenWindow);
-            return;
-        }
-
-        int windowedWidth = PlayerPrefs.GetInt(WindowedWidthPrefKey, WindowedWidth);
-        int windowedHeight = PlayerPrefs.GetInt(WindowedHeightPrefKey, WindowedHeight);
-
-        Screen.fullScreenMode = FullScreenMode.Windowed;
-        if (Screen.width != windowedWidth || Screen.height != windowedHeight)
-        {
-            Screen.SetResolution(windowedWidth, windowedHeight, FullScreenMode.Windowed);
-        }
-    }
-
-    private void CacheWindowedResolution()
-    {
-        if (Screen.fullScreenMode == FullScreenMode.Windowed)
-        {
-            PlayerPrefs.SetInt(WindowedWidthPrefKey, Screen.width);
-            PlayerPrefs.SetInt(WindowedHeightPrefKey, Screen.height);
-        }
-        else if (!PlayerPrefs.HasKey(WindowedWidthPrefKey) || !PlayerPrefs.HasKey(WindowedHeightPrefKey))
-        {
-            PlayerPrefs.SetInt(WindowedWidthPrefKey, WindowedWidth);
-            PlayerPrefs.SetInt(WindowedHeightPrefKey, WindowedHeight);
-        }
+        PlayerPrefs.SetFloat("BGMVolume", sliderValue);
+        if (mainAudioMixer != null) mainAudioMixer.SetFloat("BGMVolume", Mathf.Log10(Mathf.Clamp(sliderValue, 0.0001f, 1f)) * 20);
     }
 }
