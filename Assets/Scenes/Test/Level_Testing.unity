@@ -555,15 +555,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e768768fad74e504e8dbf4a2d8b8e227, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ModularGenerator
-  startRoomPrefab: {fileID: 9215206470418219887, guid: 052436b40b1e0494d9c6e2d6ef6aeaa7, type: 3}
+  startRoomPrefab: {fileID: 9215206470418219887, guid: 63b41bb3cd6b9bb4ca5f79a207852c7f, type: 3}
   finalRoomPrefab: {fileID: 3206246361914026675, guid: 37371f21f037fd04880b88901e668373, type: 3}
   roomPrefabs:
-  - {fileID: 1133307281766849744, guid: d5a8ff85eb433da4bbac76b365d127e6, type: 3}
-  - {fileID: 1133307281766849744, guid: d5a8ff85eb433da4bbac76b365d127e6, type: 3}
+  - {fileID: 1059234749075372331, guid: fb6ba1e821e529f419ef0ab55203bd01, type: 3}
+  - {fileID: 1059234749075372331, guid: fb6ba1e821e529f419ef0ab55203bd01, type: 3}
   - {fileID: 6045825802650325582, guid: 1d7e226035694ed4a978a960f64ee3a1, type: 3}
   - {fileID: 6045825802650325582, guid: 1d7e226035694ed4a978a960f64ee3a1, type: 3}
-  - {fileID: 1059234749075372331, guid: 4942a9f1aca1d8543b410a8a3b94fca5, type: 3}
-  - {fileID: 1059234749075372331, guid: 4942a9f1aca1d8543b410a8a3b94fca5, type: 3}
   corridorPrefabs:
   - {fileID: 4158632963112747052, guid: d823855081bc37d4690e66a028d4b4df, type: 3}
   deadEndPrefabs:
