@@ -5247,6 +5247,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 8781a494b72ef2e4d91bd8eb9798e646, type: 3}
       insertIndex: -1
       addedObject: {fileID: 6153318089627696613}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 8781a494b72ef2e4d91bd8eb9798e646, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: -2233765066343083632}
   m_SourcePrefab: {fileID: 100100000, guid: 8781a494b72ef2e4d91bd8eb9798e646, type: 3}
 --- !u!4 &5910945791519465244 stripped
 Transform:
@@ -5277,8 +5280,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.020018801, y: 0.044127233, z: 0.023853287}
-  m_Center: {x: -0.0012729916, y: -0.0050098402, z: 0.000058552425}
+  m_Size: {x: 0.020018801, y: 0.04881541, z: 0.023853287}
+  m_Center: {x: -0.0012729922, y: -0.0026657507, z: 0.000058552425}
 --- !u!195 &3429352905124751079
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -5461,6 +5464,20 @@ MonoBehaviour:
   magicPulseFrequency: 2.2
   magicPulseAmplitude: 0.25
   outlineShaderName: Custom/EnemyOutline
+--- !u!114 &-2233765066343083632
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6434576575197070758}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 90a68a4d026ca17498f560dd3fc930a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyKnockback
+  KnockbackDistance: 2.5
+  KnockbackForce: 55
 --- !u!1001 &7507982284172942104
 PrefabInstance:
   m_ObjectHideFlags: 0
