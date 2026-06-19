@@ -9,9 +9,6 @@ EditorBuildSettings:
     path: Assets/Scenes/NewTitleScreen.unity
     guid: 9e118d056e57a6547ae71575b3889f19
   - enabled: 1
-    path: Assets/Scenes/NewCredits.unity
-    guid: 86bc4b49ae0fc224c950b460bd2a3bd4
-  - enabled: 1
     path: Assets/Scenes/Tutorial.unity
     guid: 21570dbcffaa5db4a8bc8d21d7e33785
   - enabled: 1

@@ -560,14 +560,12 @@ MonoBehaviour:
   roomPrefabs:
   - {fileID: 1133307281766849744, guid: d5a8ff85eb433da4bbac76b365d127e6, type: 3}
   - {fileID: 1133307281766849744, guid: d5a8ff85eb433da4bbac76b365d127e6, type: 3}
-  - {fileID: 6045825802650325582, guid: f691004411479bb4c8c9a758650aa775, type: 3}
-  - {fileID: 6045825802650325582, guid: f691004411479bb4c8c9a758650aa775, type: 3}
+  - {fileID: 6045825802650325582, guid: 1d7e226035694ed4a978a960f64ee3a1, type: 3}
+  - {fileID: 6045825802650325582, guid: 1d7e226035694ed4a978a960f64ee3a1, type: 3}
   - {fileID: 1059234749075372331, guid: 4942a9f1aca1d8543b410a8a3b94fca5, type: 3}
   - {fileID: 1059234749075372331, guid: 4942a9f1aca1d8543b410a8a3b94fca5, type: 3}
-  - {fileID: 1059234749075372331, guid: 3fa95c8af715cd74da682444c1f0bfcb, type: 3}
-  - {fileID: 1059234749075372331, guid: 3fa95c8af715cd74da682444c1f0bfcb, type: 3}
   corridorPrefabs:
-  - {fileID: 4158632963112747052, guid: 1e3689983ac3d534197e07eb1e178728, type: 3}
+  - {fileID: 4158632963112747052, guid: d823855081bc37d4690e66a028d4b4df, type: 3}
   deadEndPrefabs:
   - {fileID: 6291659561367954977, guid: c5a74124a8fa41e4784ac8278f4665dd, type: 3}
   maxRooms: 6
