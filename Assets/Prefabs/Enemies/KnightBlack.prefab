@@ -5310,7 +5310,7 @@ PrefabInstance:
       addedObject: {fileID: 5496658807463753447}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 49a646464613a8c45a14a126560b3335, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 6853478726527912277}
+      addedObject: {fileID: -8681239308512669083}
   m_SourcePrefab: {fileID: 100100000, guid: 49a646464613a8c45a14a126560b3335, type: 3}
 --- !u!4 &2442738508998688262 stripped
 Transform:
@@ -5649,7 +5649,7 @@ MonoBehaviour:
   magicPulseFrequency: 2.2
   magicPulseAmplitude: 0.25
   outlineShaderName: Custom/EnemyOutline
---- !u!114 &6853478726527912277
+--- !u!114 &-8681239308512669083
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
