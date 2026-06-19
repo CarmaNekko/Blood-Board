@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 5933285493236552983}
   - component: {fileID: 5702834368111586178}
   - component: {fileID: -2100732316327388427}
-  - component: {fileID: -3590953644004278880}
+  - component: {fileID: -6986031142274806552}
   m_Layer: 8
   m_Name: Rook_White
   m_TagString: Untagged
@@ -215,7 +215,7 @@ MonoBehaviour:
   magicPulseFrequency: 2.2
   magicPulseAmplitude: 0.25
   outlineShaderName: Custom/EnemyOutline
---- !u!114 &-3590953644004278880
+--- !u!114 &-6986031142274806552
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

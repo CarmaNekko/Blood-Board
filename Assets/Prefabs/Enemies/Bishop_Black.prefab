@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 6878974077776783582}
   - component: {fileID: -6088299409219815959}
   - component: {fileID: -870222229648054574}
-  - component: {fileID: 4583833197791971756}
+  - component: {fileID: -865143986206143692}
   m_Layer: 8
   m_Name: Bishop_Black
   m_TagString: Untagged
@@ -218,7 +218,7 @@ MonoBehaviour:
   magicPulseFrequency: 2.2
   magicPulseAmplitude: 0.25
   outlineShaderName: Custom/EnemyOutline
---- !u!114 &4583833197791971756
+--- !u!114 &-865143986206143692
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
