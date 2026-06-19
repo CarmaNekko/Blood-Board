@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 2139405388712012466}
   - component: {fileID: -5904309391628323559}
   - component: {fileID: 7530624351244158565}
+  - component: {fileID: -4518425047777583953}
   m_Layer: 8
   m_Name: Bishop_White
   m_TagString: Untagged
@@ -217,6 +218,20 @@ MonoBehaviour:
   magicPulseFrequency: 2.2
   magicPulseAmplitude: 0.25
   outlineShaderName: Custom/EnemyOutline
+--- !u!114 &-4518425047777583953
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 597776771158220281}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 90a68a4d026ca17498f560dd3fc930a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyKnockback
+  KnockbackDistance: 2.5
+  KnockbackForce: 55
 --- !u!1 &6295801565473663064
 GameObject:
   m_ObjectHideFlags: 0
