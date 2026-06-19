@@ -105,6 +105,7 @@ public class PlayerMovement : MonoBehaviour
 
     public void ApplyKnockback(Vector3 direction, float force)
     {
+        Debug.Log("se aplicó el knockback");
         direction.Normalize();
         if (direction.y < 0) direction.y = -direction.y;
         direction.y += 0.5f;
