@@ -25,6 +25,12 @@ public class BulletRainProjectile : MonoBehaviour
             return;
         }
 
+        DestructiblePillar pillar = other.GetComponent<DestructiblePillar>();
+        if (pillar != null)
+        {
+            pillar.TakeDamage(1);
+        }
+
         EnemyHealth enemy = other.GetComponent<EnemyHealth>();
         if (enemy != null)
         {

@@ -18,6 +18,13 @@ public class SlashProjectile : MonoBehaviour
 
         bool hitTarget = false;
 
+        DestructiblePillar pillar = other.GetComponent<DestructiblePillar>();
+        if (pillar != null)
+        {
+            pillar.TakeDamage(1);
+            hitTarget = true;
+        }
+
         EnemyHealth enemy = other.GetComponent<EnemyHealth>();
         if (enemy != null)
         {

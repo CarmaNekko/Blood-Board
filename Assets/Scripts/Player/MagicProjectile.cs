@@ -18,6 +18,19 @@ public class MagicProjectile : MonoBehaviour
             return;
         }
 
+        DestructiblePillar pillar = other.GetComponent<DestructiblePillar>();
+        if (pillar != null)
+        {
+            pillar.TakeDamage(1);
+            if (explosionParticlesPrefab != null)
+            {
+                GameObject explosion = Instantiate(explosionParticlesPrefab, transform.position, Quaternion.identity);
+                Destroy(explosion, 1.5f);
+            }
+            Destroy(gameObject);
+            return;
+        }
+
         EnemyHealth enemy = other.GetComponent<EnemyHealth>();
         if (enemy != null) enemy.TakeDamage(damage, projectileColor, appliesVampirism);
 
