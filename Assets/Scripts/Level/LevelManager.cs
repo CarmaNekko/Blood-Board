@@ -54,7 +54,6 @@ public class LevelManager : MonoBehaviour
 
     private void Start()
     {
-        // Guarda el checkpoint DESPUÉS de que PlayerHealth cargue la salud persistida
         int currentScore = ScoreManager.Instance != null ? ScoreManager.Instance.GetCurrentScore() : 0;
         float currentHealth = FindFirstObjectByType<PlayerHealth>()?.currentHealth ?? 100f;
         if (SceneManager.GetActiveScene().name == BossCheckpointState.DefaultLevelScene)
