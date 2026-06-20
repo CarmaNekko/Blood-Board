@@ -1,19 +1,16 @@
 using UnityEngine;
 
-public class Chest : MonoBehaviour
+public class Chest : DestructiblePillar
 {
+    [Header("Loot")]
     public LootItem[] LootTable;
-    public int Health = 1;
+    public float lootHeightOffset = 1f;
 
-    public void TakeDamage(int damage)
+    protected override void Shatter()
     {
-        Health -= damage;
-
-        if (Health <= 0)
-        {
-            DropLoot();
-            Destroy(gameObject);
-        }
+        DropLoot();
+        base.Shatter();
+        Destroy(gameObject, 5f);
     }
 
     private void DropLoot()
@@ -27,7 +24,8 @@ public class Chest : MonoBehaviour
 
             if (randomValue <= currentChance)
             {
-                Instantiate(loot.Prefab, transform.position, Quaternion.identity);
+                Vector3 spawnPosition = transform.position + Vector3.up * lootHeightOffset;
+                Instantiate(loot.Prefab, spawnPosition, Quaternion.identity);
 
                 break;
             }

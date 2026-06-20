@@ -21,7 +21,7 @@ public class DestructiblePillar : MonoBehaviour
         }
     }
 
-    private void Shatter()
+    protected virtual void Shatter()
     {
         isDestroyed = true;
 
