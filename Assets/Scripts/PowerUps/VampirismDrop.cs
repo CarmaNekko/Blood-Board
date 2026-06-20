@@ -1,24 +1,12 @@
-using UnityEngine;
-
-public class VampirismDrop : MonoBehaviour
+public class VampirismDrop : PassivePowerUp
 {
-    [SerializeField] private float duration = 30f;
-
-    private void OnTriggerEnter(Collider other)
+    protected override bool ApplyTo(MagicShooter shooter)
     {
-        if (other.CompareTag("Player"))
+        if (!CanApplyPassive(shooter.HasVampirism()))
         {
-            MagicShooter shooter = other.GetComponent<MagicShooter>();
-            if (shooter == null)
-            {
-                shooter = other.GetComponentInChildren<MagicShooter>();
-            }
-
-            if (shooter != null)
-            {
-                shooter.ActivateVampirism(duration);
-                Destroy(gameObject);
-            }
+            return false;
         }
+
+        return shooter.UnlockVampirism();
     }
 }

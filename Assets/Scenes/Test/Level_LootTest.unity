@@ -465,9 +465,7 @@ MonoBehaviour:
   limitToProceduralScene: 1
   baseChance: 0.15
   pityIncrement: 0.15
-  temporaryPowerUpRewards:
-  - {fileID: 246719132695152999, guid: b2da05326a1b5ef42bf2a9342152221b, type: 3}
-  - {fileID: 246719132695152999, guid: e744d245b8c8c1e4590ee6ed5e4697be, type: 3}
+  temporaryPowerUpRewards: []
   showDebugButtons: 0
   debugStartEventKey: 105
   debugClearWavesKey: 108
@@ -543,12 +541,8 @@ MonoBehaviour:
   roomPrefabs:
   - {fileID: 1133307281766849744, guid: d5a8ff85eb433da4bbac76b365d127e6, type: 3}
   - {fileID: 1133307281766849744, guid: d5a8ff85eb433da4bbac76b365d127e6, type: 3}
-  - {fileID: 6045825802650325582, guid: f691004411479bb4c8c9a758650aa775, type: 3}
-  - {fileID: 6045825802650325582, guid: f691004411479bb4c8c9a758650aa775, type: 3}
-  - {fileID: 1059234749075372331, guid: 4942a9f1aca1d8543b410a8a3b94fca5, type: 3}
-  - {fileID: 1059234749075372331, guid: 4942a9f1aca1d8543b410a8a3b94fca5, type: 3}
-  - {fileID: 1059234749075372331, guid: 3fa95c8af715cd74da682444c1f0bfcb, type: 3}
-  - {fileID: 1059234749075372331, guid: 3fa95c8af715cd74da682444c1f0bfcb, type: 3}
+  - {fileID: 2005163135171162853, guid: 0668d74c70dfc7c41afd3a523ad04f32, type: 3}
+  - {fileID: 2005163135171162853, guid: 0668d74c70dfc7c41afd3a523ad04f32, type: 3}
   corridorPrefabs:
   - {fileID: 4158632963112747052, guid: 1e3689983ac3d534197e07eb1e178728, type: 3}
   deadEndPrefabs:
@@ -617,12 +611,12 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1210542690}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 2483767973135500899}
+  m_Father: {fileID: 2483767973135500895}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -1270,17 +1264,17 @@ PrefabInstance:
     - {fileID: 8777548826565050381, guid: d9fad25a5ba93d54da34f557342663f8, type: 3}
     - {fileID: 3230267921803915604, guid: d9fad25a5ba93d54da34f557342663f8, type: 3}
     m_AddedGameObjects:
-    - targetCorrespondingSourceObject: {fileID: 6954193767375070164, guid: d9fad25a5ba93d54da34f557342663f8, type: 3}
-      insertIndex: 1
-      addedObject: {fileID: 1210542691}
-    - targetCorrespondingSourceObject: {fileID: 320669064069120396, guid: d9fad25a5ba93d54da34f557342663f8, type: 3}
-      insertIndex: 1
+    - targetCorrespondingSourceObject: {fileID: 8699285923834245643, guid: d9fad25a5ba93d54da34f557342663f8, type: 3}
+      insertIndex: 10
       addedObject: {fileID: 361245078}
+    - targetCorrespondingSourceObject: {fileID: 8699285923834245643, guid: d9fad25a5ba93d54da34f557342663f8, type: 3}
+      insertIndex: 15
+      addedObject: {fileID: 1210542691}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d9fad25a5ba93d54da34f557342663f8, type: 3}
 --- !u!224 &2483767973135500895 stripped
 RectTransform:
-  m_CorrespondingSourceObject: {fileID: 320669064069120396, guid: d9fad25a5ba93d54da34f557342663f8, type: 3}
+  m_CorrespondingSourceObject: {fileID: 8699285923834245643, guid: d9fad25a5ba93d54da34f557342663f8, type: 3}
   m_PrefabInstance: {fileID: 2483767973135500894}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &2483767973135500896 stripped
@@ -1304,11 +1298,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
---- !u!224 &2483767973135500899 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 6954193767375070164, guid: d9fad25a5ba93d54da34f557342663f8, type: 3}
-  m_PrefabInstance: {fileID: 2483767973135500894}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &6350552718573185839
 PrefabInstance:
   m_ObjectHideFlags: 0

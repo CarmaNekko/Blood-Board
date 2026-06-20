@@ -13,6 +13,9 @@ public class RoomEventRunner : MonoBehaviour
 {
     private const float DoorSafetyDistance = 7f;
 
+    [Header("Power Up Rewards")]
+    [SerializeField] private GameObject[] temporaryPowerUpRewards;
+
     private bool isRunning;
     private RoomInstance eventRoom;
     private RoomEnemySpawner roomSpawner;
@@ -71,6 +74,7 @@ public class RoomEventRunner : MonoBehaviour
         if (shooter != null)
         {
             shooter.RefillManaToMax();
+            GrantTemporaryPowerUpReward(shooter);
         }
 
         ScoreManager.Instance?.AddScoreToCurrent(125);
@@ -104,6 +108,7 @@ public class RoomEventRunner : MonoBehaviour
         if (shooter != null)
         {
             shooter.RefillManaToMax();
+            GrantTemporaryPowerUpReward(shooter);
         }
 
         ScoreManager.Instance?.AddScoreToCurrent(100);
@@ -186,6 +191,7 @@ public class RoomEventRunner : MonoBehaviour
             if (shooter != null)
             {
                 shooter.RefillManaToMax();
+                GrantTemporaryPowerUpReward(shooter);
             }
 
             ScoreManager.Instance?.AddScoreToCurrent(175);
@@ -221,6 +227,17 @@ public class RoomEventRunner : MonoBehaviour
                 door.SetLock(lockState);
             }
         }
+    }
+
+    private void GrantTemporaryPowerUpReward(MagicShooter shooter)
+    {
+        GameObject[] rewards = temporaryPowerUpRewards;
+        if ((rewards == null || rewards.Length == 0) && RoomEventDirector.Instance != null)
+        {
+            rewards = RoomEventDirector.Instance.GetTemporaryPowerUpRewards();
+        }
+
+        PowerUpRewardRoller.TryGrantRandom(shooter, rewards);
     }
 
     private IEnumerator SpawnEventEnemies(int count, bool buffEnemies, MagicColor? requiredColor = null)

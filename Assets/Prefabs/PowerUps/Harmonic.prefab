@@ -125,4 +125,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b14cf24fcb92dae4daa4abdbc18ec277, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PowerUpDrop
+  powerUpId: harmonic_magic
+  displayName: Harmonic Magic
   duration: 60

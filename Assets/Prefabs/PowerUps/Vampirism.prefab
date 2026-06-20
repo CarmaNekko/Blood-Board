@@ -125,4 +125,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 80f38153cc42f05479bca38b6d3e4874, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::VampirismDrop
-  duration: 9999
+  powerUpId: vampirism
+  displayName: Vampirism
+  applyOnlyOnce: 1
+  activateWhenCollected: 1

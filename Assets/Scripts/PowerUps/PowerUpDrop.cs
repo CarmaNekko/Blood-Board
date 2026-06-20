@@ -1,24 +1,8 @@
-using UnityEngine;
-
-public class PowerUpDrop : MonoBehaviour
+public class PowerUpDrop : TemporaryPowerUp
 {
-    [SerializeField] private float duration = 60f;
-
-    private void OnTriggerEnter(Collider other)
+    protected override bool ApplyTo(MagicShooter shooter)
     {
-        if (other.CompareTag("Player"))
-        {
-            MagicShooter shooter = other.GetComponent<MagicShooter>();
-            if (shooter == null)
-            {
-                shooter = other.GetComponentInChildren<MagicShooter>();
-            }
-
-            if (shooter != null)
-            {
-                shooter.ActivateHarmonicPowerUp(duration);
-                Destroy(gameObject);
-            }
-        }
+        shooter.ActivateHarmonicPowerUp(duration);
+        return true;
     }
 }
