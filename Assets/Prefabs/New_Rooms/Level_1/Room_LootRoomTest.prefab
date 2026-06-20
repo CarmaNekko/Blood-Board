@@ -7604,7 +7604,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7699863519736545561, guid: b621bac66dafed044b3f802482dacafd, type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.39012
+      value: 0.07513711
       objectReference: {fileID: 0}
     - target: {fileID: 7699863519736545561, guid: b621bac66dafed044b3f802482dacafd, type: 3}
       propertyPath: m_LocalScale.z
@@ -7612,11 +7612,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7699863519736545561, guid: b621bac66dafed044b3f802482dacafd, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -9.22
+      value: -8.17
       objectReference: {fileID: 0}
     - target: {fileID: 7699863519736545561, guid: b621bac66dafed044b3f802482dacafd, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.28
+      value: 0.19
       objectReference: {fileID: 0}
     - target: {fileID: 7699863519736545561, guid: b621bac66dafed044b3f802482dacafd, type: 3}
       propertyPath: m_LocalPosition.z
@@ -7650,7 +7650,8 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 6448863375373638536, guid: b621bac66dafed044b3f802482dacafd, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
@@ -7675,8 +7676,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9f78215ac908ba948996d064a6ef7248, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Chest
-  LootTable: []
-  Health: 1
+  health: 1
+  explosionForce: 200
+  explosionRadius: 2
+  transparentMaterial: {fileID: 2100000, guid: 4aee4e6d82050ee4ba628ea8e6887277, type: 2}
+  LootTable:
+  - Prefab: {fileID: 1091627858203028328, guid: 22ac102733aa4cd43b9719099f308b2f, type: 3}
+    DropChance: 70
+  - Prefab: {fileID: 246719132695152999, guid: b2da05326a1b5ef42bf2a9342152221b, type: 3}
+    DropChance: 20
+  - Prefab: {fileID: 246719132695152999, guid: 0b62ebb95f0539945832d1519db359dc, type: 3}
+    DropChance: 10
+  lootHeightOffset: 1
 --- !u!4 &4225492856370253112 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7699863519736545561, guid: b621bac66dafed044b3f802482dacafd, type: 3}
