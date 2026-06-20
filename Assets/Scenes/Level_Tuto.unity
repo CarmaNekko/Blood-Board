@@ -7827,14 +7827,8 @@ PrefabInstance:
     - {fileID: 3230267921803915604, guid: d9fad25a5ba93d54da34f557342663f8, type: 3}
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 8699285923834245643, guid: d9fad25a5ba93d54da34f557342663f8, type: 3}
-      insertIndex: 3
+      insertIndex: -1
       addedObject: {fileID: 949248067}
-    - targetCorrespondingSourceObject: {fileID: 8699285923834245643, guid: d9fad25a5ba93d54da34f557342663f8, type: 3}
-      insertIndex: 13
-      addedObject: {fileID: 1014134235}
-    - targetCorrespondingSourceObject: {fileID: 8699285923834245643, guid: d9fad25a5ba93d54da34f557342663f8, type: 3}
-      insertIndex: 14
-      addedObject: {fileID: 732151635}
     - targetCorrespondingSourceObject: {fileID: 8699285923834245643, guid: d9fad25a5ba93d54da34f557342663f8, type: 3}
       insertIndex: -1
       addedObject: {fileID: 110836652}
@@ -7850,6 +7844,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 8699285923834245643, guid: d9fad25a5ba93d54da34f557342663f8, type: 3}
       insertIndex: -1
       addedObject: {fileID: 704290727}
+    - targetCorrespondingSourceObject: {fileID: 6954193767375070164, guid: d9fad25a5ba93d54da34f557342663f8, type: 3}
+      insertIndex: 1
+      addedObject: {fileID: 732151635}
+    - targetCorrespondingSourceObject: {fileID: 320669064069120396, guid: d9fad25a5ba93d54da34f557342663f8, type: 3}
+      insertIndex: 1
+      addedObject: {fileID: 1014134235}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d9fad25a5ba93d54da34f557342663f8, type: 3}
 --- !u!114 &50442134 stripped
@@ -95294,6 +95294,16 @@ Mesh:
       - serializedVersion: 1
         m_IndexStart: 0
         m_IndexCount: 0
+--- !u!224 &585336570 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 320669064069120396, guid: d9fad25a5ba93d54da34f557342663f8, type: 3}
+  m_PrefabInstance: {fileID: 50442133}
+  m_PrefabAsset: {fileID: 0}
+--- !u!224 &585336571 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 6954193767375070164, guid: d9fad25a5ba93d54da34f557342663f8, type: 3}
+  m_PrefabInstance: {fileID: 50442133}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &585916776
 GameObject:
   m_ObjectHideFlags: 0
@@ -118693,7 +118703,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1634048773}
+  m_Father: {fileID: 585336571}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -164558,7 +164568,7 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 1634048773}
+    m_TransformParent: {fileID: 585336570}
     m_Modifications:
     - target: {fileID: 2186806631786903479, guid: 0d61e48256b00054f8cee89eb10a6db7, type: 3}
       propertyPath: fpsDisplay

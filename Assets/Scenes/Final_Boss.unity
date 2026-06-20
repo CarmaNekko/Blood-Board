@@ -526,8 +526,8 @@ MonoBehaviour:
   farRange: 45
   attackCooldown: 2.5
   repelForce: 60
-  repelDamage: 15
   dashSpeed: 35
+  forcedDashTimeout: 8
   jumpHeight: 8
   hoverTime: 1.5
   smashDamageRadius: 5
@@ -769,12 +769,12 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1210542690}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 2483767973135500895}
+  m_Father: {fileID: 2483767973135500899}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -1300,7 +1300,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3542549257043908777, guid: d9fad25a5ba93d54da34f557342663f8, type: 3}
       propertyPath: m_PresetInfoIsWorld
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4011485350280797599, guid: d9fad25a5ba93d54da34f557342663f8, type: 3}
       propertyPath: m_AnchorMax.y
@@ -1434,6 +1434,14 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 7544664797319750577, guid: d9fad25a5ba93d54da34f557342663f8, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -0.000061035156
+      objectReference: {fileID: 0}
+    - target: {fileID: 7544664797319750577, guid: d9fad25a5ba93d54da34f557342663f8, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -0.000061035156
+      objectReference: {fileID: 0}
     - target: {fileID: 7727883741154552903, guid: d9fad25a5ba93d54da34f557342663f8, type: 3}
       propertyPath: m_IsActive
       value: 1
@@ -1560,7 +1568,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8877618834409404862, guid: d9fad25a5ba93d54da34f557342663f8, type: 3}
       propertyPath: m_PresetInfoIsWorld
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8889087984771861125, guid: d9fad25a5ba93d54da34f557342663f8, type: 3}
       propertyPath: m_IsActive
@@ -1572,17 +1580,17 @@ PrefabInstance:
     - {fileID: 8777548826565050381, guid: d9fad25a5ba93d54da34f557342663f8, type: 3}
     - {fileID: 3230267921803915604, guid: d9fad25a5ba93d54da34f557342663f8, type: 3}
     m_AddedGameObjects:
-    - targetCorrespondingSourceObject: {fileID: 8699285923834245643, guid: d9fad25a5ba93d54da34f557342663f8, type: 3}
-      insertIndex: 10
-      addedObject: {fileID: 361245078}
-    - targetCorrespondingSourceObject: {fileID: 8699285923834245643, guid: d9fad25a5ba93d54da34f557342663f8, type: 3}
-      insertIndex: 15
+    - targetCorrespondingSourceObject: {fileID: 6954193767375070164, guid: d9fad25a5ba93d54da34f557342663f8, type: 3}
+      insertIndex: 1
       addedObject: {fileID: 1210542691}
+    - targetCorrespondingSourceObject: {fileID: 320669064069120396, guid: d9fad25a5ba93d54da34f557342663f8, type: 3}
+      insertIndex: 1
+      addedObject: {fileID: 361245078}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d9fad25a5ba93d54da34f557342663f8, type: 3}
 --- !u!224 &2483767973135500895 stripped
 RectTransform:
-  m_CorrespondingSourceObject: {fileID: 8699285923834245643, guid: d9fad25a5ba93d54da34f557342663f8, type: 3}
+  m_CorrespondingSourceObject: {fileID: 320669064069120396, guid: d9fad25a5ba93d54da34f557342663f8, type: 3}
   m_PrefabInstance: {fileID: 2483767973135500894}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &2483767973135500896 stripped
@@ -1606,6 +1614,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+--- !u!224 &2483767973135500899 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 6954193767375070164, guid: d9fad25a5ba93d54da34f557342663f8, type: 3}
+  m_PrefabInstance: {fileID: 2483767973135500894}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &6350552718573185839
 PrefabInstance:
   m_ObjectHideFlags: 0
