@@ -14,30 +14,10 @@ public class Chest : DestructiblePillar
 
     protected override void Shatter()
     {
-        if (!TryDropPowerUp())
-        {
-            DropLoot();
-        }
+        DropLoot();
 
         base.Shatter();
         Destroy(gameObject, 5f);
-    }
-    private bool TryDropPowerUp()
-    {
-        GameObject powerUp = PowerUpRewardRoller.PickChestPowerUp(
-            temporaryPowerUps,
-            permanentAndPassivePowerUps,
-            temporaryPowerUpChance,
-            permanentOrPassivePowerUpChance);
-
-        if (powerUp == null)
-        {
-            return false;
-        }
-
-        Vector3 spawnPosition = transform.position + Vector3.up * lootHeightOffset;
-        Instantiate(powerUp, spawnPosition, Quaternion.identity);
-        return true;
     }
 
     private void DropLoot()
@@ -45,17 +25,53 @@ public class Chest : DestructiblePillar
         float randomValue = Random.Range(0f, 100f);
         float currentChance = 0f;
 
-        foreach (LootItem loot in LootTable)
+        if (LootTable != null)
         {
-            currentChance += loot.DropChance;
-
-            if (randomValue <= currentChance)
+            foreach (LootItem loot in LootTable)
             {
-                Vector3 spawnPosition = transform.position + Vector3.up * lootHeightOffset;
-                Instantiate(loot.Prefab, spawnPosition, Quaternion.identity);
+                if (loot == null || loot.Prefab == null)
+                {
+                    continue;
+                }
 
-                break;
+                currentChance += loot.DropChance;
+
+                if (randomValue <= currentChance)
+                {
+                    SpawnLoot(loot.Prefab);
+                    return;
+                }
             }
         }
+
+        currentChance += temporaryPowerUpChance;
+        if (randomValue <= currentChance && TryDropPowerUp(temporaryPowerUps))
+        {
+            return;
+        }
+
+        currentChance += permanentOrPassivePowerUpChance;
+        if (randomValue <= currentChance)
+        {
+            TryDropPowerUp(permanentAndPassivePowerUps);
+        }
+    }
+
+    private bool TryDropPowerUp(GameObject[] powerUps)
+    {
+        GameObject powerUp = PowerUpRewardRoller.PickRandomValidPowerUp(powerUps);
+        if (powerUp == null)
+        {
+            return false;
+        }
+
+        SpawnLoot(powerUp);
+        return true;
+    }
+
+    private void SpawnLoot(GameObject prefab)
+    {
+        Vector3 spawnPosition = transform.position + Vector3.up * lootHeightOffset;
+        Instantiate(prefab, spawnPosition, Quaternion.identity);
     }
 }

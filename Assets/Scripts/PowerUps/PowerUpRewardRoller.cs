@@ -36,6 +36,11 @@ public static class PowerUpRewardRoller
         return null;
     }
 
+    public static GameObject PickRandomValidPowerUp(GameObject[] powerUpPrefabs)
+    {
+        return GetRandomValidPowerUp(powerUpPrefabs);
+    }
+
     private static GameObject GetRandomValidPowerUp(GameObject[] powerUpPrefabs)
     {
         if (powerUpPrefabs == null || powerUpPrefabs.Length == 0)

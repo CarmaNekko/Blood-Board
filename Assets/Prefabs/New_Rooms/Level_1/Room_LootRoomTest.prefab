@@ -7682,12 +7682,16 @@ MonoBehaviour:
   transparentMaterial: {fileID: 2100000, guid: 4aee4e6d82050ee4ba628ea8e6887277, type: 2}
   LootTable:
   - Prefab: {fileID: 1091627858203028328, guid: 22ac102733aa4cd43b9719099f308b2f, type: 3}
-    DropChance: 70
-  - Prefab: {fileID: 246719132695152999, guid: b2da05326a1b5ef42bf2a9342152221b, type: 3}
-    DropChance: 20
-  - Prefab: {fileID: 246719132695152999, guid: 0b62ebb95f0539945832d1519db359dc, type: 3}
-    DropChance: 10
+    DropChance: 75
   lootHeightOffset: 1
+  temporaryPowerUps:
+  - {fileID: 246719132695152999, guid: b2da05326a1b5ef42bf2a9342152221b, type: 3}
+  - {fileID: 246719132695152999, guid: e744d245b8c8c1e4590ee6ed5e4697be, type: 3}
+  permanentAndPassivePowerUps:
+  - {fileID: 246719132695152999, guid: 0b62ebb95f0539945832d1519db359dc, type: 3}
+  - {fileID: 246719132695152999, guid: b5ccda3257954ff1ab59f195eef65214, type: 3}
+  temporaryPowerUpChance: 20
+  permanentOrPassivePowerUpChance: 5
 --- !u!4 &4225492856370253112 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7699863519736545561, guid: b621bac66dafed044b3f802482dacafd, type: 3}
