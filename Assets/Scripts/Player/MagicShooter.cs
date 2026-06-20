@@ -100,7 +100,7 @@ public class MagicShooter : MonoBehaviour
 
     void Update()
     {
-        if (PauseScreen.IsPaused || TutorialMessage.IsTutorialActive || isPreparingToShoot) return;
+        if (PauseScreen.IsPaused || TutorialMessage.IsTutorialActive || PowerUpShopUI.IsOpen || isPreparingToShoot) return;
 
         HandleHarmonicTimer();
         HandleBulletRainTimer();
