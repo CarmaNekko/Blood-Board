@@ -331,7 +331,7 @@ public class QueenBossController : MonoBehaviour
     {
         Vector3 spawnPos = new Vector3(
             center.x + Random.Range(-radius, radius),
-            0.1f,
+            0.5f,
             center.z + Random.Range(-radius, radius)
         );
 
