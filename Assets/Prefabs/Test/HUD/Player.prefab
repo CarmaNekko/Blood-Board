@@ -298,7 +298,6 @@ MonoBehaviour:
   jumpForce: 2
   gravity: -19.81
   playerCamera: {fileID: 1012640326866445846}
-  mouseSensitivity: 220
   groundCheck: {fileID: 8169621369389802030}
   groundDistance: 0.4
   groundMask:
@@ -323,9 +322,10 @@ MonoBehaviour:
   whiteSlashPrefab: {fileID: 4196008582005932241, guid: 231dfd9f3edf483428d9957693187f22, type: 3}
   blackSlashPrefab: {fileID: 6090206308156702687, guid: 5b77fd4af1800b74db7a7ec4c88969dc, type: 3}
   harmonicSlashPrefab: {fileID: 3537563102514347109, guid: 032000ac57a7a7548bfc53a65f0d1c35, type: 3}
-  maxChargePercent: 0.2
+  slashManaCostPercent: 0.48
   chargeSpeed: 40
   timeToStartCharge: 0.2
+  hasSlashAttack: 0
   whiteBulletRainPrefab: {fileID: 1191917644595795746, guid: 0d97b7248d6fa4a47a837a548f8ceb83, type: 3}
   blackBulletRainPrefab: {fileID: 689271266387066930, guid: 28dcb7e00cc24264e95e4a1a2956ed3b, type: 3}
   harmonicBulletRainPrefab: {fileID: 3930489931310870866, guid: 606e720476fcb124b9c8f8492e8701d4, type: 3}

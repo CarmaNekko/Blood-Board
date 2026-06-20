@@ -1,24 +1,8 @@
-using UnityEngine;
-
-public class BulletRainDrop : MonoBehaviour
+public class BulletRainDrop : TemporaryPowerUp
 {
-    [SerializeField] private float duration = 20f;
-
-    private void OnTriggerEnter(Collider other)
+    protected override bool ApplyTo(MagicShooter shooter)
     {
-        if (other.CompareTag("Player"))
-        {
-            MagicShooter shooter = other.GetComponent<MagicShooter>();
-            if (shooter == null)
-            {
-                shooter = other.GetComponentInChildren<MagicShooter>();
-            }
-
-            if (shooter != null)
-            {
-                shooter.ActivateBulletRainAttack(duration);
-                Destroy(gameObject);
-            }
-        }
+        shooter.ActivateBulletRainAttack(duration);
+        return true;
     }
 }

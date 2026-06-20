@@ -25,6 +25,9 @@ public class RoomEventDirector : MonoBehaviour
     [SerializeField, Range(0f, 1f)] private float baseChance = 0.15f;
     [SerializeField, Range(0f, 1f)] private float pityIncrement = 0.10f;
 
+    [Header("Power Up Rewards")]
+    [SerializeField] private GameObject[] temporaryPowerUpRewards;
+
     [Header("Debug")]
     [SerializeField] private bool showDebugButtons = false;
     [SerializeField] private KeyCode debugStartEventKey = KeyCode.I;
@@ -192,6 +195,11 @@ public class RoomEventDirector : MonoBehaviour
         RoomEventType selectedEvent = (RoomEventType)UnityEngine.Random.Range(0, Enum.GetValues(typeof(RoomEventType)).Length);
         runner.StartEvent(selectedEvent, room);
         Debug.Log($"Debug evento inesperado invocado en {room.name}: {selectedEvent}");
+    }
+
+    public GameObject[] GetTemporaryPowerUpRewards()
+    {
+        return temporaryPowerUpRewards;
     }
 
     public void DebugClearCurrentRoomWaves()

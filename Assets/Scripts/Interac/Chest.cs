@@ -6,11 +6,38 @@ public class Chest : DestructiblePillar
     public LootItem[] LootTable;
     public float lootHeightOffset = 1f;
 
+    [Header("Power Up Loot")]
+    [SerializeField] private GameObject[] temporaryPowerUps;
+    [SerializeField] private GameObject[] permanentAndPassivePowerUps;
+    [SerializeField, Range(0f, 100f)] private float temporaryPowerUpChance = 20f;
+    [SerializeField, Range(0f, 100f)] private float permanentOrPassivePowerUpChance = 5f;
+
     protected override void Shatter()
     {
-        DropLoot();
+        if (!TryDropPowerUp())
+        {
+            DropLoot();
+        }
+
         base.Shatter();
         Destroy(gameObject, 5f);
+    }
+    private bool TryDropPowerUp()
+    {
+        GameObject powerUp = PowerUpRewardRoller.PickChestPowerUp(
+            temporaryPowerUps,
+            permanentAndPassivePowerUps,
+            temporaryPowerUpChance,
+            permanentOrPassivePowerUpChance);
+
+        if (powerUp == null)
+        {
+            return false;
+        }
+
+        Vector3 spawnPosition = transform.position + Vector3.up * lootHeightOffset;
+        Instantiate(powerUp, spawnPosition, Quaternion.identity);
+        return true;
     }
 
     private void DropLoot()

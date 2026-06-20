@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using UnityEngine.Serialization;
 
 public class MagicShooter : MonoBehaviour
 {
@@ -13,9 +14,11 @@ public class MagicShooter : MonoBehaviour
     [SerializeField] private GameObject whiteSlashPrefab;
     [SerializeField] private GameObject blackSlashPrefab;
     [SerializeField] private GameObject harmonicSlashPrefab;
-    [SerializeField] private float maxChargePercent = 0.20f;
+    [FormerlySerializedAs("maxChargePercent")]
+    [SerializeField, Range(0.05f, 1f)] private float slashManaCostPercent = 0.20f;
     [SerializeField] private float chargeSpeed = 40f;
     [SerializeField] private float timeToStartCharge = 0.2f;
+    [SerializeField] private bool hasSlashAttack = false;
 
     [Header("Bullet Rain Attack Setup")]
     [SerializeField] private GameObject whiteBulletRainPrefab;
@@ -64,7 +67,6 @@ public class MagicShooter : MonoBehaviour
     private float harmonicTimer = 0f;
 
     private bool isVampirismActive = false;
-    private float vampirismTimer = 0f;
 
     private bool isBulletRainActive = false;
     private float bulletRainTimer = 0f;
@@ -101,7 +103,6 @@ public class MagicShooter : MonoBehaviour
         if (PauseScreen.IsPaused || TutorialMessage.IsTutorialActive || isPreparingToShoot) return;
 
         HandleHarmonicTimer();
-        HandleVampirismTimer();
         HandleBulletRainTimer();
 
         if (!isChargingSlash)
@@ -136,6 +137,12 @@ public class MagicShooter : MonoBehaviour
                     StartCoroutine(HandleBulletRainShoot(MagicColor.Black));
                 }
             }
+            return;
+        }
+
+        if (!hasSlashAttack)
+        {
+            HandleBaseMagicInput(fire1Up, fire2Up);
             return;
         }
 
@@ -189,10 +196,26 @@ public class MagicShooter : MonoBehaviour
         }
     }
 
+    private void HandleBaseMagicInput(bool fire1Up, bool fire2Up)
+    {
+        if (fire1Up)
+        {
+            if (isHarmonicActive) StartCoroutine(HandleHarmonicShoot());
+            else if (!isWhiteOverheated && currentWhiteMana >= whiteManaCost) StartCoroutine(HandleShootRequest(whiteMagicPrefab, true));
+        }
+        else if (fire2Up)
+        {
+            if (isHarmonicActive) StartCoroutine(HandleHarmonicShoot());
+            else if (!isBlackOverheated && currentBlackMana >= blackManaCost) StartCoroutine(HandleShootRequest(blackMagicPrefab, false));
+        }
+
+        holdTimer = 0f;
+    }
+
     private void StartCharging(MagicColor color)
     {
-        if ((color == MagicColor.White && (isWhiteOverheated || currentWhiteMana <= 0)) ||
-            (color == MagicColor.Black && (isBlackOverheated || currentBlackMana <= 0)))
+        if ((color == MagicColor.White && (isWhiteOverheated || currentWhiteMana < GetSlashManaCost(MagicColor.White))) ||
+            (color == MagicColor.Black && (isBlackOverheated || currentBlackMana < GetSlashManaCost(MagicColor.Black))))
         {
             return;
         }
@@ -206,7 +229,7 @@ public class MagicShooter : MonoBehaviour
     {
         if (chargingMagicColor == MagicColor.White)
         {
-            float maxDrain = maxWhiteMana * maxChargePercent;
+            float maxDrain = maxWhiteMana * slashManaCostPercent;
             float allowedDrain = maxDrain - currentChargeManaDrained;
             if (allowedDrain > 0 && currentWhiteMana > 0)
             {
@@ -218,7 +241,7 @@ public class MagicShooter : MonoBehaviour
         }
         else if (chargingMagicColor == MagicColor.Black)
         {
-            float maxDrain = maxBlackMana * maxChargePercent;
+            float maxDrain = maxBlackMana * slashManaCostPercent;
             float allowedDrain = maxDrain - currentChargeManaDrained;
             if (allowedDrain > 0 && currentBlackMana > 0)
             {
@@ -230,7 +253,7 @@ public class MagicShooter : MonoBehaviour
         }
         else if (chargingMagicColor == MagicColor.Harmonic)
         {
-            float maxDrain = 100f * maxChargePercent;
+            float maxDrain = 100f * slashManaCostPercent;
             float allowedDrain = maxDrain - currentChargeManaDrained;
             if (allowedDrain > 0)
             {
@@ -255,22 +278,69 @@ public class MagicShooter : MonoBehaviour
         else if (chargingMagicColor == MagicColor.Black) slashPrefab = blackSlashPrefab;
         else if (chargingMagicColor == MagicColor.Harmonic) slashPrefab = harmonicSlashPrefab;
 
-        if (slashPrefab != null)
+        if (slashPrefab == null || !TryPayRemainingSlashManaCost())
         {
-            GameObject projectile = Instantiate(slashPrefab, firePoint.position, firePoint.rotation * slashPrefab.transform.rotation);
+            return;
+        }
 
-            if (isVampirismActive)
+        GameObject projectile = Instantiate(slashPrefab, firePoint.position, firePoint.rotation * slashPrefab.transform.rotation);
+
+        if (isVampirismActive)
+        {
+            SlashProjectile sp = projectile.GetComponent<SlashProjectile>();
+            if (sp != null) sp.appliesVampirism = true;
+        }
+
+        Rigidbody rb = projectile.GetComponent<Rigidbody>();
+        if (rb != null) rb.linearVelocity = firePoint.forward * shootForce;
+        Destroy(projectile, 2f);
+
+        if (cameraEffects != null) cameraEffects.ApplyShootRecoil();
+    }
+
+    private float GetSlashManaCost(MagicColor color)
+    {
+        if (color == MagicColor.White)
+        {
+            return maxWhiteMana * slashManaCostPercent;
+        }
+
+        if (color == MagicColor.Black)
+        {
+            return maxBlackMana * slashManaCostPercent;
+        }
+
+        return 100f * slashManaCostPercent;
+    }
+
+    private bool TryPayRemainingSlashManaCost()
+    {
+        float remainingCost = Mathf.Max(0f, GetSlashManaCost(chargingMagicColor) - currentChargeManaDrained);
+
+        if (chargingMagicColor == MagicColor.White)
+        {
+            if (currentWhiteMana < remainingCost)
             {
-                SlashProjectile sp = projectile.GetComponent<SlashProjectile>();
-                if (sp != null) sp.appliesVampirism = true;
+                return false;
             }
 
-            Rigidbody rb = projectile.GetComponent<Rigidbody>();
-            if (rb != null) rb.linearVelocity = firePoint.forward * shootForce;
-            Destroy(projectile, 2f);
-
-            if (cameraEffects != null) cameraEffects.ApplyShootRecoil();
+            currentWhiteMana -= remainingCost;
+            if (currentWhiteMana < whiteManaCost) isWhiteOverheated = true;
         }
+        else if (chargingMagicColor == MagicColor.Black)
+        {
+            if (currentBlackMana < remainingCost)
+            {
+                return false;
+            }
+
+            currentBlackMana -= remainingCost;
+            if (currentBlackMana < blackManaCost) isBlackOverheated = true;
+        }
+
+        currentChargeManaDrained += remainingCost;
+        UpdateUI();
+        return true;
     }
 
     private IEnumerator HandleBulletRainShoot(MagicColor color)
@@ -356,18 +426,6 @@ public class MagicShooter : MonoBehaviour
             if (harmonicTimer <= 0f)
             {
                 isHarmonicActive = false;
-            }
-        }
-    }
-
-    private void HandleVampirismTimer()
-    {
-        if (isVampirismActive)
-        {
-            vampirismTimer -= Time.deltaTime;
-            if (vampirismTimer <= 0f)
-            {
-                isVampirismActive = false;
             }
         }
     }
@@ -536,15 +594,42 @@ public class MagicShooter : MonoBehaviour
         harmonicTimer = duration;
     }
 
-    public void ActivateVampirism(float duration)
+    public bool UnlockVampirism()
     {
+        if (isVampirismActive)
+        {
+            return false;
+        }
+
         isVampirismActive = true;
-        vampirismTimer = duration;
+        return true;
     }
 
     public void ActivateBulletRainAttack(float duration)
     {
         isBulletRainActive = true;
         bulletRainTimer = duration;
+    }
+
+    public bool HasSlashAttack()
+    {
+        return hasSlashAttack;
+    }
+
+    public bool HasVampirism()
+    {
+        return isVampirismActive;
+    }
+
+    public bool UnlockSlashAttack(float manaCostPercent)
+    {
+        if (hasSlashAttack)
+        {
+            return false;
+        }
+
+        hasSlashAttack = true;
+        slashManaCostPercent = manaCostPercent;
+        return true;
     }
 }

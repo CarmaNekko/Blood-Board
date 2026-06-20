@@ -465,6 +465,7 @@ MonoBehaviour:
   limitToProceduralScene: 1
   baseChance: 0.15
   pityIncrement: 0.15
+  temporaryPowerUpRewards: []
   showDebugButtons: 0
   debugStartEventKey: 105
   debugClearWavesKey: 108

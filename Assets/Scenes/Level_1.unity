@@ -465,6 +465,9 @@ MonoBehaviour:
   limitToProceduralScene: 1
   baseChance: 0.15
   pityIncrement: 0.15
+  temporaryPowerUpRewards:
+  - {fileID: 246719132695152999, guid: b2da05326a1b5ef42bf2a9342152221b, type: 3}
+  - {fileID: 246719132695152999, guid: e744d245b8c8c1e4590ee6ed5e4697be, type: 3}
   showDebugButtons: 0
   debugStartEventKey: 105
   debugClearWavesKey: 108
