@@ -27,13 +27,22 @@ public class MagicShooter : MonoBehaviour
     [SerializeField] private float bulletRainSpawnHeight = 15f;
     [SerializeField] private float bulletRainDistance = 15f;
 
+    [Header("Anomalous Soul Setup")]
+    [SerializeField] private bool hasAnomalousSoul = false;
+    [SerializeField] private float anomalousSoulRange = 20f;
+    [SerializeField, Range(10f, 180f)] private float anomalousSoulFOV = 90f;
+    [SerializeField] private LayerMask enemyLayer; 
+    [SerializeField] private LayerMask environmentLayer; 
+    [SerializeField] private GameObject anomalousSoulWhitePrefab; 
+    [SerializeField] private GameObject anomalousSoulBlackPrefab;
+
     [Header("Shooting Setup")]
     [SerializeField] private Transform firePoint;
     [SerializeField] private float shootForce = 30f;
     [SerializeField] private PlayerCameraEffects cameraEffects;
     [SerializeField] private PlayerMovement playerMovement;
 
-    [Header("Arma Pesada (Inercia)")]
+    [Header("Delay Shoot")]
     [SerializeField] private float movingShootDelay = 0.25f;
     private bool isPreparingToShoot = false;
 
@@ -483,7 +492,7 @@ public class MagicShooter : MonoBehaviour
         isPreparingToShoot = false;
     }
 
-    private void Shoot(GameObject magicPrefab)
+private void Shoot(GameObject magicPrefab)
     {
         if (magicPrefab != null)
         {
@@ -503,6 +512,67 @@ public class MagicShooter : MonoBehaviour
             Destroy(projectile, 2f);
 
             if (cameraEffects != null) cameraEffects.ApplyShootRecoil();
+
+            if (hasAnomalousSoul)
+            {
+                GameObject anomalousPrefab = magicPrefab == whiteMagicPrefab ? anomalousSoulWhitePrefab : 
+                                            (magicPrefab == blackMagicPrefab ? anomalousSoulBlackPrefab : null);
+                
+                if (anomalousPrefab != null)
+                {
+                    FireAnomalousSoul(anomalousPrefab);
+                }
+            }
+        }
+    }
+
+    private void FireAnomalousSoul(GameObject anomalousPrefab)
+    {
+        Transform primaryTarget = null;
+        
+        // 1. Identify the primary target to avoid shooting it twice
+        if (Physics.Raycast(firePoint.position, firePoint.forward, out RaycastHit mainHit, anomalousSoulRange, enemyLayer))
+        {
+            primaryTarget = mainHit.transform;
+        }
+
+        // 2. Find all enemies within range
+        Collider[] hits = Physics.OverlapSphere(firePoint.position, anomalousSoulRange, enemyLayer);
+        int targetsFound = 0;
+        int maxTargets = 2; // Number of extra projectiles
+
+        foreach (Collider hit in hits)
+        {
+            if (targetsFound >= maxTargets) break;
+
+            Transform enemy = hit.transform;
+            if (enemy == primaryTarget) continue;
+
+            Vector3 directionToEnemy = (enemy.position - firePoint.position).normalized;
+            float angleToEnemy = Vector3.Angle(firePoint.forward, directionToEnemy);
+            if (angleToEnemy <= anomalousSoulFOV / 2f)
+            {
+                float distanceToEnemy = Vector3.Distance(firePoint.position, enemy.position);
+                if (!Physics.Raycast(firePoint.position, directionToEnemy, distanceToEnemy, environmentLayer))
+                {
+                    GameObject anomalousObj = Instantiate(anomalousPrefab, firePoint.position, firePoint.rotation);
+                    
+                    if (isVampirismActive)
+                    {
+                        MagicProjectile mp = anomalousObj.GetComponent<MagicProjectile>();
+                        if (mp != null) mp.appliesVampirism = true;
+                    }
+                    HomingProjectile homing = anomalousObj.GetComponent<HomingProjectile>();
+                    if (homing != null)
+                    {
+                        homing.target = enemy;
+                        homing.speed = shootForce;
+                    }
+
+                    Destroy(anomalousObj, 2f);
+                    targetsFound++;
+                }
+            }
         }
     }
 
@@ -602,6 +672,18 @@ public class MagicShooter : MonoBehaviour
         }
 
         isVampirismActive = true;
+        return true;
+    }
+
+    public bool HasAnomalousSoul()
+    {
+        return hasAnomalousSoul;
+    }
+
+    public bool UnlockAnomalousSoul()
+    {
+        if (hasAnomalousSoul) return false;
+        hasAnomalousSoul = true;
         return true;
     }
 
