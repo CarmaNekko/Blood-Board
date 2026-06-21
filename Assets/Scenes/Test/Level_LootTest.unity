@@ -539,15 +539,15 @@ MonoBehaviour:
   startRoomPrefab: {fileID: 9215206470418219887, guid: ab716a295d34c3347bab88ef4803a2a5, type: 3}
   finalRoomPrefab: {fileID: 3206246361914026675, guid: 37371f21f037fd04880b88901e668373, type: 3}
   roomPrefabs:
-  - {fileID: 1133307281766849744, guid: d5a8ff85eb433da4bbac76b365d127e6, type: 3}
-  - {fileID: 1133307281766849744, guid: d5a8ff85eb433da4bbac76b365d127e6, type: 3}
+  - {fileID: 6045825802650325582, guid: f691004411479bb4c8c9a758650aa775, type: 3}
+  - {fileID: 1059234749075372331, guid: 3fa95c8af715cd74da682444c1f0bfcb, type: 3}
   - {fileID: 2005163135171162853, guid: 0668d74c70dfc7c41afd3a523ad04f32, type: 3}
   - {fileID: 2005163135171162853, guid: 0668d74c70dfc7c41afd3a523ad04f32, type: 3}
   corridorPrefabs:
   - {fileID: 4158632963112747052, guid: 1e3689983ac3d534197e07eb1e178728, type: 3}
   deadEndPrefabs:
   - {fileID: 6291659561367954977, guid: c5a74124a8fa41e4784ac8278f4665dd, type: 3}
-  maxRooms: 6
+  maxRooms: 8
   collisionMask:
     serializedVersion: 2
     m_Bits: 128
@@ -1265,10 +1265,10 @@ PrefabInstance:
     - {fileID: 3230267921803915604, guid: d9fad25a5ba93d54da34f557342663f8, type: 3}
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 8699285923834245643, guid: d9fad25a5ba93d54da34f557342663f8, type: 3}
-      insertIndex: 10
+      insertIndex: -1
       addedObject: {fileID: 361245078}
     - targetCorrespondingSourceObject: {fileID: 8699285923834245643, guid: d9fad25a5ba93d54da34f557342663f8, type: 3}
-      insertIndex: 15
+      insertIndex: -1
       addedObject: {fileID: 1210542691}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d9fad25a5ba93d54da34f557342663f8, type: 3}
@@ -1390,6 +1390,10 @@ PrefabInstance:
     - target: {fileID: 1156367064293503880, guid: 5e95e756df1eba343ba25da4ed081cbb, type: 3}
       propertyPath: blackManaRegen
       value: 18
+      objectReference: {fileID: 0}
+    - target: {fileID: 1156367064293503880, guid: 5e95e756df1eba343ba25da4ed081cbb, type: 3}
+      propertyPath: hasSlashAttack
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1156367064293503880, guid: 5e95e756df1eba343ba25da4ed081cbb, type: 3}
       propertyPath: playerMovement

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class Chest : DestructiblePillar
+public class Chest : Destruction
 {
     [Header("Loot")]
     public LootItem[] LootTable;
@@ -12,12 +12,15 @@ public class Chest : DestructiblePillar
     [SerializeField, Range(0f, 100f)] private float temporaryPowerUpChance = 20f;
     [SerializeField, Range(0f, 100f)] private float permanentOrPassivePowerUpChance = 5f;
 
-    protected override void Shatter()
-    {
-        DropLoot();
+    private bool isOpened = false;
 
-        base.Shatter();
-        Destroy(gameObject, 5f);
+    public override void DamageAtPoint(Vector3 impactPoint, float radius, float force)
+    {
+        if (isOpened) return;
+        isOpened = true;
+
+        DropLoot();
+        ShatterFull(impactPoint, force);
     }
 
     private void DropLoot()
