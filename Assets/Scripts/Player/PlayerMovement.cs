@@ -44,7 +44,7 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
-        if (PauseScreen.IsPaused || TutorialMessage.IsTutorialActive)
+        if (PauseScreen.IsPaused || TutorialMessage.IsTutorialActive || PowerUpShopUI.IsOpen)
         {
             return;
         }

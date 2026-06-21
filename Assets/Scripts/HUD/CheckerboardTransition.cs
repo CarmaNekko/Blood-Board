@@ -290,7 +290,6 @@ public class CheckerboardTransition : MonoBehaviour
 
     private IEnumerator FadeOutAfterFloorSign()
     {
-        // Espera hasta que el cartel del piso haya desaparecido
         yield return new WaitUntil(() => !PauseScreen.IsFloorSignActive);
         yield return StartCoroutine(AnimateFadeOut());
     }
