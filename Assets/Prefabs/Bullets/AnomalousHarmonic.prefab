@@ -14,9 +14,9 @@ GameObject:
   - component: {fileID: 4944943811138627613}
   - component: {fileID: 7552737501024555124}
   - component: {fileID: -8764795551053696983}
-  - component: {fileID: 5359638934182240129}
+  - component: {fileID: -1383239141298721710}
   m_Layer: 13
-  m_Name: AnomalousWhite
+  m_Name: AnomalousHarmonic
   m_TagString: WhiteMagic
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -72,7 +72,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: b426b3f1bda25a346a83a1d82152a430, type: 2}
+  - {fileID: 2100000, guid: 071eb8160c68d5a44a2fd2d3fdb89abe, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -156,13 +156,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5dc440eca4ed7604db2c855f75c81448, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MagicProjectile
-  projectileColor: 0
+  projectileColor: 2
   damage: 4
   explosionParticlesPrefab: {fileID: 6355656772950184143, guid: 45981744c3e66f54292110b2f5614928, type: 3}
   destructionRadius: 1.2
   impactForce: 150
   appliesVampirism: 0
---- !u!114 &5359638934182240129
+--- !u!114 &-1383239141298721710
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -5025,17 +5025,45 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 13
       objectReference: {fileID: 0}
+    - target: {fileID: 2803325680486946072, guid: a3f4a5d5821c0f642a4b326b2b6a5e23, type: 3}
+      propertyPath: m_Parameters.colorGradient.ctime0
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2803325680486946072, guid: a3f4a5d5821c0f642a4b326b2b6a5e23, type: 3}
+      propertyPath: m_Parameters.colorGradient.key0.b
+      value: 0.30810624
+      objectReference: {fileID: 0}
+    - target: {fileID: 2803325680486946072, guid: a3f4a5d5821c0f642a4b326b2b6a5e23, type: 3}
+      propertyPath: m_Parameters.colorGradient.key0.g
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2803325680486946072, guid: a3f4a5d5821c0f642a4b326b2b6a5e23, type: 3}
+      propertyPath: m_Parameters.colorGradient.key0.r
+      value: 0.4056604
+      objectReference: {fileID: 0}
+    - target: {fileID: 4279850528569166209, guid: a3f4a5d5821c0f642a4b326b2b6a5e23, type: 3}
+      propertyPath: InitialModule.startColor.maxColor.b
+      value: 0.78170156
+      objectReference: {fileID: 0}
+    - target: {fileID: 4279850528569166209, guid: a3f4a5d5821c0f642a4b326b2b6a5e23, type: 3}
+      propertyPath: InitialModule.startColor.maxColor.g
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4279850528569166209, guid: a3f4a5d5821c0f642a4b326b2b6a5e23, type: 3}
+      propertyPath: InitialModule.startColor.maxColor.r
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4452077231471352749, guid: a3f4a5d5821c0f642a4b326b2b6a5e23, type: 3}
       propertyPath: InitialModule.startColor.maxColor.b
-      value: 0.24158953
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4452077231471352749, guid: a3f4a5d5821c0f642a4b326b2b6a5e23, type: 3}
       propertyPath: InitialModule.startColor.maxColor.g
-      value: 0.4881906
+      value: 0.2028302
       objectReference: {fileID: 0}
     - target: {fileID: 4452077231471352749, guid: a3f4a5d5821c0f642a4b326b2b6a5e23, type: 3}
       propertyPath: InitialModule.startColor.maxColor.r
-      value: 0.5754717
+      value: 0.69408536
       objectReference: {fileID: 0}
     - target: {fileID: 5941724225406207372, guid: a3f4a5d5821c0f642a4b326b2b6a5e23, type: 3}
       propertyPath: m_Enabled

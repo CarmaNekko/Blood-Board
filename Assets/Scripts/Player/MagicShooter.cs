@@ -35,6 +35,7 @@ public class MagicShooter : MonoBehaviour
     [SerializeField] private LayerMask environmentLayer; 
     [SerializeField] private GameObject anomalousSoulWhitePrefab; 
     [SerializeField] private GameObject anomalousSoulBlackPrefab;
+    [SerializeField] private GameObject anomalousSoulHarmonicPrefab;
 
     [Header("Shooting Setup")]
     [SerializeField] private Transform firePoint;
@@ -453,6 +454,11 @@ public class MagicShooter : MonoBehaviour
 
     private IEnumerator HandleHarmonicShoot()
     {
+        if (isWhiteOverheated || isBlackOverheated || currentWhiteMana < whiteManaCost || currentBlackMana < blackManaCost)
+        {
+            yield break;
+        }
+
         isPreparingToShoot = true;
         bool isMoving = (playerMovement != null && playerMovement.CurrentVelocity.magnitude > 0.5f);
 
@@ -462,6 +468,14 @@ public class MagicShooter : MonoBehaviour
         }
 
         Shoot(harmonicMagicPrefab);
+        currentWhiteMana -= whiteManaCost;
+        currentBlackMana -= blackManaCost;
+        
+        if (currentWhiteMana < whiteManaCost) isWhiteOverheated = true;
+        if (currentBlackMana < blackManaCost) isBlackOverheated = true;
+        
+        UpdateUI();
+
         isPreparingToShoot = false;
     }
 
@@ -515,8 +529,11 @@ private void Shoot(GameObject magicPrefab)
 
             if (hasAnomalousSoul)
             {
-                GameObject anomalousPrefab = magicPrefab == whiteMagicPrefab ? anomalousSoulWhitePrefab : 
-                                            (magicPrefab == blackMagicPrefab ? anomalousSoulBlackPrefab : null);
+                GameObject anomalousPrefab = null;
+                
+                if (magicPrefab == whiteMagicPrefab) anomalousPrefab = anomalousSoulWhitePrefab;
+                else if (magicPrefab == blackMagicPrefab) anomalousPrefab = anomalousSoulBlackPrefab;
+                else if (magicPrefab == harmonicMagicPrefab) anomalousPrefab = anomalousSoulHarmonicPrefab; // NUEVO
                 
                 if (anomalousPrefab != null)
                 {
@@ -561,6 +578,8 @@ private void Shoot(GameObject magicPrefab)
                     {
                         MagicProjectile mp = anomalousObj.GetComponent<MagicProjectile>();
                         if (mp != null) mp.appliesVampirism = true;
+                        HarmonicProjectile hp = anomalousObj.GetComponent<HarmonicProjectile>();
+                        if (hp != null) hp.appliesVampirism = true;
                     }
                     HomingProjectile homing = anomalousObj.GetComponent<HomingProjectile>();
                     if (homing != null)

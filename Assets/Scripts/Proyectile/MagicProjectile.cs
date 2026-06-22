@@ -33,13 +33,13 @@ public class MagicProjectile : MonoBehaviour
             return;
         }
 
-        EnemyHealth enemy = other.GetComponent<EnemyHealth>();
+        EnemyHealth enemy = other.GetComponentInParent<EnemyHealth>();
         if (enemy != null) enemy.TakeDamage(damage, projectileColor, appliesVampirism);
 
-        PawnBossHealth boss = other.GetComponent<PawnBossHealth>();
+        PawnBossHealth boss = other.GetComponentInParent<PawnBossHealth>();
         if (boss != null) boss.TakeDamage(damage, projectileColor);
 
-        BishopCrystal crystal = other.GetComponent<BishopCrystal>();
+        BishopCrystal crystal = other.GetComponentInParent<BishopCrystal>();
         if (crystal != null) crystal.TakeDamage(projectileColor);
 
         if (explosionParticlesPrefab != null)
@@ -48,13 +48,16 @@ public class MagicProjectile : MonoBehaviour
             Destroy(explosion, 1.5f);
         }
 
-        PawnShield pawnShield = other.GetComponent<PawnShield>();
+        PawnShield pawnShield = other.GetComponentInParent<PawnShield>();
         if (pawnShield != null)
         {
             pawnShield.TakeDamage(projectileColor);
             Destroy(gameObject);
             return;
         }
+
+        QueenBossController queen = other.GetComponentInParent<QueenBossController>();
+        if (queen != null) queen.TakeDamage(damage, projectileColor);
 
         Destroy(gameObject);
     }

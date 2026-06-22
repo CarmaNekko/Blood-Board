@@ -4917,7 +4917,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: b1a570969fee4ae4b915f147f4c985ed, type: 2}
+  - {fileID: 2100000, guid: be332c7bed5955746a19d154e069a296, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -5004,6 +5004,8 @@ MonoBehaviour:
   projectileColor: 1
   damage: 4
   explosionParticlesPrefab: {fileID: 2539987683281859403, guid: 32d9df1d79750e447bac2bbc75d61e66, type: 3}
+  destructionRadius: 1.2
+  impactForce: 150
   appliesVampirism: 0
 --- !u!114 &9009419435245911460
 MonoBehaviour:

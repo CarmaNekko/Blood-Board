@@ -30,13 +30,13 @@ public class HarmonicProjectile : MonoBehaviour
             return;
         }
 
-        EnemyHealth enemy = other.GetComponent<EnemyHealth>();
+        EnemyHealth enemy = other.GetComponentInParent<EnemyHealth>();
         if (enemy != null) enemy.TakeDamage(damage, MagicColor.Harmonic, appliesVampirism);
 
-        PawnBossHealth boss = other.GetComponent<PawnBossHealth>();
+        PawnBossHealth boss = other.GetComponentInParent<PawnBossHealth>();
         if (boss != null) boss.TakeDamage(damage, MagicColor.Harmonic);
 
-        BishopCrystal crystal = other.GetComponent<BishopCrystal>();
+        BishopCrystal crystal = other.GetComponentInParent<BishopCrystal>();
         if (crystal != null) crystal.TakeDamage(MagicColor.Harmonic);
 
         if (explosionParticlesPrefab != null)

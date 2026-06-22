@@ -332,7 +332,7 @@ MonoBehaviour:
   bulletRainSpawnHeight: 15
   bulletRainDistance: 15
   hasAnomalousSoul: 0
-  anomalousSoulRange: 20
+  anomalousSoulRange: 60
   anomalousSoulFOV: 90
   enemyLayer:
     serializedVersion: 2
@@ -342,6 +342,7 @@ MonoBehaviour:
     m_Bits: 192
   anomalousSoulWhitePrefab: {fileID: 6653451336201665546, guid: 07280cfccf3cd864a83bd0be00ae9a90, type: 3}
   anomalousSoulBlackPrefab: {fileID: 8704798185733213193, guid: aa4d7cd2f627d3b46b56cdddf240c5d4, type: 3}
+  anomalousSoulHarmonicPrefab: {fileID: 6653451336201665546, guid: 4d2b311618a50dc4c81403e7b874c070, type: 3}
   firePoint: {fileID: 8885997691368852185}
   shootForce: 30
   cameraEffects: {fileID: 0}
