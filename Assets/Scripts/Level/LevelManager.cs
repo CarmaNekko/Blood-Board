@@ -55,11 +55,16 @@ public class LevelManager : MonoBehaviour
     private void Start()
     {
         int currentScore = ScoreManager.Instance != null ? ScoreManager.Instance.GetCurrentScore() : 0;
-        float currentHealth = FindFirstObjectByType<PlayerHealth>()?.currentHealth ?? 100f;
+        
         if (SceneManager.GetActiveScene().name == BossCheckpointState.DefaultLevelScene)
         {
-            SaveManager.SaveToSlot(GameModeManager.CurrentSlot, currentLevel, currentScore, currentHealth, GameModeManager.CurrentMode.GetModeName());
-            Debug.Log($"Guardado checkpoint al iniciar piso: {currentLevel} con salud: {currentHealth}");
+            SaveData data = SaveManager.LoadFromSlot(GameModeManager.CurrentSlot);
+            if (data != null && data.score > 0)
+            {
+                ScoreManager.Instance?.SetCurrentScore(data.score);
+            }
+            SaveManager.SaveToSlot(GameModeManager.CurrentSlot, currentLevel, currentScore, FindFirstObjectByType<PlayerHealth>()?.currentHealth ?? 100f, GameModeManager.CurrentMode.GetModeName());
+            Debug.Log($"Guardado checkpoint al iniciar piso: {currentLevel} con salud: {FindFirstObjectByType<PlayerHealth>()?.currentHealth}");
         }
     }
 

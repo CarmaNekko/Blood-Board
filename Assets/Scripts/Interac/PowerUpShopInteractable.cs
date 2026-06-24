@@ -101,14 +101,36 @@ public class PowerUpShopInteractable : InteractableBase
             return PowerUpShopPurchaseResult.NotEnoughPoints;
         }
 
-        PowerUpBase powerUp = item.PowerUpPrefab.GetComponent<PowerUpBase>();
-        if (powerUp == null || !powerUp.TryGrantTo(buyer.Shooter))
+        PowerUpBase powerUpToBuy = item.PowerUpPrefab.GetComponent<PowerUpBase>();
+        if (powerUpToBuy == null)
+        {
+            return PowerUpShopPurchaseResult.Invalid;
+        }
+
+        if (IsChargedAttack(powerUpToBuy))
+        {
+            buyer.Shooter.ResetChargedAttack();
+        }
+
+        if (!powerUpToBuy.TryGrantTo(buyer.Shooter))
         {
             return PowerUpShopPurchaseResult.AlreadyOwnedOrUnavailable;
         }
 
         scoreManager.TrySpendScore(item.Price);
         return PowerUpShopPurchaseResult.Purchased;
+    }
+    private bool IsChargedAttack(PowerUpShopItem item)
+    {
+        if (item?.PowerUpPrefab == null) return false;
+        string name = item.PowerUpPrefab.name.ToLower();
+        return name.Contains("slash") || name.Contains("vortex");
+    }
+    private bool IsChargedAttack(PowerUpBase powerUp)
+    {
+        if (powerUp == null) return false;
+        string typeName = powerUp.GetType().Name.ToLower();
+        return typeName.Contains("slash") || typeName.Contains("vortex");
     }
 }
 

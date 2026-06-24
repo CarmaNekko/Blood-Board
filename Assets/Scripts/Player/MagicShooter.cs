@@ -10,6 +10,10 @@ public class MagicShooter : MonoBehaviour
     [SerializeField] private GameObject blackMagicPrefab;
     [SerializeField] private GameObject harmonicMagicPrefab;
 
+    public enum ChargedAttackType { None, Slash, Vortex }
+    [Header("Charged Attack Settings")]
+    [SerializeField] private ChargedAttackType currentChargedAttack = ChargedAttackType.None;
+
     [Header("Slash Attack Setup")]
     [SerializeField] private GameObject whiteSlashPrefab;
     [SerializeField] private GameObject blackSlashPrefab;
@@ -18,7 +22,6 @@ public class MagicShooter : MonoBehaviour
     [SerializeField, Range(0.05f, 1f)] private float slashManaCostPercent = 0.20f;
     [SerializeField] private float chargeSpeed = 40f;
     [SerializeField] private float timeToStartCharge = 0.2f;
-    [SerializeField] private bool hasSlashAttack = false;
 
     [Header("Bullet Rain Attack Setup")]
     [SerializeField] private GameObject whiteBulletRainPrefab;
@@ -36,6 +39,11 @@ public class MagicShooter : MonoBehaviour
     [SerializeField] private GameObject anomalousSoulWhitePrefab; 
     [SerializeField] private GameObject anomalousSoulBlackPrefab;
     [SerializeField] private GameObject anomalousSoulHarmonicPrefab;
+
+    [Header("Vortex Attack Setup")]
+    [SerializeField] private GameObject whiteVortexPrefab;
+    [SerializeField] private GameObject blackVortexPrefab;
+    [SerializeField] private GameObject harmonicVortexPrefab;
 
     [Header("Shooting Setup")]
     [SerializeField] private Transform firePoint;
@@ -86,7 +94,7 @@ public class MagicShooter : MonoBehaviour
     private MagicColor chargingMagicColor;
     private float holdTimer = 0f;
 
-    void Start()
+    private void Start()
     {
         currentWhiteMana = maxWhiteMana;
         currentBlackMana = maxBlackMana;
@@ -106,6 +114,8 @@ public class MagicShooter : MonoBehaviour
 
         if (cameraEffects == null) cameraEffects = GetComponentInChildren<PlayerCameraEffects>();
         if (playerMovement == null) playerMovement = GetComponentInParent<PlayerMovement>();
+
+        RestorePersistedPowerUps();
     }
 
     void Update()
@@ -149,8 +159,8 @@ public class MagicShooter : MonoBehaviour
             }
             return;
         }
-
-        if (!hasSlashAttack)
+        
+        if (currentChargedAttack == ChargedAttackType.None)
         {
             HandleBaseMagicInput(fire1Up, fire2Up);
             return;
@@ -283,28 +293,37 @@ public class MagicShooter : MonoBehaviour
 
     private void FireSlash()
     {
-        GameObject slashPrefab = null;
-        if (chargingMagicColor == MagicColor.White) slashPrefab = whiteSlashPrefab;
-        else if (chargingMagicColor == MagicColor.Black) slashPrefab = blackSlashPrefab;
-        else if (chargingMagicColor == MagicColor.Harmonic) slashPrefab = harmonicSlashPrefab;
-
-        if (slashPrefab == null || !TryPayRemainingSlashManaCost())
+        GameObject prefabToFire = null;
+        if (currentChargedAttack == ChargedAttackType.Slash)
         {
-            return;
+            if (chargingMagicColor == MagicColor.White) prefabToFire = whiteSlashPrefab;
+            else if (chargingMagicColor == MagicColor.Black) prefabToFire = blackSlashPrefab;
+            else if (chargingMagicColor == MagicColor.Harmonic) prefabToFire = harmonicSlashPrefab;
+        }
+        else if (currentChargedAttack == ChargedAttackType.Vortex)
+        {
+            if (chargingMagicColor == MagicColor.White) prefabToFire = whiteVortexPrefab;
+            else if (chargingMagicColor == MagicColor.Black) prefabToFire = blackVortexPrefab;
+            else if (chargingMagicColor == MagicColor.Harmonic) prefabToFire = harmonicVortexPrefab;
         }
 
-        GameObject projectile = Instantiate(slashPrefab, firePoint.position, firePoint.rotation * slashPrefab.transform.rotation);
+        if (prefabToFire == null || !TryPayRemainingSlashManaCost()) return;
+
+        GameObject projectile = Instantiate(prefabToFire, firePoint.position, firePoint.rotation * prefabToFire.transform.rotation);
 
         if (isVampirismActive)
         {
             SlashProjectile sp = projectile.GetComponent<SlashProjectile>();
             if (sp != null) sp.appliesVampirism = true;
+
+            VortexProjectile vp = projectile.GetComponent<VortexProjectile>();
+            if (vp != null) vp.appliesVampirism = true;
         }
 
         Rigidbody rb = projectile.GetComponent<Rigidbody>();
         if (rb != null) rb.linearVelocity = firePoint.forward * shootForce;
+        
         Destroy(projectile, 2f);
-
         if (cameraEffects != null) cameraEffects.ApplyShootRecoil();
     }
 
@@ -533,7 +552,7 @@ private void Shoot(GameObject magicPrefab)
                 
                 if (magicPrefab == whiteMagicPrefab) anomalousPrefab = anomalousSoulWhitePrefab;
                 else if (magicPrefab == blackMagicPrefab) anomalousPrefab = anomalousSoulBlackPrefab;
-                else if (magicPrefab == harmonicMagicPrefab) anomalousPrefab = anomalousSoulHarmonicPrefab; // NUEVO
+                else if (magicPrefab == harmonicMagicPrefab) anomalousPrefab = anomalousSoulHarmonicPrefab;
                 
                 if (anomalousPrefab != null)
                 {
@@ -546,17 +565,13 @@ private void Shoot(GameObject magicPrefab)
     private void FireAnomalousSoul(GameObject anomalousPrefab)
     {
         Transform primaryTarget = null;
-        
-        // 1. Identify the primary target to avoid shooting it twice
         if (Physics.Raycast(firePoint.position, firePoint.forward, out RaycastHit mainHit, anomalousSoulRange, enemyLayer))
         {
             primaryTarget = mainHit.transform;
         }
-
-        // 2. Find all enemies within range
         Collider[] hits = Physics.OverlapSphere(firePoint.position, anomalousSoulRange, enemyLayer);
         int targetsFound = 0;
-        int maxTargets = 2; // Number of extra projectiles
+        int maxTargets = 2;
 
         foreach (Collider hit in hits)
         {
@@ -712,25 +727,68 @@ private void Shoot(GameObject magicPrefab)
         bulletRainTimer = duration;
     }
 
-    public bool HasSlashAttack()
-    {
-        return hasSlashAttack;
-    }
-
     public bool HasVampirism()
     {
         return isVampirismActive;
     }
 
+    public bool HasBulletRain()
+    {
+        return isBulletRainActive;
+    }
+
+    public bool HasAnyChargedAttack()
+    {
+        return currentChargedAttack != ChargedAttackType.None;
+    }
+
     public bool UnlockSlashAttack(float manaCostPercent)
     {
-        if (hasSlashAttack)
-        {
-            return false;
-        }
-
-        hasSlashAttack = true;
+        currentChargedAttack = ChargedAttackType.Slash;
         slashManaCostPercent = manaCostPercent;
         return true;
+    }
+
+    public bool UnlockVortexAttack(float manaCostPercent)
+    {
+        currentChargedAttack = ChargedAttackType.Vortex;
+        slashManaCostPercent = manaCostPercent;
+        return true;
+    }
+
+    public void ResetChargedAttack()
+    {
+        currentChargedAttack = ChargedAttackType.None;
+    }
+
+    public ChargedAttackType GetChargedAttackType()
+    {
+        return currentChargedAttack;
+    }
+
+    public void RestorePersistedPowerUps()
+    {
+        SaveData data = SaveManager.LoadFromSlot(GameModeManager.CurrentSlot);
+        if (data == null) return;
+
+        if (data.hasAnomalousSoul && !hasAnomalousSoul)
+        {
+            hasAnomalousSoul = true;
+        }
+
+        if (data.hasSlashAttack && currentChargedAttack == ChargedAttackType.None)
+        {
+            currentChargedAttack = ChargedAttackType.Slash;
+        }
+
+        if (data.hasVortexAttack && currentChargedAttack == ChargedAttackType.None)
+        {
+            currentChargedAttack = ChargedAttackType.Vortex;
+        }
+
+        if (data.hasVampirism && !isVampirismActive)
+        {
+            isVampirismActive = true;
+        }
     }
 }

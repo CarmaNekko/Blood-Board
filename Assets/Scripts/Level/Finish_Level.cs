@@ -47,6 +47,8 @@ public class Finish_Level : MonoBehaviour
         int currentScore = ScoreManager.Instance != null ? ScoreManager.Instance.GetCurrentScore() : 0;
         string currentModeName = GameModeManager.CurrentMode != null ? GameModeManager.CurrentMode.GetModeName() : "Modo_Historia";
 
+        MagicShooter shooter = other.GetComponent<MagicShooter>();
+
         // Elimar esta cosa cuando tengamos el nivel del jefe final listo :,u
         if (LevelManager.currentLevel >= 5)
         {
@@ -58,6 +60,13 @@ public class Finish_Level : MonoBehaviour
 
         if (TryGetBossRoute(LevelManager.currentLevel, out BossCheckpointRoute bossRoute))
         {
+            SaveManager.SaveToSlot(GameModeManager.CurrentSlot, LevelManager.currentLevel, currentScore, health, currentModeName);
+            
+            if (shooter != null)
+            {
+                SaveManager.SavePowerUpState(shooter);
+            }
+
             SaveManager.SaveBossCheckpointToSlot(
                 GameModeManager.CurrentSlot,
                 LevelManager.currentLevel,
@@ -78,6 +87,11 @@ public class Finish_Level : MonoBehaviour
             GameOver gameOverScreen = Object.FindFirstObjectByType<GameOver>();
             if (gameOverScreen != null) gameOverScreen.ShowGameOver(true);
             return;
+        }
+
+        if (shooter != null)
+        {
+            SaveManager.SavePowerUpState(shooter);
         }
 
         LevelManager.currentLevel++;

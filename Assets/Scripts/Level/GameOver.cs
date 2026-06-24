@@ -120,6 +120,12 @@ public class GameOver : MonoBehaviour
             PlayerHealth.ResetPersistedHealth();
         }
 
+        var shooter = FindFirstObjectByType<MagicShooter>();
+        if (shooter != null && saveData != null)
+        {
+            shooter.RestorePersistedPowerUps();
+        }
+
         Time.timeScale = 1f;
         CheckerboardTransition.LoadScene(SceneManager.GetActiveScene().name);
     }

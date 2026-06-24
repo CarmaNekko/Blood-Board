@@ -8,11 +8,6 @@ public class SlashProjectilePowerUp : PermanentPowerUp
 
     protected override bool ApplyTo(MagicShooter shooter)
     {
-        if (!CanApplyPermanent(shooter.HasSlashAttack()))
-        {
-            return false;
-        }
-
         return shooter.UnlockSlashAttack(manaCostPercentage);
     }
 }

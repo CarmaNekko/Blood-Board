@@ -12,9 +12,9 @@ GameObject:
   - component: {fileID: 5796598284502499701}
   - component: {fileID: 3627784429359789253}
   - component: {fileID: 7221915982951260425}
-  - component: {fileID: 5222760822815339610}
+  - component: {fileID: 8106601333555659823}
   m_Layer: 0
-  m_Name: Harmonic
+  m_Name: AnomalousSoul
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -68,7 +68,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: bb15a8c4005525d4f96c4fa169d5ed6b, type: 2}
+  - {fileID: 2100000, guid: 071eb8160c68d5a44a2fd2d3fdb89abe, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -113,7 +113,7 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &5222760822815339610
+--- !u!114 &8106601333555659823
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -122,9 +122,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 246719132695152999}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b14cf24fcb92dae4daa4abdbc18ec277, type: 3}
+  m_Script: {fileID: 11500000, guid: d2af856ed2be54541b5b3a046068dfbe, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PowerUpDrop
-  powerUpId: harmonic_magic
-  displayName: "Bala Arm\xF3nica"
-  duration: 60
+  m_EditorClassIdentifier: Assembly-CSharp::AnomalousSoulPowerUp
+  powerUpId: anomalous_soul
+  displayName: "Alma An\xF3mala"
+  applyOnlyOnce: 1

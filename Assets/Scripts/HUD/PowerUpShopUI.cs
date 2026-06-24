@@ -16,7 +16,8 @@ public class PowerUpShopUI : MonoBehaviour
     [SerializeField] private TMP_Text statusText;
 
     [Header("Grid Slots")]
-    [SerializeField] private PowerUpShopItemButton[] itemButtons;
+    [SerializeField] private PowerUpShopItemButton itemButtonPrefab;
+    [SerializeField] private Transform itemButtonsContainer;
 
     [Header("Actions")]
     [SerializeField] private Button cancelButton;
@@ -122,31 +123,24 @@ public class PowerUpShopUI : MonoBehaviour
         {
             pointsText.text = $"{currentScore} pts | Piso {currentFloor}";
         }
+        foreach (Transform child in itemButtonsContainer)
+        {
+            Destroy(child.gameObject);
+        }
 
         PowerUpShopItem[] items = currentShop.Items;
-        int itemCount = items != null ? items.Length : 0;
+        if (items == null) return;
 
-        for (int i = 0; i < itemButtons.Length; i++)
+        foreach (PowerUpShopItem item in items)
         {
-            PowerUpShopItemButton itemButton = itemButtons[i];
-            if (itemButton == null)
+            if (item == null || !item.IsConfigured() || currentFloor < item.AvailableFromFloor)
             {
                 continue;
             }
-
-            bool hasItem = i < itemCount && items[i] != null && items[i].IsConfigured();
-            itemButton.gameObject.SetActive(hasItem);
-
-            if (!hasItem)
-            {
-                continue;
-            }
-
-            PowerUpShopItem item = items[i];
+            PowerUpShopItemButton itemButton = Instantiate(itemButtonPrefab, itemButtonsContainer);
             itemButton.SetLabel(BuildItemLabel(item, currentFloor));
-
-            bool isAvailable = item.IsAvailableOnFloor(currentFloor) && currentScore >= item.Price;
-            itemButton.SetAvailable(isAvailable);
+            bool canAfford = currentScore >= item.Price;
+            itemButton.SetAvailable(canAfford);
 
             Button button = itemButton.Button;
             if (button != null)
@@ -156,20 +150,10 @@ public class PowerUpShopUI : MonoBehaviour
                 button.onClick.AddListener(() => Buy(capturedItem));
             }
         }
-
-        if (statusText != null && itemCount > itemButtons.Length)
-        {
-            statusText.text = "Hay mas items configurados que botones en el grid.";
-        }
     }
 
     private string BuildItemLabel(PowerUpShopItem item, int currentFloor)
     {
-        if (!item.IsAvailableOnFloor(currentFloor))
-        {
-            return $"{item.GetDisplayName()}\n{item.Price} pts\nPiso {item.AvailableFromFloor}";
-        }
-
         return $"{item.GetDisplayName()}\n{item.Price} pts";
     }
 
@@ -186,6 +170,7 @@ public class PowerUpShopUI : MonoBehaviour
         {
             case PowerUpShopPurchaseResult.Purchased:
                 SetStatus($"{item.GetDisplayName()} comprado.");
+                SaveManager.SavePowerUpPurchase(GetPowerUpTypeFromPrefab(item.PowerUpPrefab));
                 if (currentShop.CloseAfterPurchase)
                 {
                     Close();
@@ -215,5 +200,23 @@ public class PowerUpShopUI : MonoBehaviour
         {
             statusText.text = message;
         }
+    }
+
+    private string GetPowerUpTypeFromPrefab(GameObject prefab)
+    {
+        if (prefab == null) return "";
+
+        string name = prefab.name.ToLower();
+
+        if (name.Contains("anomalous") || name.Contains("soul")) return "anomalousSoul";
+        if (name.Contains("slash")) return "slashAttack";
+        if (name.Contains("vortex")) return "vortexAttack";
+        if (name.Contains("vampirism")) return "vampirism";
+        if (name.Contains("bullet") && name.Contains("rain")) return "bulletRain";
+        if (name.Contains("health")) return "health";
+        if (name.Contains("damage")) return "damage";
+        if (name.Contains("speed")) return "speed";
+
+        return "";
     }
 }

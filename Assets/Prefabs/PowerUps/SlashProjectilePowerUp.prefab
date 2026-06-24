@@ -126,5 +126,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SlashProjectilePowerUp
   powerUpId: slash_projectile
-  displayName: Slash Projectile
+  displayName: Tajo Cargado
   applyOnlyOnce: 1
+  manaCostPercentage: 0.48
