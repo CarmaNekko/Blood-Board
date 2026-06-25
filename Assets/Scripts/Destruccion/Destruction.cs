@@ -3,13 +3,15 @@ using System.Collections.Generic;
 
 public class Destruction : MonoBehaviour
 {
-    [Header("Configuración de Destrucción Local")]
-    public Material transparentMaterial;
+    [Header("Configuracion de Destruccion Local")]
+    [SerializeField] private Material transparentMaterial;
     [SerializeField] private float neighborTolerance = 0.05f;
 
     private List<Transform> activePieces = new List<Transform>();
     private Dictionary<Transform, List<Transform>> adjacencyList = new Dictionary<Transform, List<Transform>>();
     private List<Transform> anchors = new List<Transform>();
+
+    public bool IsDestroyed => activePieces.Count == 0;
 
     private void Start()
     {

@@ -5385,7 +5385,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4cf5a179cb75ab41962a8b2e4673258, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyPawn
-  playerTarget: {fileID: 0}
+  pillarDetectionRadius: 3
   attackRange: 19
   attackCooldown: 1
   baseSpeed: 4

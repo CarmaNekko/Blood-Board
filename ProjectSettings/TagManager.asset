@@ -7,11 +7,12 @@ TagManager:
   - Enemy
   - WhiteMagic
   - BlackMagic
+  - Pilar
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Debris
   - Water
   - UI
   - Ground

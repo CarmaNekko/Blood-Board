@@ -3,6 +3,9 @@ using UnityEngine;
 public class PawnProjectile : MonoBehaviour
 {
     [SerializeField] private float speed = 10f;
+    [SerializeField] private float explosionRadius = 2f;
+    [SerializeField] private float explosionForce = 15f;
+
     private Vector3 targetPosition;
     private Vector3 moveDirection;
     private float damage;
@@ -21,7 +24,7 @@ public class PawnProjectile : MonoBehaviour
         Destroy(gameObject, 4f);
     }
 
-    void Update()
+    private void Update()
     {
         if (isSetup)
         {
@@ -49,6 +52,15 @@ public class PawnProjectile : MonoBehaviour
                 playerHealth.TakeDamage(damage, transform);
             }
         }
+        else if (other.CompareTag("Pilar"))
+        {
+            Destruction pillarDestruction = other.GetComponent<Destruction>();
+            if (pillarDestruction != null)
+            {
+                pillarDestruction.DamageAtPoint(transform.position, explosionRadius, explosionForce);
+            }
+        }
+
         Destroy(gameObject);
     }
 }

@@ -540,9 +540,6 @@ MonoBehaviour:
   finalRoomPrefab: {fileID: 3206246361914026675, guid: 37371f21f037fd04880b88901e668373, type: 3}
   roomPrefabs:
   - {fileID: 6045825802650325582, guid: f691004411479bb4c8c9a758650aa775, type: 3}
-  - {fileID: 1059234749075372331, guid: 3fa95c8af715cd74da682444c1f0bfcb, type: 3}
-  - {fileID: 2005163135171162853, guid: 0668d74c70dfc7c41afd3a523ad04f32, type: 3}
-  - {fileID: 2005163135171162853, guid: 0668d74c70dfc7c41afd3a523ad04f32, type: 3}
   corridorPrefabs:
   - {fileID: 4158632963112747052, guid: 1e3689983ac3d534197e07eb1e178728, type: 3}
   deadEndPrefabs:
@@ -1126,6 +1123,26 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 6704078877642364757, guid: d9fad25a5ba93d54da34f557342663f8, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6704078877642364757, guid: d9fad25a5ba93d54da34f557342663f8, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6704078877642364757, guid: d9fad25a5ba93d54da34f557342663f8, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6704078877642364757, guid: d9fad25a5ba93d54da34f557342663f8, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6704078877642364757, guid: d9fad25a5ba93d54da34f557342663f8, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7727883741154552903, guid: d9fad25a5ba93d54da34f557342663f8, type: 3}
       propertyPath: m_IsActive
       value: 1
@@ -1458,6 +1475,10 @@ PrefabInstance:
     - target: {fileID: 5394803261205600067, guid: 5e95e756df1eba343ba25da4ed081cbb, type: 3}
       propertyPath: sprintSpeed
       value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 5394803261205600067, guid: 5e95e756df1eba343ba25da4ed081cbb, type: 3}
+      propertyPath: debrisMask.m_Bits
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 6507242683096430587, guid: 5e95e756df1eba343ba25da4ed081cbb, type: 3}
       propertyPath: healthBarUI
