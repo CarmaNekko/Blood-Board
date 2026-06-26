@@ -78,6 +78,9 @@ MonoBehaviour:
   canBeBuffed: 1
   frenzyParticles: {fileID: 4159541582662744387}
   possibleDrops: []
+  coinPrefab: {fileID: 2378777998552020141, guid: 469a02ca61d4eb54f9cf08aef8b94732, type: 3}
+  minCoins: 2
+  maxCoins: 6
 --- !u!65 &1518101093947906420
 BoxCollider:
   m_ObjectHideFlags: 0

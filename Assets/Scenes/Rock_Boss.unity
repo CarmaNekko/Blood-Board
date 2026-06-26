@@ -387,7 +387,7 @@ GameObject:
   - component: {fileID: 40520970}
   - component: {fileID: 40520969}
   - component: {fileID: 40520968}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: Floor (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -12848,6 +12848,9 @@ MonoBehaviour:
   canBeBuffed: 0
   frenzyParticles: {fileID: 0}
   possibleDrops: []
+  coinPrefab: {fileID: 0}
+  minCoins: 2
+  maxCoins: 6
 --- !u!65 &1985750172
 BoxCollider:
   m_ObjectHideFlags: 0

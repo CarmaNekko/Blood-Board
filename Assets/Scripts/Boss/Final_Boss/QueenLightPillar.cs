@@ -60,10 +60,10 @@ public class QueenLightPillar : MonoBehaviour
     {
         if (other.CompareTag("Player") && !hasDealtDamage)
         {
-            PlayerHealth playerHealth = other.GetComponent<PlayerHealth>();
-            if (playerHealth != null)
+            PlayerHealth health = other.GetComponent<PlayerHealth>();
+            if (health != null)
             {
-                playerHealth.TakeDamage(damage, transform);
+                health.TakeDamage(damage, transform);
                 hasDealtDamage = true;
             }
         }
