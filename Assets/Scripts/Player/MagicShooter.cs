@@ -10,6 +10,10 @@ public class MagicShooter : MonoBehaviour
     [SerializeField] private GameObject blackMagicPrefab;
     [SerializeField] private GameObject harmonicMagicPrefab;
 
+    public enum ChargedAttackType { None, Slash, Vortex }
+    [Header("Charged Attack Settings")]
+    [SerializeField] private ChargedAttackType currentChargedAttack = ChargedAttackType.None;
+
     [Header("Slash Attack Setup")]
     [SerializeField] private GameObject whiteSlashPrefab;
     [SerializeField] private GameObject blackSlashPrefab;
@@ -18,7 +22,6 @@ public class MagicShooter : MonoBehaviour
     [SerializeField, Range(0.05f, 1f)] private float slashManaCostPercent = 0.20f;
     [SerializeField] private float chargeSpeed = 40f;
     [SerializeField] private float timeToStartCharge = 0.2f;
-    [SerializeField] private bool hasSlashAttack = false;
 
     [Header("Bullet Rain Attack Setup")]
     [SerializeField] private GameObject whiteBulletRainPrefab;
@@ -27,13 +30,28 @@ public class MagicShooter : MonoBehaviour
     [SerializeField] private float bulletRainSpawnHeight = 15f;
     [SerializeField] private float bulletRainDistance = 15f;
 
+    [Header("Anomalous Soul Setup")]
+    [SerializeField] private bool hasAnomalousSoul = false;
+    [SerializeField] private float anomalousSoulRange = 20f;
+    [SerializeField, Range(10f, 180f)] private float anomalousSoulFOV = 90f;
+    [SerializeField] private LayerMask enemyLayer; 
+    [SerializeField] private LayerMask environmentLayer; 
+    [SerializeField] private GameObject anomalousSoulWhitePrefab; 
+    [SerializeField] private GameObject anomalousSoulBlackPrefab;
+    [SerializeField] private GameObject anomalousSoulHarmonicPrefab;
+
+    [Header("Vortex Attack Setup")]
+    [SerializeField] private GameObject whiteVortexPrefab;
+    [SerializeField] private GameObject blackVortexPrefab;
+    [SerializeField] private GameObject harmonicVortexPrefab;
+
     [Header("Shooting Setup")]
     [SerializeField] private Transform firePoint;
     [SerializeField] private float shootForce = 30f;
     [SerializeField] private PlayerCameraEffects cameraEffects;
     [SerializeField] private PlayerMovement playerMovement;
 
-    [Header("Arma Pesada (Inercia)")]
+    [Header("Delay Shoot")]
     [SerializeField] private float movingShootDelay = 0.25f;
     private bool isPreparingToShoot = false;
 
@@ -76,7 +94,7 @@ public class MagicShooter : MonoBehaviour
     private MagicColor chargingMagicColor;
     private float holdTimer = 0f;
 
-    void Start()
+    private void Start()
     {
         currentWhiteMana = maxWhiteMana;
         currentBlackMana = maxBlackMana;
@@ -96,11 +114,13 @@ public class MagicShooter : MonoBehaviour
 
         if (cameraEffects == null) cameraEffects = GetComponentInChildren<PlayerCameraEffects>();
         if (playerMovement == null) playerMovement = GetComponentInParent<PlayerMovement>();
+
+        RestorePersistedPowerUps();
     }
 
     void Update()
     {
-        if (PauseScreen.IsPaused || TutorialMessage.IsTutorialActive || isPreparingToShoot) return;
+        if (PauseScreen.IsPaused || TutorialMessage.IsTutorialActive || PowerUpShopUI.IsOpen || isPreparingToShoot) return;
 
         HandleHarmonicTimer();
         HandleBulletRainTimer();
@@ -139,8 +159,8 @@ public class MagicShooter : MonoBehaviour
             }
             return;
         }
-
-        if (!hasSlashAttack)
+        
+        if (currentChargedAttack == ChargedAttackType.None)
         {
             HandleBaseMagicInput(fire1Up, fire2Up);
             return;
@@ -273,28 +293,37 @@ public class MagicShooter : MonoBehaviour
 
     private void FireSlash()
     {
-        GameObject slashPrefab = null;
-        if (chargingMagicColor == MagicColor.White) slashPrefab = whiteSlashPrefab;
-        else if (chargingMagicColor == MagicColor.Black) slashPrefab = blackSlashPrefab;
-        else if (chargingMagicColor == MagicColor.Harmonic) slashPrefab = harmonicSlashPrefab;
-
-        if (slashPrefab == null || !TryPayRemainingSlashManaCost())
+        GameObject prefabToFire = null;
+        if (currentChargedAttack == ChargedAttackType.Slash)
         {
-            return;
+            if (chargingMagicColor == MagicColor.White) prefabToFire = whiteSlashPrefab;
+            else if (chargingMagicColor == MagicColor.Black) prefabToFire = blackSlashPrefab;
+            else if (chargingMagicColor == MagicColor.Harmonic) prefabToFire = harmonicSlashPrefab;
+        }
+        else if (currentChargedAttack == ChargedAttackType.Vortex)
+        {
+            if (chargingMagicColor == MagicColor.White) prefabToFire = whiteVortexPrefab;
+            else if (chargingMagicColor == MagicColor.Black) prefabToFire = blackVortexPrefab;
+            else if (chargingMagicColor == MagicColor.Harmonic) prefabToFire = harmonicVortexPrefab;
         }
 
-        GameObject projectile = Instantiate(slashPrefab, firePoint.position, firePoint.rotation * slashPrefab.transform.rotation);
+        if (prefabToFire == null || !TryPayRemainingSlashManaCost()) return;
+
+        GameObject projectile = Instantiate(prefabToFire, firePoint.position, firePoint.rotation * prefabToFire.transform.rotation);
 
         if (isVampirismActive)
         {
             SlashProjectile sp = projectile.GetComponent<SlashProjectile>();
             if (sp != null) sp.appliesVampirism = true;
+
+            VortexProjectile vp = projectile.GetComponent<VortexProjectile>();
+            if (vp != null) vp.appliesVampirism = true;
         }
 
         Rigidbody rb = projectile.GetComponent<Rigidbody>();
         if (rb != null) rb.linearVelocity = firePoint.forward * shootForce;
+        
         Destroy(projectile, 2f);
-
         if (cameraEffects != null) cameraEffects.ApplyShootRecoil();
     }
 
@@ -444,6 +473,11 @@ public class MagicShooter : MonoBehaviour
 
     private IEnumerator HandleHarmonicShoot()
     {
+        if (isWhiteOverheated || isBlackOverheated || currentWhiteMana < whiteManaCost || currentBlackMana < blackManaCost)
+        {
+            yield break;
+        }
+
         isPreparingToShoot = true;
         bool isMoving = (playerMovement != null && playerMovement.CurrentVelocity.magnitude > 0.5f);
 
@@ -453,6 +487,14 @@ public class MagicShooter : MonoBehaviour
         }
 
         Shoot(harmonicMagicPrefab);
+        currentWhiteMana -= whiteManaCost;
+        currentBlackMana -= blackManaCost;
+        
+        if (currentWhiteMana < whiteManaCost) isWhiteOverheated = true;
+        if (currentBlackMana < blackManaCost) isBlackOverheated = true;
+        
+        UpdateUI();
+
         isPreparingToShoot = false;
     }
 
@@ -483,7 +525,7 @@ public class MagicShooter : MonoBehaviour
         isPreparingToShoot = false;
     }
 
-    private void Shoot(GameObject magicPrefab)
+private void Shoot(GameObject magicPrefab)
     {
         if (magicPrefab != null)
         {
@@ -503,6 +545,68 @@ public class MagicShooter : MonoBehaviour
             Destroy(projectile, 2f);
 
             if (cameraEffects != null) cameraEffects.ApplyShootRecoil();
+
+            if (hasAnomalousSoul)
+            {
+                GameObject anomalousPrefab = null;
+                
+                if (magicPrefab == whiteMagicPrefab) anomalousPrefab = anomalousSoulWhitePrefab;
+                else if (magicPrefab == blackMagicPrefab) anomalousPrefab = anomalousSoulBlackPrefab;
+                else if (magicPrefab == harmonicMagicPrefab) anomalousPrefab = anomalousSoulHarmonicPrefab;
+                
+                if (anomalousPrefab != null)
+                {
+                    FireAnomalousSoul(anomalousPrefab);
+                }
+            }
+        }
+    }
+
+    private void FireAnomalousSoul(GameObject anomalousPrefab)
+    {
+        Transform primaryTarget = null;
+        if (Physics.Raycast(firePoint.position, firePoint.forward, out RaycastHit mainHit, anomalousSoulRange, enemyLayer))
+        {
+            primaryTarget = mainHit.transform;
+        }
+        Collider[] hits = Physics.OverlapSphere(firePoint.position, anomalousSoulRange, enemyLayer);
+        int targetsFound = 0;
+        int maxTargets = 2;
+
+        foreach (Collider hit in hits)
+        {
+            if (targetsFound >= maxTargets) break;
+
+            Transform enemy = hit.transform;
+            if (enemy == primaryTarget) continue;
+
+            Vector3 directionToEnemy = (enemy.position - firePoint.position).normalized;
+            float angleToEnemy = Vector3.Angle(firePoint.forward, directionToEnemy);
+            if (angleToEnemy <= anomalousSoulFOV / 2f)
+            {
+                float distanceToEnemy = Vector3.Distance(firePoint.position, enemy.position);
+                if (!Physics.Raycast(firePoint.position, directionToEnemy, distanceToEnemy, environmentLayer))
+                {
+                    GameObject anomalousObj = Instantiate(anomalousPrefab, firePoint.position, firePoint.rotation);
+                    
+                    if (isVampirismActive)
+                    {
+                        MagicProjectile mp = anomalousObj.GetComponent<MagicProjectile>();
+                        if (mp != null) mp.appliesVampirism = true;
+                        HarmonicProjectile hp = anomalousObj.GetComponent<HarmonicProjectile>();
+                        if (hp != null) hp.appliesVampirism = true;
+                    }
+                    HomingProjectile homing = anomalousObj.GetComponent<HomingProjectile>();
+                    if (homing != null)
+                    {
+                        homing.target = enemy;
+                        homing.speed = shootForce;
+                    }
+
+                    Destroy(anomalousObj, 2f);
+                    targetsFound++;
+                }
+            }
         }
     }
 
@@ -605,15 +709,22 @@ public class MagicShooter : MonoBehaviour
         return true;
     }
 
+    public bool HasAnomalousSoul()
+    {
+        return hasAnomalousSoul;
+    }
+
+    public bool UnlockAnomalousSoul()
+    {
+        if (hasAnomalousSoul) return false;
+        hasAnomalousSoul = true;
+        return true;
+    }
+
     public void ActivateBulletRainAttack(float duration)
     {
         isBulletRainActive = true;
         bulletRainTimer = duration;
-    }
-
-    public bool HasSlashAttack()
-    {
-        return hasSlashAttack;
     }
 
     public bool HasVampirism()
@@ -621,15 +732,63 @@ public class MagicShooter : MonoBehaviour
         return isVampirismActive;
     }
 
+    public bool HasBulletRain()
+    {
+        return isBulletRainActive;
+    }
+
+    public bool HasAnyChargedAttack()
+    {
+        return currentChargedAttack != ChargedAttackType.None;
+    }
+
     public bool UnlockSlashAttack(float manaCostPercent)
     {
-        if (hasSlashAttack)
-        {
-            return false;
-        }
-
-        hasSlashAttack = true;
+        currentChargedAttack = ChargedAttackType.Slash;
         slashManaCostPercent = manaCostPercent;
         return true;
+    }
+
+    public bool UnlockVortexAttack(float manaCostPercent)
+    {
+        currentChargedAttack = ChargedAttackType.Vortex;
+        slashManaCostPercent = manaCostPercent;
+        return true;
+    }
+
+    public void ResetChargedAttack()
+    {
+        currentChargedAttack = ChargedAttackType.None;
+    }
+
+    public ChargedAttackType GetChargedAttackType()
+    {
+        return currentChargedAttack;
+    }
+
+    public void RestorePersistedPowerUps()
+    {
+        SaveData data = SaveManager.LoadFromSlot(GameModeManager.CurrentSlot);
+        if (data == null) return;
+
+        if (data.hasAnomalousSoul && !hasAnomalousSoul)
+        {
+            hasAnomalousSoul = true;
+        }
+
+        if (data.hasSlashAttack && currentChargedAttack == ChargedAttackType.None)
+        {
+            currentChargedAttack = ChargedAttackType.Slash;
+        }
+
+        if (data.hasVortexAttack && currentChargedAttack == ChargedAttackType.None)
+        {
+            currentChargedAttack = ChargedAttackType.Vortex;
+        }
+
+        if (data.hasVampirism && !isVampirismActive)
+        {
+            isVampirismActive = true;
+        }
     }
 }

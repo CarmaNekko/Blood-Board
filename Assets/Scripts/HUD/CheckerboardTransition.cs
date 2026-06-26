@@ -16,9 +16,9 @@ public class CheckerboardTransition : MonoBehaviour
     [SerializeField] private List<Image> squares = new List<Image>();
     [SerializeField] private GameObject squarePrefab;
     [SerializeField] private float squareSize = 50f;
-    [SerializeField] private float animationDuration = 0.3f; // Más rápido
-    [SerializeField] private float delayBetweenColumns = 0.02f; // Delay entre columnas, más rápido
-    [SerializeField] private float speed = 2f; // Multiplicador de velocidad, más rápido
+    [SerializeField] private float animationDuration = 0.3f;
+    [SerializeField] private float delayBetweenColumns = 0.02f;
+    [SerializeField] private float speed = 2f;
 
     private int columns;
     private int rows;
@@ -200,6 +200,60 @@ public class CheckerboardTransition : MonoBehaviour
     }
 #endif
 
+    #region Simple Fade
+
+    public Coroutine StartFadeToBlack(float duration)
+    {
+        if (IsTransitioning)
+        {
+            Debug.LogWarning("CheckerboardTransition: Attempted to start a fade while another transition is in progress.");
+            return null;
+        }
+
+        if (raycastBlocker != null) raycastBlocker.raycastTarget = true;
+        foreach (var square in squares)
+        {
+            if (square != null) square.color = Color.clear;
+        }
+
+        return StartCoroutine(Fade(Color.black, duration));
+    }
+
+    public Coroutine StartFadeFromBlack(float duration)
+    {
+        foreach (var square in squares)
+        {
+            if (square != null) square.color = Color.clear;
+        }
+
+        return StartCoroutine(Fade(Color.clear, duration));
+    }
+
+    private IEnumerator Fade(Color targetColor, float duration)
+    {
+        if (raycastBlocker == null) yield break;
+
+        raycastBlocker.raycastTarget = true;
+        Color startColor = raycastBlocker.color;
+        float timer = 0f;
+
+        while (timer < duration)
+        {
+            timer += Time.unscaledDeltaTime;
+            raycastBlocker.color = Color.Lerp(startColor, targetColor, timer / duration);
+            yield return null;
+        }
+
+        raycastBlocker.color = targetColor;
+
+        if (targetColor == Color.clear)
+        {
+            raycastBlocker.raycastTarget = false;
+        }
+    }
+
+    #endregion
+
     public void StartTransition(Action onCompleteCallback, bool isSceneLoad = true)
     {
         StopAllCoroutines();
@@ -290,7 +344,6 @@ public class CheckerboardTransition : MonoBehaviour
 
     private IEnumerator FadeOutAfterFloorSign()
     {
-        // Espera hasta que el cartel del piso haya desaparecido
         yield return new WaitUntil(() => !PauseScreen.IsFloorSignActive);
         yield return StartCoroutine(AnimateFadeOut());
     }

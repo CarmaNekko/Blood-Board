@@ -49,7 +49,7 @@ public class PlayerCameraEffects : MonoBehaviour
 
     void Update()
     {
-        if (PauseScreen.IsPaused || TutorialMessage.IsTutorialActive) return;
+        if (PauseScreen.IsPaused || TutorialMessage.IsTutorialActive || PowerUpShopUI.IsOpen) return;
 
         HandleDynamicFOV();
         HandleStrafeTilt();

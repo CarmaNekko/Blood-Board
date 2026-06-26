@@ -126,5 +126,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PowerUpDrop
   powerUpId: harmonic_magic
-  displayName: Harmonic Magic
+  displayName: "Bala Arm\xF3nica"
   duration: 60

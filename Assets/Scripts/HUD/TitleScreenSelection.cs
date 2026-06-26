@@ -357,7 +357,7 @@ public class TitleScreenSelection : MonoBehaviour
         LevelManager.currentLevel = 0;
         BossCheckpointState.SetLevelCheckpoint();
         ScoreManager.Instance?.ResetCurrentScore();
-        SaveManager.SaveToSlot(selectedSlot, 0, 0, 100f, GameModeManager.CurrentMode.GetModeName());
+        SaveManager.SaveNewGameSlot(selectedSlot, 0, 0, 100f, GameModeManager.CurrentMode.GetModeName());
         Debug.Log($"Nueva partida Normal iniciada en slot {selectedSlot}. Guardado inicial en tutorial (piso 0).");
         CheckerboardTransition.LoadScene("Tutorial");
     }
@@ -373,7 +373,7 @@ public class TitleScreenSelection : MonoBehaviour
         LevelManager.currentLevel = 1;
         BossCheckpointState.SetLevelCheckpoint();
         ScoreManager.Instance?.ResetCurrentScore();
-        SaveManager.SaveToSlot(selectedSlot, 1, 0, 100f, GameModeManager.CurrentMode.GetModeName());
+        SaveManager.SaveNewGameSlot(selectedSlot, 1, 0, 100f, GameModeManager.CurrentMode.GetModeName());
         Debug.Log($"Nueva partida Infinita iniciada en slot {selectedSlot}. Guardado inicial en piso 1.");
         CheckerboardTransition.LoadScene("Level_1");
     }

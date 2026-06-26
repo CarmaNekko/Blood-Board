@@ -5000,3 +5000,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PawnProjectile
   speed: 10
+  explosionRadius: 2
+  explosionForce: 5

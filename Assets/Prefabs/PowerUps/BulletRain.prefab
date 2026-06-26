@@ -126,5 +126,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BulletRainDrop
   powerUpId: bullet_rain
-  displayName: Bullet Rain
+  displayName: "Lluvia Mal\xE9fica"
   duration: 20

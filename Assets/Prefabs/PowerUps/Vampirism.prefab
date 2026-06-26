@@ -126,6 +126,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::VampirismDrop
   powerUpId: vampirism
-  displayName: Vampirism
+  displayName: "Absorci\xF3n de Vitalidad"
   applyOnlyOnce: 1
   activateWhenCollected: 1

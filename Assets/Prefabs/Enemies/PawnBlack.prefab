@@ -5316,7 +5316,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4cf5a179cb75ab41962a8b2e4673258, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyPawn
-  playerTarget: {fileID: 0}
+  pillarDetectionRadius: 3
   attackRange: 19
   attackCooldown: 1
   baseSpeed: 4
@@ -5341,13 +5341,10 @@ MonoBehaviour:
   shieldVisual: {fileID: 5270852484274944935}
   canBeBuffed: 1
   frenzyParticles: {fileID: 6318600937171281692}
-  possibleDrops:
-  - prefab: {fileID: 246719132695152999, guid: b2da05326a1b5ef42bf2a9342152221b, type: 3}
-    dropChance: 0.01
-  - prefab: {fileID: 246719132695152999, guid: 0b62ebb95f0539945832d1519db359dc, type: 3}
-    dropChance: 0.02
-  - prefab: {fileID: 246719132695152999, guid: e744d245b8c8c1e4590ee6ed5e4697be, type: 3}
-    dropChance: 0.03
+  possibleDrops: []
+  coinPrefab: {fileID: 2378777998552020141, guid: 469a02ca61d4eb54f9cf08aef8b94732, type: 3}
+  minCoins: 2
+  maxCoins: 6
 --- !u!114 &7409382937165975956
 MonoBehaviour:
   m_ObjectHideFlags: 0

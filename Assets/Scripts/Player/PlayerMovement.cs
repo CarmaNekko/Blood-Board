@@ -17,8 +17,9 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private Transform groundCheck;
     [SerializeField] private float groundDistance = 0.4f;
     [SerializeField] private LayerMask groundMask;
+    [SerializeField] private LayerMask debrisMask;
 
-    [Header("Físicas de Impacto")]
+    [Header("Fisicas de Impacto")]
     [SerializeField] private float mass = 3f;
     private Vector3 impactVelocity = Vector3.zero;
 
@@ -26,15 +27,15 @@ public class PlayerMovement : MonoBehaviour
     private Vector3 velocity;
     private float xRotation = 0f;
     private bool isActuallyGrounded;
+    private bool wasSprintingWhenJumped = false;
 
     public bool IsSprinting { get; private set; }
     public float CurrentInputX { get; private set; }
     public bool IsGrounded => isActuallyGrounded;
     public Vector3 CurrentVelocity => controller.velocity;
     public float CameraTilt { get; set; }
-    private bool wasSprintingWhenJumped = false;
 
-    void Start()
+    private void Start()
     {
         controller = GetComponent<CharacterController>();
         Cursor.lockState = CursorLockMode.Locked;
@@ -42,9 +43,9 @@ public class PlayerMovement : MonoBehaviour
         SetGlobalMouseSensitivity(savedSensitivity);
     }
 
-    void Update()
+    private void Update()
     {
-        if (PauseScreen.IsPaused || TutorialMessage.IsTutorialActive)
+        if (PauseScreen.IsPaused || TutorialMessage.IsTutorialActive || PowerUpShopUI.IsOpen)
         {
             return;
         }
@@ -58,7 +59,8 @@ public class PlayerMovement : MonoBehaviour
         playerCamera.localRotation = Quaternion.Euler(xRotation, 0f, CameraTilt);
         transform.Rotate(Vector3.up * mouseX);
 
-        isActuallyGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
+        isActuallyGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask | debrisMask);
+
         CurrentInputX = Input.GetAxis("Horizontal");
         float z = Input.GetAxis("Vertical");
 
@@ -105,7 +107,6 @@ public class PlayerMovement : MonoBehaviour
 
     public void ApplyKnockback(Vector3 direction, float force)
     {
-        Debug.Log("se aplicó el knockback");
         direction.Normalize();
         if (direction.y < 0) direction.y = -direction.y;
         direction.y += 0.5f;
@@ -115,5 +116,11 @@ public class PlayerMovement : MonoBehaviour
     public static void SetGlobalMouseSensitivity(float sensitivity)
     {
         GlobalMouseSensitivity = Mathf.Clamp(sensitivity, 0f, 400f);
+    }
+
+    public void ResetVelocity()
+    {
+        velocity = Vector3.zero;
+        impactVelocity = Vector3.zero;
     }
 }

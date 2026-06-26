@@ -65,6 +65,23 @@ public class ScoreManager : MonoBehaviour
         Debug.Log($"Score added: {amount}. Current score: {_currentRunScore}");
     }
 
+    public bool CanSpendScore(int amount)
+    {
+        return amount >= 0 && _currentRunScore >= amount;
+    }
+
+    public bool TrySpendScore(int amount)
+    {
+        if (!CanSpendScore(amount))
+        {
+            return false;
+        }
+
+        _currentRunScore -= amount;
+        Debug.Log($"Score spent: {amount}. Current score: {_currentRunScore}");
+        return true;
+    }
+
     public int GetCurrentScore()
     {
         return _currentRunScore;

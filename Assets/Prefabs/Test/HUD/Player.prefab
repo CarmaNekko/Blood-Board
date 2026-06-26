@@ -208,6 +208,7 @@ GameObject:
   - component: {fileID: 5394803261205600067}
   - component: {fileID: 1156367064293503880}
   - component: {fileID: 6507242683096430587}
+  - component: {fileID: 777748826925241386}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -319,18 +320,33 @@ MonoBehaviour:
   whiteMagicPrefab: {fileID: 6653451336201665546, guid: 477c3a856c90f0742b5daad78d603d0b, type: 3}
   blackMagicPrefab: {fileID: 8704798185733213193, guid: d895a193937f5534f9fef31172878c0a, type: 3}
   harmonicMagicPrefab: {fileID: 6653451336201665546, guid: f08b9556715ddfd4480818093a57cab1, type: 3}
+  currentChargedAttack: 0
   whiteSlashPrefab: {fileID: 4196008582005932241, guid: 231dfd9f3edf483428d9957693187f22, type: 3}
   blackSlashPrefab: {fileID: 6090206308156702687, guid: 5b77fd4af1800b74db7a7ec4c88969dc, type: 3}
   harmonicSlashPrefab: {fileID: 3537563102514347109, guid: 032000ac57a7a7548bfc53a65f0d1c35, type: 3}
   slashManaCostPercent: 0.48
   chargeSpeed: 40
   timeToStartCharge: 0.2
-  hasSlashAttack: 0
   whiteBulletRainPrefab: {fileID: 1191917644595795746, guid: 0d97b7248d6fa4a47a837a548f8ceb83, type: 3}
   blackBulletRainPrefab: {fileID: 689271266387066930, guid: 28dcb7e00cc24264e95e4a1a2956ed3b, type: 3}
   harmonicBulletRainPrefab: {fileID: 3930489931310870866, guid: 606e720476fcb124b9c8f8492e8701d4, type: 3}
   bulletRainSpawnHeight: 15
   bulletRainDistance: 15
+  hasAnomalousSoul: 0
+  anomalousSoulRange: 60
+  anomalousSoulFOV: 90
+  enemyLayer:
+    serializedVersion: 2
+    m_Bits: 256
+  environmentLayer:
+    serializedVersion: 2
+    m_Bits: 192
+  anomalousSoulWhitePrefab: {fileID: 6653451336201665546, guid: 07280cfccf3cd864a83bd0be00ae9a90, type: 3}
+  anomalousSoulBlackPrefab: {fileID: 8704798185733213193, guid: aa4d7cd2f627d3b46b56cdddf240c5d4, type: 3}
+  anomalousSoulHarmonicPrefab: {fileID: 6653451336201665546, guid: 4d2b311618a50dc4c81403e7b874c070, type: 3}
+  whiteVortexPrefab: {fileID: 6653451336201665546, guid: 0fd071c311afe6e43a3fcdd54931a1d4, type: 3}
+  blackVortexPrefab: {fileID: 8704798185733213193, guid: 23f72c6115e7ec848aeef74aa4acb6cf, type: 3}
+  harmonicVortexPrefab: {fileID: 6653451336201665546, guid: 13a6d53b260178341875806ac800dd3f, type: 3}
   firePoint: {fileID: 8885997691368852185}
   shootForce: 30
   cameraEffects: {fileID: 0}
@@ -373,6 +389,20 @@ MonoBehaviour:
   comboWindow: 1
   mitigationFactor: 0.5
   minDamageMultiplier: 0.2
+--- !u!114 &777748826925241386
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7527604178095564770}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d1da1c4fbf6c955498fb6f385e733bec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerInteractor
+  interactKey: 101
+  promptText: {fileID: 0}
 --- !u!1 &7624917620450374352
 GameObject:
   m_ObjectHideFlags: 0

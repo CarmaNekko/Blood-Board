@@ -11,6 +11,14 @@ public class SaveData
     public string checkpointScene;
     public bool isBossCheckpoint;
     public string bossDisplayName;
+    public int powerUpHealth;
+    public int powerUpDamage;
+    public int powerUpSpeed;
+    public bool hasAnomalousSoul;
+    public bool hasSlashAttack;
+    public bool hasVortexAttack;
+    public bool hasVampirism;
+    public bool hasBulletRain;
 }
 
 public abstract class SaveSystem
@@ -32,6 +40,7 @@ public class PlayerPrefsSaveSystem : SaveSystem
 
     public override void Save(int slot, int floor, int score, float health, string mode)
     {
+        SaveData existingData = Load(slot);
         SaveData data = new SaveData
         {
             floor = floor,
@@ -40,7 +49,10 @@ public class PlayerPrefsSaveSystem : SaveSystem
             mode = mode,
             checkpointScene = floor == 0 ? BossCheckpointState.TutorialScene : BossCheckpointState.DefaultLevelScene,
             isBossCheckpoint = false,
-            bossDisplayName = string.Empty
+            bossDisplayName = string.Empty,
+            powerUpHealth = existingData != null ? existingData.powerUpHealth : 0,
+            powerUpDamage = existingData != null ? existingData.powerUpDamage : 0,
+            powerUpSpeed = existingData != null ? existingData.powerUpSpeed : 0
         };
         Save(slot, data);
     }
@@ -88,6 +100,7 @@ public class SaveManager : MonoBehaviour
 {
     public static SaveManager Instance { get; private set; }
     private static SaveSystem saveSystem;
+    private static int currentSlot = 1;
 
     static SaveManager()
     {
@@ -107,14 +120,68 @@ public class SaveManager : MonoBehaviour
         }
     }
 
+    public static void SetCurrentSlot(int slot)
+    {
+        currentSlot = slot;
+    }
+
+    public static int GetCurrentSlot()
+    {
+        return GameModeManager.CurrentSlot;
+    }
+
     public static void SaveToSlot(int slot, int floor, int score, float health, string mode)
     {
-        saveSystem.Save(slot, floor, score, health, mode);
+        SaveData existingData = LoadFromSlot(slot);
+        SaveData data = new SaveData
+        {
+            floor = floor,
+            score = score,
+            health = health,
+            mode = mode,
+            checkpointScene = floor == 0 ? BossCheckpointState.TutorialScene : BossCheckpointState.DefaultLevelScene,
+            isBossCheckpoint = false,
+            bossDisplayName = string.Empty,
+            powerUpHealth = existingData != null ? existingData.powerUpHealth : 0,
+            powerUpDamage = existingData != null ? existingData.powerUpDamage : 0,
+            powerUpSpeed = existingData != null ? existingData.powerUpSpeed : 0,
+            hasAnomalousSoul = existingData != null ? existingData.hasAnomalousSoul : false,
+            hasSlashAttack = existingData != null ? existingData.hasSlashAttack : false,
+            hasVortexAttack = existingData != null ? existingData.hasVortexAttack : false,
+            hasVampirism = existingData != null ? existingData.hasVampirism : false,
+            hasBulletRain = existingData != null ? existingData.hasBulletRain : false
+        };
+        saveSystem.Save(slot, data);
+        BossCheckpointState.SetLevelCheckpoint();
+    }
+
+    public static void SaveNewGameSlot(int slot, int floor, int score, float health, string mode)
+    {
+        SaveData data = new SaveData
+        {
+            floor = floor,
+            score = score,
+            health = health,
+            mode = mode,
+            checkpointScene = floor == 0 ? BossCheckpointState.TutorialScene : BossCheckpointState.DefaultLevelScene,
+            isBossCheckpoint = false,
+            bossDisplayName = string.Empty,
+            powerUpHealth = 0,
+            powerUpDamage = 0,
+            powerUpSpeed = 0,
+            hasAnomalousSoul = false,
+            hasSlashAttack = false,
+            hasVortexAttack = false,
+            hasVampirism = false,
+            hasBulletRain = false
+        };
+        saveSystem.Save(slot, data);
         BossCheckpointState.SetLevelCheckpoint();
     }
 
     public static void SaveBossCheckpointToSlot(int slot, int floor, int score, float health, string mode, string bossSceneName, string bossDisplayName)
     {
+        SaveData existingData = LoadFromSlot(slot);
         SaveData data = new SaveData
         {
             floor = floor,
@@ -123,7 +190,15 @@ public class SaveManager : MonoBehaviour
             mode = mode,
             checkpointScene = bossSceneName,
             isBossCheckpoint = true,
-            bossDisplayName = bossDisplayName
+            bossDisplayName = bossDisplayName,
+            powerUpHealth = existingData != null ? existingData.powerUpHealth : 0,
+            powerUpDamage = existingData != null ? existingData.powerUpDamage : 0,
+            powerUpSpeed = existingData != null ? existingData.powerUpSpeed : 0,
+            hasAnomalousSoul = existingData != null ? existingData.hasAnomalousSoul : false,
+            hasSlashAttack = existingData != null ? existingData.hasSlashAttack : false,
+            hasVortexAttack = existingData != null ? existingData.hasVortexAttack : false,
+            hasVampirism = existingData != null ? existingData.hasVampirism : false,
+            hasBulletRain = existingData != null ? existingData.hasBulletRain : false
         };
 
         saveSystem.Save(slot, data);
@@ -174,5 +249,113 @@ public class SaveManager : MonoBehaviour
 
     public static void DeleteSave(int floor)
     {
+    }
+
+    public static void BuyPowerUp(string powerUpType, int cost)
+    {
+        int slot = GameModeManager.CurrentSlot;
+        SaveData data = LoadFromSlot(slot);
+        if (data == null)
+            return;
+
+        if (data.score >= cost)
+        {
+            data.score -= cost;
+
+            switch(powerUpType)
+            {
+                case "health":
+                    data.powerUpHealth++;
+                    break;
+                case "damage":
+                    data.powerUpDamage++;
+                    break;
+                case "speed":
+                    data.powerUpSpeed++;
+                    break;
+            }
+
+            saveSystem.Save(slot, data);
+        }
+    }
+
+    public static int GetPowerUpCount(string powerUpType)
+    {
+        int slot = GameModeManager.CurrentSlot;
+        SaveData data = LoadFromSlot(slot);
+        if (data == null)
+            return 0;
+
+        switch(powerUpType)
+        {
+            case "health":
+                return data.powerUpHealth;
+            case "damage":
+                return data.powerUpDamage;
+            case "speed":
+                return data.powerUpSpeed;
+            default:
+                return 0;
+        }
+    }
+
+    public static void SavePowerUpPurchase(string powerUpType)
+    {
+        int slot = GameModeManager.CurrentSlot;
+        SaveData data = LoadFromSlot(slot);
+        if (data == null)
+            return;
+
+        switch(powerUpType)
+        {
+            case "health":
+                data.powerUpHealth++;
+                break;
+            case "damage":
+                data.powerUpDamage++;
+                break;
+            case "speed":
+                data.powerUpSpeed++;
+                break;
+            case "anomalousSoul":
+                data.hasAnomalousSoul = true;
+                break;
+            case "slashAttack":
+                data.hasSlashAttack = true;
+                data.hasVortexAttack = false;
+                break;
+            case "vortexAttack":
+                data.hasVortexAttack = true;
+                data.hasSlashAttack = false;
+                break;
+            case "vampirism":
+                data.hasVampirism = true;
+                break;
+            case "bulletRain":
+                data.hasBulletRain = true;
+                break;
+        }
+
+        saveSystem.Save(slot, data);
+    }
+
+    public static void SavePowerUpState(MagicShooter shooter)
+    {
+        int slot = GameModeManager.CurrentSlot;
+        SaveData data = LoadFromSlot(slot);
+        if (data == null) return;
+
+        if (shooter.HasAnomalousSoul()) data.hasAnomalousSoul = true;
+        if (shooter.HasAnyChargedAttack())
+        {
+            if (shooter.GetChargedAttackType() == MagicShooter.ChargedAttackType.Slash)
+                data.hasSlashAttack = true;
+            else if (shooter.GetChargedAttackType() == MagicShooter.ChargedAttackType.Vortex)
+                data.hasVortexAttack = true;
+        }
+        if (shooter.HasVampirism()) data.hasVampirism = true;
+        if (shooter.HasBulletRain()) data.hasBulletRain = true;
+
+        saveSystem.Save(slot, data);
     }
 }
