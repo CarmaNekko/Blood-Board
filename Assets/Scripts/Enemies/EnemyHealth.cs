@@ -31,6 +31,9 @@ public class EnemyHealth : MonoBehaviour
 
     [Header("Drops")]
     [SerializeField] private DropItem[] possibleDrops;
+    [SerializeField] private GameObject coinPrefab;
+    [SerializeField] private int minCoins = 2;
+    [SerializeField] private int maxCoins = 6;
 
     private bool isBleeding = false;
 
@@ -119,6 +122,7 @@ public class EnemyHealth : MonoBehaviour
     {
         ScoreManager.Instance?.AddScoreToCurrent(scoreValue);
 
+        DropCoins();
         if (possibleDrops != null)
         {
             foreach (var drop in possibleDrops)
@@ -140,6 +144,31 @@ public class EnemyHealth : MonoBehaviour
             Destroy(gameObject);
         }
     }
+
+    private void DropCoins()
+{
+    int amount = Random.Range(minCoins, maxCoins + 1);
+
+    for (int i = 0; i < amount; i++)
+    {
+        Vector3 spawnPos = transform.position + Vector3.up * 0.5f;
+
+        GameObject coin = Instantiate(coinPrefab, spawnPos, Quaternion.identity);
+
+        Rigidbody rb = coin.GetComponent<Rigidbody>();
+
+        if (rb != null)
+        {
+            Vector3 force = new Vector3(
+                Random.Range(-1.5f, 1.5f),
+                Random.Range(3f, 5f),
+                Random.Range(-1.5f, 1.5f)
+            );
+
+            rb.AddForce(force, ForceMode.Impulse);
+        }
+    }
+}
 
     private void ClearEditorSelectionIfSelected()
     {
