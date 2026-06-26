@@ -117,4 +117,10 @@ public class PlayerMovement : MonoBehaviour
     {
         GlobalMouseSensitivity = Mathf.Clamp(sensitivity, 0f, 400f);
     }
+
+    public void ResetVelocity()
+    {
+        velocity = Vector3.zero;
+        impactVelocity = Vector3.zero;
+    }
 }
