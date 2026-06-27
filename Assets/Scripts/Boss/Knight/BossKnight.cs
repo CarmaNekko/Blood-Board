@@ -59,6 +59,8 @@ public class BossKnight : MonoBehaviour
 
     private IEnumerator ChaseRoutine()
     {
+        Collider bossCollider = GetComponent<Collider>();
+
         while (isAwake)
         {
             yield return new WaitForSeconds(restTime);
@@ -84,6 +86,8 @@ public class BossKnight : MonoBehaviour
                 bossAudioSource.PlayOneShot(jumpSound);
             }
 
+            if (bossCollider != null) bossCollider.isTrigger = true;
+
             currentStartPos = transform.position;
             float elapsedTime = 0f;
 
@@ -101,6 +105,8 @@ public class BossKnight : MonoBehaviour
 
             transform.position = currentTargetPos;
             redShadow.gameObject.SetActive(false);
+
+            if (bossCollider != null) bossCollider.isTrigger = false;
 
             if (bossAudioSource != null && crashSound != null)
             {

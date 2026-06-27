@@ -28,6 +28,7 @@ public class PlayerMovement : MonoBehaviour
     private float xRotation = 0f;
     private bool isActuallyGrounded;
     private bool wasSprintingWhenJumped = false;
+    private Vector3 currentHorizontalVelocity;
 
     public bool IsSprinting { get; private set; }
     public float CurrentInputX { get; private set; }
@@ -59,7 +60,7 @@ public class PlayerMovement : MonoBehaviour
         playerCamera.localRotation = Quaternion.Euler(xRotation, 0f, CameraTilt);
         transform.Rotate(Vector3.up * mouseX);
 
-        isActuallyGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask | debrisMask);
+        isActuallyGrounded = Physics.SphereCast(groundCheck.position + (Vector3.up * 0.1f), groundDistance, Vector3.down, out RaycastHit hit, 0.2f, groundMask | debrisMask);
 
         CurrentInputX = Input.GetAxis("Horizontal");
         float z = Input.GetAxis("Vertical");
@@ -85,7 +86,9 @@ public class PlayerMovement : MonoBehaviour
 
         float currentSpeed = IsSprinting ? sprintSpeed : moveSpeed;
 
-        Vector3 horizontalVelocity = (transform.right * CurrentInputX + transform.forward * z) * currentSpeed;
+        Vector3 targetHorizontalVelocity = (transform.right * CurrentInputX + transform.forward * z) * currentSpeed;
+        float acceleration = isActuallyGrounded ? 15f : 3f;
+        currentHorizontalVelocity = Vector3.Lerp(currentHorizontalVelocity, targetHorizontalVelocity, acceleration * Time.deltaTime);
 
         Vector3 currentKnockback = Vector3.zero;
         if (impactVelocity.magnitude > 0.2f)
@@ -98,9 +101,16 @@ public class PlayerMovement : MonoBehaviour
             impactVelocity = Vector3.zero;
         }
 
-        velocity.y += gravity * Time.deltaTime;
+        if (velocity.y < 0)
+        {
+            velocity.y += gravity * 2.5f * Time.deltaTime;
+        }
+        else
+        {
+            velocity.y += gravity * Time.deltaTime;
+        }
 
-        Vector3 finalMovement = horizontalVelocity + currentKnockback + velocity;
+        Vector3 finalMovement = currentHorizontalVelocity + currentKnockback + velocity;
 
         controller.Move(finalMovement * Time.deltaTime);
     }

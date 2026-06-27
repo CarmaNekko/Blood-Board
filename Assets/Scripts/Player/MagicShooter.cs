@@ -34,9 +34,9 @@ public class MagicShooter : MonoBehaviour
     [SerializeField] private bool hasAnomalousSoul = false;
     [SerializeField] private float anomalousSoulRange = 20f;
     [SerializeField, Range(10f, 180f)] private float anomalousSoulFOV = 90f;
-    [SerializeField] private LayerMask enemyLayer; 
-    [SerializeField] private LayerMask environmentLayer; 
-    [SerializeField] private GameObject anomalousSoulWhitePrefab; 
+    [SerializeField] private LayerMask enemyLayer;
+    [SerializeField] private LayerMask environmentLayer;
+    [SerializeField] private GameObject anomalousSoulWhitePrefab;
     [SerializeField] private GameObject anomalousSoulBlackPrefab;
     [SerializeField] private GameObject anomalousSoulHarmonicPrefab;
 
@@ -135,31 +135,31 @@ public class MagicShooter : MonoBehaviour
 
     private void HandleInput()
     {
-        bool fire1Held = Input.GetButton("Fire1");
-        bool fire2Held = Input.GetButton("Fire2");
-        bool fire1Up = Input.GetButtonUp("Fire1");
-        bool fire2Up = Input.GetButtonUp("Fire2");
+        bool fire1Held = Input.GetMouseButton(0);
+        bool fire2Held = Input.GetMouseButton(1);
+        bool fire1Up = Input.GetMouseButtonUp(0);
+        bool fire2Up = Input.GetMouseButtonUp(1);
 
         if (isBulletRainActive)
         {
-            if (Input.GetButtonDown("Fire1") || Input.GetButtonDown("Fire2"))
+            if (Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1))
             {
                 if (isHarmonicActive)
                 {
                     StartCoroutine(HandleBulletRainShoot(MagicColor.Harmonic));
                 }
-                else if (Input.GetButtonDown("Fire1") && !isWhiteOverheated && currentWhiteMana >= whiteManaCost)
+                else if (Input.GetMouseButtonDown(0) && !isWhiteOverheated && currentWhiteMana >= whiteManaCost)
                 {
                     StartCoroutine(HandleBulletRainShoot(MagicColor.White));
                 }
-                else if (Input.GetButtonDown("Fire2") && !isBlackOverheated && currentBlackMana >= blackManaCost)
+                else if (Input.GetMouseButtonDown(1) && !isBlackOverheated && currentBlackMana >= blackManaCost)
                 {
                     StartCoroutine(HandleBulletRainShoot(MagicColor.Black));
                 }
             }
             return;
         }
-        
+
         if (currentChargedAttack == ChargedAttackType.None)
         {
             HandleBaseMagicInput(fire1Up, fire2Up);
@@ -322,7 +322,7 @@ public class MagicShooter : MonoBehaviour
 
         Rigidbody rb = projectile.GetComponent<Rigidbody>();
         if (rb != null) rb.linearVelocity = firePoint.forward * shootForce;
-        
+
         Destroy(projectile, 2f);
         if (cameraEffects != null) cameraEffects.ApplyShootRecoil();
     }
@@ -489,10 +489,10 @@ public class MagicShooter : MonoBehaviour
         Shoot(harmonicMagicPrefab);
         currentWhiteMana -= whiteManaCost;
         currentBlackMana -= blackManaCost;
-        
+
         if (currentWhiteMana < whiteManaCost) isWhiteOverheated = true;
         if (currentBlackMana < blackManaCost) isBlackOverheated = true;
-        
+
         UpdateUI();
 
         isPreparingToShoot = false;
@@ -525,7 +525,7 @@ public class MagicShooter : MonoBehaviour
         isPreparingToShoot = false;
     }
 
-private void Shoot(GameObject magicPrefab)
+    private void Shoot(GameObject magicPrefab)
     {
         if (magicPrefab != null)
         {
@@ -549,11 +549,11 @@ private void Shoot(GameObject magicPrefab)
             if (hasAnomalousSoul)
             {
                 GameObject anomalousPrefab = null;
-                
+
                 if (magicPrefab == whiteMagicPrefab) anomalousPrefab = anomalousSoulWhitePrefab;
                 else if (magicPrefab == blackMagicPrefab) anomalousPrefab = anomalousSoulBlackPrefab;
                 else if (magicPrefab == harmonicMagicPrefab) anomalousPrefab = anomalousSoulHarmonicPrefab;
-                
+
                 if (anomalousPrefab != null)
                 {
                     FireAnomalousSoul(anomalousPrefab);
@@ -588,7 +588,7 @@ private void Shoot(GameObject magicPrefab)
                 if (!Physics.Raycast(firePoint.position, directionToEnemy, distanceToEnemy, environmentLayer))
                 {
                     GameObject anomalousObj = Instantiate(anomalousPrefab, firePoint.position, firePoint.rotation);
-                    
+
                     if (isVampirismActive)
                     {
                         MagicProjectile mp = anomalousObj.GetComponent<MagicProjectile>();

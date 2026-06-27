@@ -300,10 +300,13 @@ MonoBehaviour:
   gravity: -19.81
   playerCamera: {fileID: 1012640326866445846}
   groundCheck: {fileID: 8169621369389802030}
-  groundDistance: 0.4
+  groundDistance: 0.1
   groundMask:
     serializedVersion: 2
     m_Bits: 64
+  debrisMask:
+    serializedVersion: 2
+    m_Bits: 0
   mass: 3
 --- !u!114 &1156367064293503880
 MonoBehaviour:
@@ -428,7 +431,7 @@ Transform:
   m_GameObject: {fileID: 7624917620450374352}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.093, z: 0.744}
+  m_LocalPosition: {x: 0, y: -0.093, z: 0.252}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

@@ -836,7 +836,7 @@ MonoBehaviour:
   m_OverrideVoxelSize: 0
   m_VoxelSize: 0.16666667
   m_MinRegionArea: 2
-  m_NavMeshData: {fileID: 23800000, guid: 4aa6a278cdf4b1a4aa429f7721cbd443, type: 2}
+  m_NavMeshData: {fileID: 23800000, guid: ca88a3695dee4014e9783c7fd78be69f, type: 2}
   m_BuildHeightMesh: 0
 --- !u!4 &89072167
 Transform:
@@ -11807,6 +11807,51 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+--- !u!1 &1802202509
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1802202511}
+  - component: {fileID: 1802202510}
+  m_Layer: 0
+  m_Name: Coin Manage
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1802202510
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1802202509}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7936958e37efde24eba12c8af8c55edb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CoinManager
+  Coins: 0
+--- !u!4 &1802202511
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1802202509}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1822730322
 GameObject:
   m_ObjectHideFlags: 0
@@ -12841,7 +12886,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth
   myColor: 1
-  maxHealth: 600
+  maxHealth: 500
   scoreValue: 1000
   isShielded: 0
   shieldVisual: {fileID: 0}
@@ -14355,6 +14400,10 @@ PrefabInstance:
       propertyPath: sprintSpeed
       value: 12
       objectReference: {fileID: 0}
+    - target: {fileID: 5394803261205600067, guid: 5e95e756df1eba343ba25da4ed081cbb, type: 3}
+      propertyPath: groundDistance
+      value: 0.1
+      objectReference: {fileID: 0}
     - target: {fileID: 6507242683096430587, guid: 5e95e756df1eba343ba25da4ed081cbb, type: 3}
       propertyPath: healthBarUI
       value: 
@@ -14406,3 +14455,4 @@ SceneRoots:
   - {fileID: 2022445503}
   - {fileID: 1444117426484608495}
   - {fileID: 1702231416}
+  - {fileID: 1802202511}

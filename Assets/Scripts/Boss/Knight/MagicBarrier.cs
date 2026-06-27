@@ -15,18 +15,15 @@ public class MagicBarrier : MonoBehaviour
     private void Start()
     {
         meshRenderer = GetComponent<MeshRenderer>();
-        ResetBarrier(); // Llamamos a la función de revivir al inicio
+        ResetBarrier();
     }
 
-    // Esta es la nueva función mágica que el pasillo llamará
     public void ResetBarrier()
     {
-        // 1. Volver a encender el objeto por si estaba apagado
         gameObject.SetActive(true);
 
         if (meshRenderer == null) meshRenderer = GetComponent<MeshRenderer>();
 
-        // 2. Tirar la moneda de nuevo para cambiar el color
         int randomColor = Random.Range(0, 2);
         if (randomColor == 0)
         {
@@ -41,6 +38,16 @@ public class MagicBarrier : MonoBehaviour
     }
 
     private void OnTriggerEnter(Collider other)
+    {
+        ProcessHit(other);
+    }
+
+    private void OnTriggerStay(Collider other)
+    {
+        ProcessHit(other);
+    }
+
+    private void ProcessHit(Collider other)
     {
         if (other.CompareTag("WhiteMagic"))
         {
@@ -61,7 +68,6 @@ public class MagicBarrier : MonoBehaviour
             Instantiate(shatterParticles, transform.position, transform.rotation);
         }
 
-        // ¡EL CAMBIO CLAVE! En lugar de Destroy, lo APAGAMOS
         gameObject.SetActive(false);
     }
 }
