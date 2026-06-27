@@ -4509,10 +4509,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 505385a5dc618ff47961205447a9f781, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DestructiblePillar
-  health: 3
-  explosionForce: 200
-  explosionRadius: 2
+  intactModel: {fileID: 0}
+  fracturedModelParent: {fileID: 0}
   transparentMaterial: {fileID: 2100000, guid: 7ca407db2206b864f93a3ea113eca51a, type: 2}
+  neighborTolerance: 0.05
 --- !u!65 &4334844104238616728
 BoxCollider:
   m_ObjectHideFlags: 0
