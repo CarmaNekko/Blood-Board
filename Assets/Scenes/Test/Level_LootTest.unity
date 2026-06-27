@@ -539,7 +539,7 @@ MonoBehaviour:
   startRoomPrefab: {fileID: 9215206470418219887, guid: ab716a295d34c3347bab88ef4803a2a5, type: 3}
   finalRoomPrefab: {fileID: 3206246361914026675, guid: 37371f21f037fd04880b88901e668373, type: 3}
   roomPrefabs:
-  - {fileID: 6045825802650325582, guid: f691004411479bb4c8c9a758650aa775, type: 3}
+  - {fileID: 1059234749075372331, guid: 3fa95c8af715cd74da682444c1f0bfcb, type: 3}
   corridorPrefabs:
   - {fileID: 4158632963112747052, guid: 1e3689983ac3d534197e07eb1e178728, type: 3}
   deadEndPrefabs:
