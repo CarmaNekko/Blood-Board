@@ -5109,6 +5109,9 @@ MonoBehaviour:
   - 0
   - -25
   - -45
+  laserDeploySound: {fileID: 8300000, guid: 62c0bd51957c3d545aa1676029c58264, type: 3}
+  laserHumSound: {fileID: 8300000, guid: a2b780be24fe0b34ca09177049aa0318, type: 3}
+  audioVolume: 0.8
 --- !u!114 &792989174
 MonoBehaviour:
   m_ObjectHideFlags: 0

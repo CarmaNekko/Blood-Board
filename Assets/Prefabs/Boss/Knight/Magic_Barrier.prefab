@@ -128,3 +128,7 @@ MonoBehaviour:
   materialBlanco: {fileID: 2100000, guid: cc0c91e40dd15a8459026682682d04de, type: 2}
   materialNegro: {fileID: 2100000, guid: 690391499e491bf4f84fdb8b7ce97bba, type: 2}
   shatterParticles: {fileID: 0}
+  breakSound: {fileID: 8300000, guid: fa3362abc23cf704ca521add3b1abf3f, type: 3}
+  breakSoundVolume: 0.5
+  wrongMagicSound: {fileID: 8300000, guid: 3900eebeab4477f41bcdbbe2b48ef4f9, type: 3}
+  wrongMagicVolume: 1

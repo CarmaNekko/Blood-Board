@@ -599,9 +599,17 @@ PrefabInstance:
     m_TransformParent: {fileID: 650781619}
     m_Modifications:
     - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
+      propertyPath: warningSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 2a5b5544289f74d4ea473c29bcce5940, type: 3}
+    - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
       propertyPath: brokenDuration
       value: 2.5
       objectReference: {fileID: 0}
+    - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
+      propertyPath: beamStrikeSound
+      value: 
+      objectReference: {fileID: 8300000, guid: a9bdd45bebc92d444bb2eba045bde983, type: 3}
     - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
       propertyPath: warningDuration
       value: 2
@@ -1741,9 +1749,17 @@ PrefabInstance:
     m_TransformParent: {fileID: 650781619}
     m_Modifications:
     - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
+      propertyPath: warningSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 2a5b5544289f74d4ea473c29bcce5940, type: 3}
+    - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
       propertyPath: brokenDuration
       value: 2.5
       objectReference: {fileID: 0}
+    - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
+      propertyPath: beamStrikeSound
+      value: 
+      objectReference: {fileID: 8300000, guid: a9bdd45bebc92d444bb2eba045bde983, type: 3}
     - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
       propertyPath: warningDuration
       value: 2
@@ -3258,9 +3274,17 @@ PrefabInstance:
     m_TransformParent: {fileID: 650781619}
     m_Modifications:
     - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
+      propertyPath: warningSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 2a5b5544289f74d4ea473c29bcce5940, type: 3}
+    - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
       propertyPath: brokenDuration
       value: 2.5
       objectReference: {fileID: 0}
+    - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
+      propertyPath: beamStrikeSound
+      value: 
+      objectReference: {fileID: 8300000, guid: a9bdd45bebc92d444bb2eba045bde983, type: 3}
     - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
       propertyPath: warningDuration
       value: 2
@@ -3515,9 +3539,17 @@ PrefabInstance:
     m_TransformParent: {fileID: 650781619}
     m_Modifications:
     - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
+      propertyPath: warningSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 2a5b5544289f74d4ea473c29bcce5940, type: 3}
+    - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
       propertyPath: brokenDuration
       value: 2.5
       objectReference: {fileID: 0}
+    - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
+      propertyPath: beamStrikeSound
+      value: 
+      objectReference: {fileID: 8300000, guid: a9bdd45bebc92d444bb2eba045bde983, type: 3}
     - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
       propertyPath: warningDuration
       value: 2
@@ -4265,9 +4297,17 @@ PrefabInstance:
     m_TransformParent: {fileID: 650781619}
     m_Modifications:
     - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
+      propertyPath: warningSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 2a5b5544289f74d4ea473c29bcce5940, type: 3}
+    - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
       propertyPath: brokenDuration
       value: 2.5
       objectReference: {fileID: 0}
+    - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
+      propertyPath: beamStrikeSound
+      value: 
+      objectReference: {fileID: 8300000, guid: a9bdd45bebc92d444bb2eba045bde983, type: 3}
     - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
       propertyPath: warningDuration
       value: 2
@@ -4672,9 +4712,17 @@ PrefabInstance:
     m_TransformParent: {fileID: 650781619}
     m_Modifications:
     - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
+      propertyPath: warningSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 2a5b5544289f74d4ea473c29bcce5940, type: 3}
+    - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
       propertyPath: brokenDuration
       value: 2.5
       objectReference: {fileID: 0}
+    - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
+      propertyPath: beamStrikeSound
+      value: 
+      objectReference: {fileID: 8300000, guid: a9bdd45bebc92d444bb2eba045bde983, type: 3}
     - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
       propertyPath: warningDuration
       value: 2
@@ -4966,9 +5014,17 @@ PrefabInstance:
     m_TransformParent: {fileID: 650781619}
     m_Modifications:
     - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
+      propertyPath: warningSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 2a5b5544289f74d4ea473c29bcce5940, type: 3}
+    - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
       propertyPath: brokenDuration
       value: 2.5
       objectReference: {fileID: 0}
+    - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
+      propertyPath: beamStrikeSound
+      value: 
+      objectReference: {fileID: 8300000, guid: a9bdd45bebc92d444bb2eba045bde983, type: 3}
     - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
       propertyPath: warningDuration
       value: 2
@@ -5351,9 +5407,17 @@ PrefabInstance:
     m_TransformParent: {fileID: 650781619}
     m_Modifications:
     - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
+      propertyPath: warningSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 2a5b5544289f74d4ea473c29bcce5940, type: 3}
+    - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
       propertyPath: brokenDuration
       value: 2.5
       objectReference: {fileID: 0}
+    - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
+      propertyPath: beamStrikeSound
+      value: 
+      objectReference: {fileID: 8300000, guid: a9bdd45bebc92d444bb2eba045bde983, type: 3}
     - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
       propertyPath: warningDuration
       value: 2
@@ -5757,9 +5821,17 @@ PrefabInstance:
     m_TransformParent: {fileID: 650781619}
     m_Modifications:
     - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
+      propertyPath: warningSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 2a5b5544289f74d4ea473c29bcce5940, type: 3}
+    - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
       propertyPath: brokenDuration
       value: 2.5
       objectReference: {fileID: 0}
+    - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
+      propertyPath: beamStrikeSound
+      value: 
+      objectReference: {fileID: 8300000, guid: a9bdd45bebc92d444bb2eba045bde983, type: 3}
     - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
       propertyPath: warningDuration
       value: 2
@@ -5939,9 +6011,17 @@ PrefabInstance:
     m_TransformParent: {fileID: 650781619}
     m_Modifications:
     - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
+      propertyPath: warningSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 2a5b5544289f74d4ea473c29bcce5940, type: 3}
+    - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
       propertyPath: brokenDuration
       value: 2.5
       objectReference: {fileID: 0}
+    - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
+      propertyPath: beamStrikeSound
+      value: 
+      objectReference: {fileID: 8300000, guid: a9bdd45bebc92d444bb2eba045bde983, type: 3}
     - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
       propertyPath: warningDuration
       value: 2
@@ -6233,9 +6313,17 @@ PrefabInstance:
     m_TransformParent: {fileID: 650781619}
     m_Modifications:
     - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
+      propertyPath: warningSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 2a5b5544289f74d4ea473c29bcce5940, type: 3}
+    - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
       propertyPath: brokenDuration
       value: 2.5
       objectReference: {fileID: 0}
+    - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
+      propertyPath: beamStrikeSound
+      value: 
+      objectReference: {fileID: 8300000, guid: a9bdd45bebc92d444bb2eba045bde983, type: 3}
     - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
       propertyPath: warningDuration
       value: 2
@@ -6874,9 +6962,17 @@ PrefabInstance:
     m_TransformParent: {fileID: 650781619}
     m_Modifications:
     - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
+      propertyPath: warningSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 2a5b5544289f74d4ea473c29bcce5940, type: 3}
+    - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
       propertyPath: brokenDuration
       value: 2.5
       objectReference: {fileID: 0}
+    - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
+      propertyPath: beamStrikeSound
+      value: 
+      objectReference: {fileID: 8300000, guid: a9bdd45bebc92d444bb2eba045bde983, type: 3}
     - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
       propertyPath: warningDuration
       value: 2
@@ -7056,9 +7152,17 @@ PrefabInstance:
     m_TransformParent: {fileID: 650781619}
     m_Modifications:
     - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
+      propertyPath: warningSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 2a5b5544289f74d4ea473c29bcce5940, type: 3}
+    - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
       propertyPath: brokenDuration
       value: 2.5
       objectReference: {fileID: 0}
+    - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
+      propertyPath: beamStrikeSound
+      value: 
+      objectReference: {fileID: 8300000, guid: a9bdd45bebc92d444bb2eba045bde983, type: 3}
     - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
       propertyPath: warningDuration
       value: 2
@@ -9017,9 +9121,17 @@ PrefabInstance:
     m_TransformParent: {fileID: 650781619}
     m_Modifications:
     - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
+      propertyPath: warningSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 2a5b5544289f74d4ea473c29bcce5940, type: 3}
+    - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
       propertyPath: brokenDuration
       value: 2.5
       objectReference: {fileID: 0}
+    - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
+      propertyPath: beamStrikeSound
+      value: 
+      objectReference: {fileID: 8300000, guid: a9bdd45bebc92d444bb2eba045bde983, type: 3}
     - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
       propertyPath: warningDuration
       value: 2
@@ -9087,9 +9199,17 @@ PrefabInstance:
     m_TransformParent: {fileID: 650781619}
     m_Modifications:
     - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
+      propertyPath: warningSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 2a5b5544289f74d4ea473c29bcce5940, type: 3}
+    - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
       propertyPath: brokenDuration
       value: 2.5
       objectReference: {fileID: 0}
+    - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
+      propertyPath: beamStrikeSound
+      value: 
+      objectReference: {fileID: 8300000, guid: a9bdd45bebc92d444bb2eba045bde983, type: 3}
     - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
       propertyPath: warningDuration
       value: 2
@@ -9157,9 +9277,17 @@ PrefabInstance:
     m_TransformParent: {fileID: 650781619}
     m_Modifications:
     - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
+      propertyPath: warningSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 2a5b5544289f74d4ea473c29bcce5940, type: 3}
+    - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
       propertyPath: brokenDuration
       value: 2.5
       objectReference: {fileID: 0}
+    - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
+      propertyPath: beamStrikeSound
+      value: 
+      objectReference: {fileID: 8300000, guid: a9bdd45bebc92d444bb2eba045bde983, type: 3}
     - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
       propertyPath: warningDuration
       value: 2
@@ -9451,9 +9579,17 @@ PrefabInstance:
     m_TransformParent: {fileID: 650781619}
     m_Modifications:
     - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
+      propertyPath: warningSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 2a5b5544289f74d4ea473c29bcce5940, type: 3}
+    - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
       propertyPath: brokenDuration
       value: 2.5
       objectReference: {fileID: 0}
+    - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
+      propertyPath: beamStrikeSound
+      value: 
+      objectReference: {fileID: 8300000, guid: a9bdd45bebc92d444bb2eba045bde983, type: 3}
     - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
       propertyPath: warningDuration
       value: 2
@@ -9596,9 +9732,17 @@ PrefabInstance:
     m_TransformParent: {fileID: 650781619}
     m_Modifications:
     - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
+      propertyPath: warningSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 2a5b5544289f74d4ea473c29bcce5940, type: 3}
+    - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
       propertyPath: brokenDuration
       value: 2.5
       objectReference: {fileID: 0}
+    - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
+      propertyPath: beamStrikeSound
+      value: 
+      objectReference: {fileID: 8300000, guid: a9bdd45bebc92d444bb2eba045bde983, type: 3}
     - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
       propertyPath: warningDuration
       value: 2
@@ -10175,9 +10319,17 @@ PrefabInstance:
     m_TransformParent: {fileID: 650781619}
     m_Modifications:
     - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
+      propertyPath: warningSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 2a5b5544289f74d4ea473c29bcce5940, type: 3}
+    - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
       propertyPath: brokenDuration
       value: 2.5
       objectReference: {fileID: 0}
+    - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
+      propertyPath: beamStrikeSound
+      value: 
+      objectReference: {fileID: 8300000, guid: a9bdd45bebc92d444bb2eba045bde983, type: 3}
     - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
       propertyPath: warningDuration
       value: 2
@@ -10520,9 +10672,17 @@ PrefabInstance:
     m_TransformParent: {fileID: 650781619}
     m_Modifications:
     - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
+      propertyPath: warningSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 2a5b5544289f74d4ea473c29bcce5940, type: 3}
+    - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
       propertyPath: brokenDuration
       value: 2.5
       objectReference: {fileID: 0}
+    - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
+      propertyPath: beamStrikeSound
+      value: 
+      objectReference: {fileID: 8300000, guid: a9bdd45bebc92d444bb2eba045bde983, type: 3}
     - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
       propertyPath: warningDuration
       value: 2
@@ -11484,9 +11644,17 @@ PrefabInstance:
     m_TransformParent: {fileID: 650781619}
     m_Modifications:
     - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
+      propertyPath: warningSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 2a5b5544289f74d4ea473c29bcce5940, type: 3}
+    - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
       propertyPath: brokenDuration
       value: 2.5
       objectReference: {fileID: 0}
+    - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
+      propertyPath: beamStrikeSound
+      value: 
+      objectReference: {fileID: 8300000, guid: a9bdd45bebc92d444bb2eba045bde983, type: 3}
     - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
       propertyPath: warningDuration
       value: 2
@@ -12185,9 +12353,17 @@ PrefabInstance:
     m_TransformParent: {fileID: 650781619}
     m_Modifications:
     - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
+      propertyPath: warningSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 2a5b5544289f74d4ea473c29bcce5940, type: 3}
+    - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
       propertyPath: brokenDuration
       value: 2.5
       objectReference: {fileID: 0}
+    - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
+      propertyPath: beamStrikeSound
+      value: 
+      objectReference: {fileID: 8300000, guid: a9bdd45bebc92d444bb2eba045bde983, type: 3}
     - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
       propertyPath: warningDuration
       value: 2
@@ -13019,9 +13195,17 @@ PrefabInstance:
     m_TransformParent: {fileID: 650781619}
     m_Modifications:
     - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
+      propertyPath: warningSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 2a5b5544289f74d4ea473c29bcce5940, type: 3}
+    - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
       propertyPath: brokenDuration
       value: 2.5
       objectReference: {fileID: 0}
+    - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
+      propertyPath: beamStrikeSound
+      value: 
+      objectReference: {fileID: 8300000, guid: a9bdd45bebc92d444bb2eba045bde983, type: 3}
     - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
       propertyPath: warningDuration
       value: 2
@@ -13402,9 +13586,17 @@ PrefabInstance:
     m_TransformParent: {fileID: 650781619}
     m_Modifications:
     - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
+      propertyPath: warningSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 2a5b5544289f74d4ea473c29bcce5940, type: 3}
+    - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
       propertyPath: brokenDuration
       value: 2.5
       objectReference: {fileID: 0}
+    - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
+      propertyPath: beamStrikeSound
+      value: 
+      objectReference: {fileID: 8300000, guid: a9bdd45bebc92d444bb2eba045bde983, type: 3}
     - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
       propertyPath: warningDuration
       value: 2
@@ -13627,9 +13819,17 @@ PrefabInstance:
     m_TransformParent: {fileID: 650781619}
     m_Modifications:
     - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
+      propertyPath: warningSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 2a5b5544289f74d4ea473c29bcce5940, type: 3}
+    - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
       propertyPath: brokenDuration
       value: 2.5
       objectReference: {fileID: 0}
+    - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
+      propertyPath: beamStrikeSound
+      value: 
+      objectReference: {fileID: 8300000, guid: a9bdd45bebc92d444bb2eba045bde983, type: 3}
     - target: {fileID: -2505536574711512729, guid: aac8a8f19ed78214692bb3f85a5a711d, type: 3}
       propertyPath: warningDuration
       value: 2

@@ -9,12 +9,24 @@ public class MagicBarrier : MonoBehaviour
     [Header("Efectos Visuales")]
     public GameObject shatterParticles;
 
+    [Header("Audio")]
+    public AudioClip breakSound;
+    [Range(0f, 1f)] public float breakSoundVolume = 1f;
+    public AudioClip wrongMagicSound;
+    [Range(0f, 1f)] public float wrongMagicVolume = 0.5f;
+
     private bool isWhiteBarrier;
     private MeshRenderer meshRenderer;
+    private AudioSource audioSource;
 
     private void Start()
     {
         meshRenderer = GetComponent<MeshRenderer>();
+
+        audioSource = gameObject.AddComponent<AudioSource>();
+        audioSource.playOnAwake = false;
+        audioSource.spatialBlend = 1f;
+
         ResetBarrier();
     }
 
@@ -51,13 +63,35 @@ public class MagicBarrier : MonoBehaviour
     {
         if (other.CompareTag("WhiteMagic"))
         {
-            if (!isWhiteBarrier) BreakBarrier();
-            else Destroy(other.gameObject);
+            if (!isWhiteBarrier)
+            {
+                BreakBarrier();
+            }
+            else
+            {
+                PlayDeflectSound();
+                Destroy(other.gameObject);
+            }
         }
         else if (other.CompareTag("BlackMagic"))
         {
-            if (isWhiteBarrier) BreakBarrier();
-            else Destroy(other.gameObject);
+            if (isWhiteBarrier)
+            {
+                BreakBarrier();
+            }
+            else
+            {
+                PlayDeflectSound();
+                Destroy(other.gameObject);
+            }
+        }
+    }
+
+    private void PlayDeflectSound()
+    {
+        if (wrongMagicSound != null && audioSource != null)
+        {
+            audioSource.PlayOneShot(wrongMagicSound, wrongMagicVolume);
         }
     }
 
@@ -66,6 +100,12 @@ public class MagicBarrier : MonoBehaviour
         if (shatterParticles != null)
         {
             Instantiate(shatterParticles, transform.position, transform.rotation);
+        }
+
+        if (breakSound != null)
+        {
+            Vector3 soundPos = Camera.main != null ? Camera.main.transform.position : transform.position;
+            AudioSource.PlayClipAtPoint(breakSound, soundPos, breakSoundVolume);
         }
 
         gameObject.SetActive(false);

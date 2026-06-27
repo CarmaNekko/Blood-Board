@@ -16,10 +16,16 @@ public class BishopPlatform : MonoBehaviour
     [SerializeField] private GameObject beamPrefab;
     [SerializeField] private float beamDuration = 1f;
 
+    [Header("Audio")]
+    [SerializeField] private AudioClip warningSound;
+    [SerializeField] private AudioClip beamStrikeSound;
+    [SerializeField, Range(0f, 1f)] private float audioVolume = 0.8f;
+
     private Material originalMaterial;
     private Renderer platformRenderer;
     private Collider platformCollider;
     private Vector3 originalPosition;
+    private AudioSource audioSource;
 
     public bool IsTargeted { get; private set; } = false;
 
@@ -33,6 +39,10 @@ public class BishopPlatform : MonoBehaviour
         {
             originalMaterial = platformRenderer.material;
         }
+
+        audioSource = gameObject.AddComponent<AudioSource>();
+        audioSource.playOnAwake = false;
+        audioSource.spatialBlend = 1f;
     }
 
     public void TargetPlatform()
@@ -52,6 +62,14 @@ public class BishopPlatform : MonoBehaviour
             platformRenderer.material = warningMaterial;
         }
 
+        if (warningSound != null)
+        {
+            audioSource.clip = warningSound;
+            audioSource.volume = audioVolume;
+            audioSource.loop = true;
+            audioSource.Play();
+        }
+
         float elapsed = 0f;
         while (elapsed < warningDuration)
         {
@@ -63,6 +81,9 @@ public class BishopPlatform : MonoBehaviour
         }
 
         transform.position = originalPosition;
+
+        if (audioSource.isPlaying) audioSource.Stop();
+        if (beamStrikeSound != null) audioSource.PlayOneShot(beamStrikeSound, audioVolume);
 
         GameObject beamInstance = null;
         if (beamPrefab != null)

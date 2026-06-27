@@ -36,6 +36,14 @@ public class PawnBossController : MonoBehaviour
 
     private int currentPhase = 0;
 
+    [Header("Audio")]
+    [SerializeField] private AudioClip laserDeploySound;
+    [SerializeField] private AudioClip laserHumSound;
+    [SerializeField, Range(0f, 1f)] private float audioVolume = 0.8f;
+
+    private AudioSource deployAudioSource;
+    private AudioSource humAudioSource;
+
     private void Start()
     {
         bool isWhite = Random.value > 0.5f;
@@ -65,6 +73,15 @@ public class PawnBossController : MonoBehaviour
         SetupAutoPivots(upperLasersPivot, ref upperLaserPivots, ref upperLaserOriginalScales);
 
         if (shieldVisual != null) shieldVisual.SetActive(false);
+
+        deployAudioSource = gameObject.AddComponent<AudioSource>();
+        deployAudioSource.playOnAwake = false;
+        deployAudioSource.spatialBlend = 1f;
+
+        humAudioSource = gameObject.AddComponent<AudioSource>();
+        humAudioSource.playOnAwake = false;
+        humAudioSource.spatialBlend = 1f;
+        humAudioSource.loop = true;
     }
 
     private void SetupAutoPivots(Transform pivotContainer, ref Transform[] pivotArray, ref Vector3[] scalesArray)
@@ -103,6 +120,8 @@ public class PawnBossController : MonoBehaviour
     {
         if (shieldVisual != null) shieldVisual.SetActive(true);
         currentState = BossState.Transitioning;
+
+        if (laserDeploySound != null) deployAudioSource.PlayOneShot(laserDeploySound, audioVolume);
     }
 
     public void StartBattle()
@@ -118,17 +137,28 @@ public class PawnBossController : MonoBehaviour
             if (bossRenderer != null) bossRenderer.material.color = originalColor;
             if (shieldVisual != null) shieldVisual.SetActive(true);
 
+            if (laserHumSound != null && !humAudioSource.isPlaying)
+            {
+                humAudioSource.clip = laserHumSound;
+                humAudioSource.volume = audioVolume;
+                humAudioSource.Play();
+            }
+
             yield return new WaitForSeconds(attackDuration);
 
             currentState = BossState.Fatigued;
             if (bossRenderer != null) bossRenderer.material.color = Color.gray;
             if (shieldVisual != null) shieldVisual.SetActive(false);
 
+            if (humAudioSource != null) humAudioSource.Stop();
+
             yield return new WaitForSeconds(fatigueDuration);
 
             currentState = BossState.Transitioning;
             if (bossRenderer != null) bossRenderer.material.color = originalColor;
             if (shieldVisual != null) shieldVisual.SetActive(true);
+
+            if (laserDeploySound != null) deployAudioSource.PlayOneShot(laserDeploySound, audioVolume);
 
             yield return new WaitForSeconds(1.5f);
         }
@@ -189,6 +219,8 @@ public class PawnBossController : MonoBehaviour
     {
         currentState = BossState.Defeated;
         if (shieldVisual != null) shieldVisual.SetActive(false);
+
+        if (humAudioSource != null) humAudioSource.Stop();
 
         if (lowerLaserPivots != null)
         {
