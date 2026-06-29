@@ -85,6 +85,9 @@ public class PowerUpShopInteractable : InteractableBase
             return PowerUpShopPurchaseResult.Invalid;
         }
 
+        CoinManager coinManager = CoinManager.Instance;
+        if (coinManager == null) return PowerUpShopPurchaseResult.Invalid;
+
         if (!item.IsConfigured())
         {
             return PowerUpShopPurchaseResult.Invalid;
@@ -95,30 +98,33 @@ public class PowerUpShopInteractable : InteractableBase
             return PowerUpShopPurchaseResult.LockedByFloor;
         }
 
-        ScoreManager scoreManager = ScoreManager.Instance;
-        if (scoreManager == null || !scoreManager.CanSpendScore(item.Price))
-        {
-            return PowerUpShopPurchaseResult.NotEnoughPoints;
-        }
-
         PowerUpBase powerUpToBuy = item.PowerUpPrefab.GetComponent<PowerUpBase>();
         if (powerUpToBuy == null)
         {
             return PowerUpShopPurchaseResult.Invalid;
         }
 
-        if (IsChargedAttack(powerUpToBuy))
+        if (!coinManager.CanAffordCoins(item.Price))
         {
-            buyer.Shooter.ResetChargedAttack();
+            return PowerUpShopPurchaseResult.NotEnoughCoins;
         }
 
-        if (!powerUpToBuy.TryGrantTo(buyer.Shooter))
+        if (coinManager.SpendCoins(item.Price))
         {
-            return PowerUpShopPurchaseResult.AlreadyOwnedOrUnavailable;
+            if (powerUpToBuy.TryGrantTo(buyer.Shooter))
+            {
+                return PowerUpShopPurchaseResult.Purchased;
+            }
+            else
+            {
+                coinManager.AddCoins(item.Price);
+                return PowerUpShopPurchaseResult.AlreadyOwnedOrUnavailable;
+            }
         }
-
-        scoreManager.TrySpendScore(item.Price);
-        return PowerUpShopPurchaseResult.Purchased;
+        else
+        {
+            return PowerUpShopPurchaseResult.NotEnoughCoins;
+        }
     }
     private bool IsChargedAttack(PowerUpShopItem item)
     {
@@ -137,7 +143,7 @@ public class PowerUpShopInteractable : InteractableBase
 public enum PowerUpShopPurchaseResult
 {
     Purchased,
-    NotEnoughPoints,
+    NotEnoughCoins,
     LockedByFloor,
     AlreadyOwnedOrUnavailable,
     Invalid

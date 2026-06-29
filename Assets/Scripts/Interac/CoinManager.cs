@@ -24,6 +24,11 @@ public class CoinManager : MonoBehaviour
         Debug.Log("Coins: " + Coins);
     }
 
+    public bool CanAffordCoins(int amount)
+    {
+        return Coins >= amount;
+    }
+
     public bool SpendCoins(int amount)
     {
         if (Coins >= amount)

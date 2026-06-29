@@ -29,7 +29,7 @@ public class CheckpointManager : MonoBehaviour
 
     private void Start()
     {
-        transitionEffect = FindObjectOfType<CheckerboardTransition>();
+        transitionEffect = FindFirstObjectByType<CheckerboardTransition>();
         if (transitionEffect == null)
         {
             Debug.LogError("No se encontró un CheckerboardTransition en la escena. El respawn no tendrá efecto de fundido.");

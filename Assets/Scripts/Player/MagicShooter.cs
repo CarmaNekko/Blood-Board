@@ -744,6 +744,10 @@ public class MagicShooter : MonoBehaviour
 
     public bool UnlockSlashAttack(float manaCostPercent)
     {
+        if (currentChargedAttack == ChargedAttackType.Slash)
+        {
+            return false;
+        }
         currentChargedAttack = ChargedAttackType.Slash;
         slashManaCostPercent = manaCostPercent;
         return true;
@@ -751,6 +755,10 @@ public class MagicShooter : MonoBehaviour
 
     public bool UnlockVortexAttack(float manaCostPercent)
     {
+        if (currentChargedAttack == ChargedAttackType.Vortex)
+        {
+            return false;
+        }
         currentChargedAttack = ChargedAttackType.Vortex;
         slashManaCostPercent = manaCostPercent;
         return true;

@@ -12,7 +12,7 @@ public class PowerUpShopUI : MonoBehaviour
 
     [Header("Texts")]
     [SerializeField] private TMP_Text titleText;
-    [SerializeField] private TMP_Text pointsText;
+    [SerializeField] private TMP_Text coinsText;
     [SerializeField] private TMP_Text statusText;
 
     [Header("Grid Slots")]
@@ -111,7 +111,7 @@ public class PowerUpShopUI : MonoBehaviour
             return;
         }
 
-        int currentScore = ScoreManager.Instance != null ? ScoreManager.Instance.GetCurrentScore() : 0;
+        int currentCoins = CoinManager.Instance != null ? CoinManager.Instance.Coins : 0;
         int currentFloor = currentShop.GetCurrentFloor();
 
         if (titleText != null)
@@ -119,9 +119,9 @@ public class PowerUpShopUI : MonoBehaviour
             titleText.text = currentShop.ShopTitle;
         }
 
-        if (pointsText != null)
+        if (coinsText != null)
         {
-            pointsText.text = $"{currentScore} pts | Piso {currentFloor}";
+            coinsText.text = $"{currentCoins} monedas | Piso {currentFloor}";
         }
         foreach (Transform child in itemButtonsContainer)
         {
@@ -139,7 +139,7 @@ public class PowerUpShopUI : MonoBehaviour
             }
             PowerUpShopItemButton itemButton = Instantiate(itemButtonPrefab, itemButtonsContainer);
             itemButton.SetLabel(BuildItemLabel(item, currentFloor));
-            bool canAfford = currentScore >= item.Price;
+            bool canAfford = currentCoins >= item.Price;
             itemButton.SetAvailable(canAfford);
 
             Button button = itemButton.Button;
@@ -154,7 +154,7 @@ public class PowerUpShopUI : MonoBehaviour
 
     private string BuildItemLabel(PowerUpShopItem item, int currentFloor)
     {
-        return $"{item.GetDisplayName()}\n{item.Price} pts";
+        return $"{item.GetDisplayName()}\n{item.Price} monedas";
     }
 
     private void Buy(PowerUpShopItem item)
@@ -177,8 +177,8 @@ public class PowerUpShopUI : MonoBehaviour
                     return;
                 }
                 break;
-            case PowerUpShopPurchaseResult.NotEnoughPoints:
-                SetStatus("No tienes suficientes puntos.");
+            case PowerUpShopPurchaseResult.NotEnoughCoins:
+                SetStatus("No tienes suficientes monedas.");
                 break;
             case PowerUpShopPurchaseResult.LockedByFloor:
                 SetStatus($"Disponible desde el piso {item.AvailableFromFloor}.");
