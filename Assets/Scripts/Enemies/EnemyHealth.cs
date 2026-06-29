@@ -145,25 +145,27 @@ public class EnemyHealth : MonoBehaviour
         }
     }
 
-    private void DropCoins()
+private void DropCoins()
 {
+    if (coinPrefab == null) return;
+
     int amount = Random.Range(minCoins, maxCoins + 1);
+    Vector3 spawnPos = transform.position + Vector3.up * 0.5f;
 
     for (int i = 0; i < amount; i++)
     {
-        Vector3 spawnPos = transform.position + Vector3.up * 0.5f;
-
         GameObject coin = Instantiate(coinPrefab, spawnPos, Quaternion.identity);
 
         Rigidbody rb = coin.GetComponent<Rigidbody>();
-
         if (rb != null)
         {
-            Vector3 force = new Vector3(
-                Random.Range(-1.5f, 1.5f),
-                Random.Range(3f, 5f),
-                Random.Range(-1.5f, 1.5f)
-            );
+            Vector2 randomDir = Random.insideUnitCircle.normalized;
+            float horizontalMagnitude = Random.Range(1.5f, 3.5f);
+            Vector3 horizontalForce = new Vector3(randomDir.x, 0, randomDir.y) * horizontalMagnitude;
+            
+            float verticalForce = Random.Range(4f, 6f);
+
+            Vector3 force = horizontalForce + (Vector3.up * verticalForce);
 
             rb.AddForce(force, ForceMode.Impulse);
         }
