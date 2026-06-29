@@ -738,7 +738,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PowerUpShopUI
   panelRoot: {fileID: 839582980778642422}
   titleText: {fileID: 6527125550422119802}
-  coinsText: {fileID: 0}
+  coinsText: {fileID: 2338141158613798939}
   statusText: {fileID: 8703957178824576041}
   itemButtonPrefab: {fileID: 1953026932736693912, guid: 6af5e24a9d22a3b44b24c10f52a1641a, type: 3}
   itemButtonsContainer: {fileID: 5022866186946035127}

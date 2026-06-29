@@ -19,6 +19,7 @@ public class SaveData
     public bool hasVortexAttack;
     public bool hasVampirism;
     public bool hasBulletRain;
+    public int coins;
 }
 
 public abstract class SaveSystem
@@ -52,7 +53,9 @@ public class PlayerPrefsSaveSystem : SaveSystem
             bossDisplayName = string.Empty,
             powerUpHealth = existingData != null ? existingData.powerUpHealth : 0,
             powerUpDamage = existingData != null ? existingData.powerUpDamage : 0,
-            powerUpSpeed = existingData != null ? existingData.powerUpSpeed : 0
+            powerUpSpeed = existingData != null ? existingData.powerUpSpeed : 0,
+            hasAnomalousSoul = existingData != null ? existingData.hasAnomalousSoul : false, hasSlashAttack = existingData != null ? existingData.hasSlashAttack : false, hasVortexAttack = existingData != null ? existingData.hasVortexAttack : false, hasVampirism = existingData != null ? existingData.hasVampirism : false, hasBulletRain = existingData != null ? existingData.hasBulletRain : false,
+            coins = CoinManager.Instance != null ? CoinManager.Instance.Coins : (existingData != null ? existingData.coins : 0)
         };
         Save(slot, data);
     }
@@ -149,7 +152,8 @@ public class SaveManager : MonoBehaviour
             hasSlashAttack = existingData != null ? existingData.hasSlashAttack : false,
             hasVortexAttack = existingData != null ? existingData.hasVortexAttack : false,
             hasVampirism = existingData != null ? existingData.hasVampirism : false,
-            hasBulletRain = existingData != null ? existingData.hasBulletRain : false
+            hasBulletRain = existingData != null ? existingData.hasBulletRain : false,
+            coins = CoinManager.Instance != null ? CoinManager.Instance.Coins : (existingData != null ? existingData.coins : 0)
         };
         saveSystem.Save(slot, data);
         BossCheckpointState.SetLevelCheckpoint();
@@ -173,7 +177,8 @@ public class SaveManager : MonoBehaviour
             hasSlashAttack = false,
             hasVortexAttack = false,
             hasVampirism = false,
-            hasBulletRain = false
+            hasBulletRain = false,
+            coins = 0
         };
         saveSystem.Save(slot, data);
         BossCheckpointState.SetLevelCheckpoint();
@@ -198,7 +203,8 @@ public class SaveManager : MonoBehaviour
             hasSlashAttack = existingData != null ? existingData.hasSlashAttack : false,
             hasVortexAttack = existingData != null ? existingData.hasVortexAttack : false,
             hasVampirism = existingData != null ? existingData.hasVampirism : false,
-            hasBulletRain = existingData != null ? existingData.hasBulletRain : false
+            hasBulletRain = existingData != null ? existingData.hasBulletRain : false,
+            coins = CoinManager.Instance != null ? CoinManager.Instance.Coins : (existingData != null ? existingData.coins : 0)
         };
 
         saveSystem.Save(slot, data);
@@ -305,6 +311,12 @@ public class SaveManager : MonoBehaviour
         SaveData data = LoadFromSlot(slot);
         if (data == null)
             return;
+
+        // Guarda el estado actual de las monedas junto con la compra del power-up
+        if (CoinManager.Instance != null)
+        {
+            data.coins = CoinManager.Instance.Coins;
+        }
 
         switch(powerUpType)
         {

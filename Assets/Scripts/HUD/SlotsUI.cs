@@ -99,7 +99,9 @@ public class SlotsUI : MonoBehaviour
                 GameModeManager.SetMode(data.mode == "Normal" ? GameModeManager.CreateNormalMode() : GameModeManager.CreateEndlessMode());
                 LevelManager.currentLevel = data.floor;
                 BossCheckpointState.ApplyLoadedSave(data);
-                BloodBoard.GameManagement.ScoreManager.Instance?.SetCurrentScore(data.score);                    PlayerHealth.SetPersistedHealth(data.health);
+                BloodBoard.GameManagement.ScoreManager.Instance?.SetCurrentScore(data.score);
+                PlayerHealth.SetPersistedHealth(data.health);
+                CoinManager.SetPersistedCoins(data.coins);
                 CheckerboardTransition.LoadScene(BossCheckpointState.ResolveSceneName(data));
             }
             else

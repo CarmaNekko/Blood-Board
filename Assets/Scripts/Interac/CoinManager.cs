@@ -1,8 +1,12 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class CoinManager : MonoBehaviour
 {
     public static CoinManager Instance;
+
+    private static bool persistedCoinsAvailable = false;
+    private static int persistedCoins = 0;
 
     public int Coins = 0;
 
@@ -11,11 +15,43 @@ public class CoinManager : MonoBehaviour
         if (Instance == null)
         {
             Instance = this;
+            DontDestroyOnLoad(gameObject);
+            SceneManager.sceneLoaded += OnSceneLoaded;
         }
         else
         {
             Destroy(gameObject);
+            return;
         }
+        ApplyPersistedCoins();
+    }
+
+    private void OnDestroy()
+    {
+        if (Instance == this)
+        {
+            SceneManager.sceneLoaded -= OnSceneLoaded;
+        }
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        ApplyPersistedCoins();
+    }
+
+    private void ApplyPersistedCoins()
+    {
+        if (persistedCoinsAvailable)
+        {
+            Coins = persistedCoins;
+            persistedCoinsAvailable = false;
+        }
+    }
+
+    public static void SetPersistedCoins(int coins)
+    {
+        persistedCoins = coins;
+        persistedCoinsAvailable = true;
     }
 
     public void AddCoins(int amount)
