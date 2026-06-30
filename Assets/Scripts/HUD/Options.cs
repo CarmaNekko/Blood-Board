@@ -23,6 +23,8 @@ public class Options : MonoBehaviour
     [SerializeField] private GameObject fpsDisplay;
     [SerializeField] private VolumeProfile globalVolumeProfile;
     [SerializeField] private Toggle motionBlurToggle;
+    [SerializeField] private Slider brightnessSlider;
+    [SerializeField] private TMP_Text brightnessLabel;
 
     [Header("Audio")]
     [SerializeField] private AudioMixer mainAudioMixer;
@@ -39,8 +41,12 @@ public class Options : MonoBehaviour
     [SerializeField] private float minSensitivity = 50f;
     [SerializeField] private float maxSensitivity = 400f;
     [SerializeField] private float defaultSensitivity = 200f;
+    [SerializeField] private float brightnessMultiplier = 0.5f;
 
     private List<Resolution> filteredResolutions;
+    private static float brightnessOffset = 0f;
+
+    public static float BrightnessOffset => brightnessOffset;
 
     private void Awake()
     {
@@ -63,6 +69,13 @@ public class Options : MonoBehaviour
         if (masterVolumeSlider != null) masterVolumeSlider.onValueChanged.AddListener(SetMasterVolume);
         if (sfxVolumeSlider != null) sfxVolumeSlider.onValueChanged.AddListener(SetSFXVolume);
         if (bgmVolumeSlider != null) bgmVolumeSlider.onValueChanged.AddListener(SetBGMVolume);
+
+        if (brightnessSlider != null)
+        {
+            brightnessSlider.minValue = -1f;
+            brightnessSlider.maxValue = 1f;
+            brightnessSlider.onValueChanged.AddListener(OnBrightnessChanged);
+        }
 
         if (backButton != null) backButton.onClick.AddListener(HideOptions);
 
@@ -98,6 +111,17 @@ public class Options : MonoBehaviour
         if (motionBlurToggle != null) motionBlurToggle.SetIsOnWithoutNotify(motionBlurOn);
         ApplyMotionBlur(motionBlurOn);
 
+        float brightness = PlayerPrefs.GetFloat("Brightness", 0f);
+        brightnessOffset = brightness;
+        if (brightnessSlider != null) brightnessSlider.SetValueWithoutNotify(brightness);
+        if (brightnessLabel != null) UpdateBrightnessLabel(brightness);
+        
+        var lightingManager = FindAnyObjectByType<DungeonLightingManager>();
+        if (lightingManager != null)
+        {
+            lightingManager.UpdateBrightness();
+        }
+
         float masterVol = PlayerPrefs.GetFloat("MasterVolume", 1f);
         float sfxVol = PlayerPrefs.GetFloat("SFXVolume", 1f);
         float bgmVol = PlayerPrefs.GetFloat("BGMVolume", 1f);
@@ -109,6 +133,13 @@ public class Options : MonoBehaviour
         SetMasterVolume(masterVol);
         SetSFXVolume(sfxVol);
         SetBGMVolume(bgmVol);
+    }
+
+    public static void SetBrightness(float value)
+    {
+        brightnessOffset = value;
+        PlayerPrefs.SetFloat("Brightness", value);
+        PlayerPrefs.Save();
     }
 
     private void InitializeResolutions()
@@ -222,6 +253,24 @@ public class Options : MonoBehaviour
         PlayerPrefs.SetInt("MotionBlur", isOn ? 1 : 0);
         PlayerPrefs.Save();
         ApplyMotionBlur(isOn);
+    }
+
+    public void OnBrightnessChanged(float value)
+    {
+        brightnessOffset = value;
+        PlayerPrefs.SetFloat("Brightness", value);
+        PlayerPrefs.Save();
+        UpdateBrightnessLabel(value);
+        var lightingManager = FindAnyObjectByType<DungeonLightingManager>();
+        if (lightingManager != null)
+        {
+            lightingManager.UpdateBrightness();
+        }
+    }
+
+    private void UpdateBrightnessLabel(float value)
+    {
+        if (brightnessLabel != null) brightnessLabel.text = $"{value:0.00}";
     }
 
     private void ApplyMotionBlur(bool isOn)

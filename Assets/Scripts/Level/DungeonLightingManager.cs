@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 [DisallowMultipleComponent]
 public class DungeonLightingManager : MonoBehaviour
@@ -24,6 +25,9 @@ public class DungeonLightingManager : MonoBehaviour
     [SerializeField] private float brightMainLightMultiplier = 0.65f;
     [Range(0f, 1f)]
     [SerializeField] private float darkMainLightMultiplier = 0.18f;
+
+    [Header("Brightness Multiplier")]
+    [SerializeField] private float brightnessMultiplier = 0.5f;
 
     [Header("Distance Fade")]
     [SerializeField] private bool controlSceneLighting = true;
@@ -127,8 +131,13 @@ public class DungeonLightingManager : MonoBehaviour
         if (controlSceneLighting)
         {
             RenderSettings.ambientMode = UnityEngine.Rendering.AmbientMode.Flat;
-            RenderSettings.ambientLight = Color.Lerp(brightAmbientColor, darkAmbientColor, CurrentDarkness);
-            RenderSettings.ambientIntensity = Mathf.Lerp(brightAmbientIntensity, darkAmbientIntensity, CurrentDarkness);
+            
+            float brightness = Options.BrightnessOffset;
+            Color adjustedBrightAmbient = brightAmbientColor + (Color.white * brightness * 0.3f);
+            RenderSettings.ambientLight = Color.Lerp(adjustedBrightAmbient, darkAmbientColor, CurrentDarkness);
+            
+            float ambientIntensity = Mathf.Lerp(brightAmbientIntensity, darkAmbientIntensity, CurrentDarkness);
+            RenderSettings.ambientIntensity = Mathf.Clamp(ambientIntensity, 0.05f, 2f);
 
             ResolveMainLight();
             CacheOriginalMainLightIntensity();
@@ -359,7 +368,7 @@ public class DungeonLightingManager : MonoBehaviour
         RenderSettings.fogEndDistance = fogEndDistance;
     }
 
-    private void ApplyBackground()
+private void ApplyBackground()
     {
         if (!useSolidDarkBackground)
         {
@@ -399,5 +408,37 @@ public class DungeonLightingManager : MonoBehaviour
 
         cameraToApply.clearFlags = CameraClearFlags.SolidColor;
         cameraToApply.backgroundColor = backgroundColor;
+    }
+
+    public void UpdateBrightness()
+    {
+        if (hasAppliedLighting)
+        {
+            ApplyDarkness(CalculateEffectiveDarkness());
+            return;
+        }
+        
+        float brightness = Options.BrightnessOffset;
+        float currentDarkness = baseDarkness;
+        Color adjustedBrightAmbient = brightAmbientColor + (Color.white * brightness * 0.3f);
+        RenderSettings.ambientLight = Color.Lerp(adjustedBrightAmbient, darkAmbientColor, currentDarkness);
+        RenderSettings.ambientIntensity = Mathf.Lerp(brightAmbientIntensity, darkAmbientIntensity, currentDarkness);
+        
+        ResolveMainLight();
+        CacheOriginalMainLightIntensity();
+        if (mainLight != null)
+        {
+            float multiplier = Mathf.Lerp(brightMainLightMultiplier, darkMainLightMultiplier, currentDarkness);
+            mainLight.intensity = originalMainLightIntensity * multiplier;
+        }
+    }
+
+    public void SetBaseIntensities(float ambient, float mainLightIntensity)
+    {
+        darkAmbientIntensity = ambient;
+        if (mainLight != null)
+        {
+            originalMainLightIntensity = mainLightIntensity;
+        }
     }
 }
