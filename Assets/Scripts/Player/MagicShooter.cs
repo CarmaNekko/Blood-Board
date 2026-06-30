@@ -50,6 +50,13 @@ public class MagicShooter : MonoBehaviour
     [SerializeField] private float shootForce = 30f;
     [SerializeField] private PlayerCameraEffects cameraEffects;
     [SerializeField] private PlayerMovement playerMovement;
+    
+    [Header("Audio")]
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip whiteShootClip;
+    [SerializeField] private AudioClip blackShootClip;
+    [SerializeField] private AudioClip lastWhiteShotClip;
+    [SerializeField] private AudioClip lastBlackShotClip;
 
     [Header("Delay Shoot")]
     [SerializeField] private float movingShootDelay = 0.25f;
@@ -192,13 +199,13 @@ public class MagicShooter : MonoBehaviour
             if (fire1Up && holdTimer < timeToStartCharge)
             {
                 if (isHarmonicActive) StartCoroutine(HandleHarmonicShoot());
-                else if (!isWhiteOverheated && currentWhiteMana >= whiteManaCost) StartCoroutine(HandleShootRequest(whiteMagicPrefab, true));
+                else if (!isWhiteOverheated && currentWhiteMana >= whiteManaCost) StartCoroutine(HandleShootRequest(whiteMagicPrefab));
                 holdTimer = 0f;
             }
             else if (fire2Up && holdTimer < timeToStartCharge)
             {
                 if (isHarmonicActive) StartCoroutine(HandleHarmonicShoot());
-                else if (!isBlackOverheated && currentBlackMana >= blackManaCost) StartCoroutine(HandleShootRequest(blackMagicPrefab, false));
+                else if (!isBlackOverheated && currentBlackMana >= blackManaCost) StartCoroutine(HandleShootRequest(blackMagicPrefab));
                 holdTimer = 0f;
             }
         }
@@ -221,12 +228,12 @@ public class MagicShooter : MonoBehaviour
         if (fire1Up)
         {
             if (isHarmonicActive) StartCoroutine(HandleHarmonicShoot());
-            else if (!isWhiteOverheated && currentWhiteMana >= whiteManaCost) StartCoroutine(HandleShootRequest(whiteMagicPrefab, true));
+            else if (!isWhiteOverheated && currentWhiteMana >= whiteManaCost) StartCoroutine(HandleShootRequest(whiteMagicPrefab));
         }
         else if (fire2Up)
         {
             if (isHarmonicActive) StartCoroutine(HandleHarmonicShoot());
-            else if (!isBlackOverheated && currentBlackMana >= blackManaCost) StartCoroutine(HandleShootRequest(blackMagicPrefab, false));
+            else if (!isBlackOverheated && currentBlackMana >= blackManaCost) StartCoroutine(HandleShootRequest(blackMagicPrefab));
         }
 
         holdTimer = 0f;
@@ -309,6 +316,18 @@ public class MagicShooter : MonoBehaviour
 
         if (prefabToFire == null || !TryPayRemainingSlashManaCost()) return;
 
+        bool isWhiteMagic = chargingMagicColor == MagicColor.White || chargingMagicColor == MagicColor.Harmonic;
+        bool willOverheat = (isWhiteMagic && (currentWhiteMana - whiteManaCost) < whiteManaCost) ||
+                          (!isWhiteMagic && (currentBlackMana - blackManaCost) < blackManaCost);
+
+        if (audioSource != null)
+        {
+            AudioClip clip = isWhiteMagic 
+                ? (willOverheat ? lastWhiteShotClip : whiteShootClip)
+                : (willOverheat ? lastBlackShotClip : blackShootClip);
+            if (clip != null) audioSource.PlayOneShot(clip);
+        }
+
         GameObject projectile = Instantiate(prefabToFire, firePoint.position, firePoint.rotation * prefabToFire.transform.rotation);
 
         if (isVampirismActive)
@@ -380,6 +399,18 @@ public class MagicShooter : MonoBehaviour
         if (isMoving)
         {
             yield return new WaitForSeconds(movingShootDelay);
+        }
+
+        bool isWhiteMagic = color == MagicColor.White;
+        bool willOverheat = (isWhiteMagic && (currentWhiteMana - whiteManaCost) < whiteManaCost) ||
+                          (!isWhiteMagic && (currentBlackMana - blackManaCost) < blackManaCost);
+
+        if (audioSource != null)
+        {
+            AudioClip clip = isWhiteMagic 
+                ? (willOverheat ? lastWhiteShotClip : whiteShootClip)
+                : (willOverheat ? lastBlackShotClip : blackShootClip);
+            if (clip != null) audioSource.PlayOneShot(clip);
         }
 
         if (color == MagicColor.White)
@@ -486,7 +517,8 @@ public class MagicShooter : MonoBehaviour
             yield return new WaitForSeconds(movingShootDelay);
         }
 
-        Shoot(harmonicMagicPrefab);
+        bool willOverheat = (currentWhiteMana - whiteManaCost) < whiteManaCost || (currentBlackMana - blackManaCost) < blackManaCost;
+        Shoot(harmonicMagicPrefab, true, willOverheat);
         currentWhiteMana -= whiteManaCost;
         currentBlackMana -= blackManaCost;
 
@@ -498,9 +530,11 @@ public class MagicShooter : MonoBehaviour
         isPreparingToShoot = false;
     }
 
-    private IEnumerator HandleShootRequest(GameObject magicPrefab, bool isWhiteMagic)
+    private IEnumerator HandleShootRequest(GameObject magicPrefab)
     {
         isPreparingToShoot = true;
+        bool isWhiteMagic = magicPrefab == whiteMagicPrefab;
+        bool isHarmonic = magicPrefab == harmonicMagicPrefab;
 
         bool isMoving = (playerMovement != null && playerMovement.CurrentVelocity.magnitude > 0.5f);
 
@@ -508,15 +542,18 @@ public class MagicShooter : MonoBehaviour
         {
             yield return new WaitForSeconds(movingShootDelay);
         }
+
         if (isWhiteMagic && currentWhiteMana >= whiteManaCost)
         {
-            Shoot(magicPrefab);
+            bool willOverheat = (currentWhiteMana - whiteManaCost) < whiteManaCost;
+            Shoot(magicPrefab, true, willOverheat);
             currentWhiteMana -= whiteManaCost;
             if (currentWhiteMana < whiteManaCost) isWhiteOverheated = true;
         }
-        else if (!isWhiteMagic && currentBlackMana >= blackManaCost)
+        else if (!isWhiteMagic && !isHarmonic && currentBlackMana >= blackManaCost)
         {
-            Shoot(magicPrefab);
+            bool willOverheat = (currentBlackMana - blackManaCost) < blackManaCost;
+            Shoot(magicPrefab, false, willOverheat);
             currentBlackMana -= blackManaCost;
             if (currentBlackMana < blackManaCost) isBlackOverheated = true;
         }
@@ -525,10 +562,18 @@ public class MagicShooter : MonoBehaviour
         isPreparingToShoot = false;
     }
 
-    private void Shoot(GameObject magicPrefab)
+    private void Shoot(GameObject magicPrefab, bool isWhiteMagic, bool willOverheat)
     {
         if (magicPrefab != null)
         {
+            if (audioSource != null)
+            {
+                AudioClip clip = isWhiteMagic 
+                    ? (willOverheat ? lastWhiteShotClip : whiteShootClip)
+                    : (willOverheat ? lastBlackShotClip : blackShootClip);
+                if (clip != null) audioSource.PlayOneShot(clip);
+            }
+            
             GameObject projectile = Instantiate(magicPrefab, firePoint.position, firePoint.rotation);
 
             if (isVampirismActive)
