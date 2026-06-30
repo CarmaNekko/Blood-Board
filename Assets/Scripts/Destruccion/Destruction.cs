@@ -140,6 +140,12 @@ public class Destruction : MonoBehaviour
                 rb.AddExplosionForce(force, explosionPos, radius);
             }
 
+            Renderer rend = piece.GetComponent<Renderer>();
+            if (rend != null)
+            {
+                RoomVisibilityManager.RegisterDestructible(piece.gameObject);
+            }
+
             FadingDebris debrisScript = piece.gameObject.GetComponent<FadingDebris>();
             if (debrisScript == null)
             {

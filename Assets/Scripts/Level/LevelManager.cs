@@ -44,6 +44,7 @@ public class LevelManager : MonoBehaviour
         if (generator != null)
         {
             CurrentLayout = generator.GenerateLevel(roomsToGenerate);
+            RoomVisibilityManager.SetLayout(CurrentLayout);
             LayoutGenerated?.Invoke(CurrentLayout);
         }
         else

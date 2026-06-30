@@ -133,7 +133,7 @@ public class DungeonLightingManager : MonoBehaviour
             RenderSettings.ambientMode = UnityEngine.Rendering.AmbientMode.Flat;
             
             float brightness = Options.BrightnessOffset;
-            Color adjustedBrightAmbient = brightAmbientColor + (Color.white * brightness * 0.3f);
+            Color adjustedBrightAmbient = brightAmbientColor + (Color.white * brightness * brightnessMultiplier);
             RenderSettings.ambientLight = Color.Lerp(adjustedBrightAmbient, darkAmbientColor, CurrentDarkness);
             
             float ambientIntensity = Mathf.Lerp(brightAmbientIntensity, darkAmbientIntensity, CurrentDarkness);
@@ -420,7 +420,7 @@ private void ApplyBackground()
         
         float brightness = Options.BrightnessOffset;
         float currentDarkness = baseDarkness;
-        Color adjustedBrightAmbient = brightAmbientColor + (Color.white * brightness * 0.3f);
+        Color adjustedBrightAmbient = brightAmbientColor + (Color.white * brightness * brightnessMultiplier);
         RenderSettings.ambientLight = Color.Lerp(adjustedBrightAmbient, darkAmbientColor, currentDarkness);
         RenderSettings.ambientIntensity = Mathf.Lerp(brightAmbientIntensity, darkAmbientIntensity, currentDarkness);
         

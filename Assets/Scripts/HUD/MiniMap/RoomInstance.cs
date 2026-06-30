@@ -23,6 +23,8 @@ public class RoomInstance : MonoBehaviour
     [SerializeField] private MapAreaShape areaShape = MapAreaShape.Room;
     [SerializeField] private float corridorVisualThicknessWorld = 5f;
     [SerializeField] private int walkableLayer = 6;
+    [Header("Optimization")]
+    [SerializeField] private float activationDistance = 35f;
 
     public static IReadOnlyList<RoomInstance> ActiveInstances => activeInstances;
 
@@ -34,6 +36,7 @@ public class RoomInstance : MonoBehaviour
     public bool HasBounds => hasCachedBounds;
     public Bounds WorldBounds => cachedBounds;
     public IReadOnlyList<Bounds> VisualSegments => visualSegments;
+    public float ActivationDistance => activationDistance;
 
     private readonly List<Bounds> visualSegments = new List<Bounds>();
 
@@ -41,6 +44,7 @@ public class RoomInstance : MonoBehaviour
     private Transform playerTransform;
     private Bounds cachedBounds;
     private bool hasCachedBounds;
+    private List<GameObject> optimizableObjects;
 
     public void Initialize(
         DungeonLayout dungeonLayout,
@@ -55,6 +59,7 @@ public class RoomInstance : MonoBehaviour
         areaShape = shape;
 
         CacheBounds();
+        CacheOptimizableObjects();
         layout?.BindRoomInstance(roomId, this);
 
         if (discoverOnStart)
@@ -72,6 +77,7 @@ public class RoomInstance : MonoBehaviour
         areaShape = shape;
 
         CacheBounds();
+        CacheOptimizableObjects();
 
         if (discoverOnStart)
         {
@@ -105,18 +111,27 @@ public class RoomInstance : MonoBehaviour
     private void Awake()
     {
         CacheBounds();
+        CacheOptimizableObjects();
+    }
+
+    private void Start()
+    {
+        RoomVisibilityManager.RegisterRoom(this);
+    }
+
+    private void OnDestroy()
+    {
+        RoomVisibilityManager.UnregisterRoom(this);
     }
 
     private void Update()
     {
-        // Check if room should be discovered based on layout
         if (!IsDiscovered && layout != null && RoomId >= 0 && layout.IsDiscovered(RoomId))
         {
             MarkDiscovered();
             AreasChanged?.Invoke();
         }
 
-        // In tutorial scene, always discover rooms for full minimap
         if (!IsDiscovered && UnityEngine.SceneManagement.SceneManager.GetActiveScene().name == "Tutorial")
         {
             MarkDiscovered();
@@ -243,6 +258,17 @@ public class RoomInstance : MonoBehaviour
         return true;
     }
 
+    public void SetObjectsActive(bool active)
+    {
+        foreach (GameObject obj in optimizableObjects)
+        {
+            if (obj != null)
+            {
+                obj.SetActive(active);
+            }
+        }
+    }
+
     private void CacheBounds()
     {
         if (TryBuildWalkableBounds())
@@ -260,6 +286,37 @@ public class RoomInstance : MonoBehaviour
         Renderer[] renderers = GetComponentsInChildren<Renderer>();
         hasCachedBounds = TryBuildBoundsFromRenderers(renderers);
         BuildFallbackVisualSegments();
+    }
+
+    private void CacheOptimizableObjects()
+    {
+        if (optimizableObjects == null)
+            optimizableObjects = new List<GameObject>();
+        else
+            optimizableObjects.Clear();
+
+        Renderer[] allRenderers = GetComponentsInChildren<Renderer>();
+        
+        foreach (Renderer rend in allRenderers)
+        {
+            MeshCollider mc = rend.GetComponent<MeshCollider>();
+            if (mc != null)
+            {
+                optimizableObjects.Add(rend.gameObject);
+            }
+        }
+
+        Transform[] allChildren = GetComponentsInChildren<Transform>();
+        foreach (Transform child in allChildren)
+        {
+            if (child != transform && child.CompareTag("Destructible"))
+            {
+                if (!optimizableObjects.Contains(child.gameObject))
+                {
+                    optimizableObjects.Add(child.gameObject);
+                }
+            }
+        }
     }
 
     private bool TryBuildBoundsFromColliders(Collider[] colliders)

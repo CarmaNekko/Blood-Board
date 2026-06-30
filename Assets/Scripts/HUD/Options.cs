@@ -41,12 +41,16 @@ public class Options : MonoBehaviour
     [SerializeField] private float minSensitivity = 50f;
     [SerializeField] private float maxSensitivity = 400f;
     [SerializeField] private float defaultSensitivity = 200f;
-    [SerializeField] private float brightnessMultiplier = 0.5f;
 
     private List<Resolution> filteredResolutions;
     private static float brightnessOffset = 0f;
 
     public static float BrightnessOffset => brightnessOffset;
+
+    public static void SetBrightnessOffset(float offset)
+    {
+        brightnessOffset = Mathf.Clamp(offset, -1f, 1f);
+    }
 
     private void Awake()
     {

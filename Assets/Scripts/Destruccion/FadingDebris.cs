@@ -26,6 +26,8 @@ public class FadingDebris : MonoBehaviour
     private void Update()
     {
         if (!canStartFading) return;
+        
+        if (rend != null && !rend.enabled) return;
 
         timer += Time.deltaTime;
 

@@ -9,6 +9,18 @@ public class FloorSign : MonoBehaviour
 
     private void Start()
     {
+        float savedBrightness = PlayerPrefs.GetFloat("Brightness", 0f);
+        if (Mathf.Abs(savedBrightness) > 0.001f)
+        {
+            Options.SetBrightnessOffset(savedBrightness);
+
+            DungeonLightingManager lightingManager = FindFirstObjectByType<DungeonLightingManager>();
+            if (lightingManager != null)
+            {
+                lightingManager.UpdateBrightness();
+            }
+        }
+
         if (signPanel != null && signText != null)
         {
             LevelManager levelManager = FindFirstObjectByType<LevelManager>();
