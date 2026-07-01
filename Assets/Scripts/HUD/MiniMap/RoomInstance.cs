@@ -296,25 +296,13 @@ public class RoomInstance : MonoBehaviour
             optimizableObjects.Clear();
 
         Renderer[] allRenderers = GetComponentsInChildren<Renderer>();
-        
+
         foreach (Renderer rend in allRenderers)
         {
             MeshCollider mc = rend.GetComponent<MeshCollider>();
             if (mc != null)
             {
                 optimizableObjects.Add(rend.gameObject);
-            }
-        }
-
-        Transform[] allChildren = GetComponentsInChildren<Transform>();
-        foreach (Transform child in allChildren)
-        {
-            if (child != transform && child.CompareTag("Destructible"))
-            {
-                if (!optimizableObjects.Contains(child.gameObject))
-                {
-                    optimizableObjects.Add(child.gameObject);
-                }
             }
         }
     }
