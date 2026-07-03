@@ -10140,6 +10140,9 @@ MonoBehaviour:
   projectileColor: 2
   damage: 10
   explosionParticlesPrefab: {fileID: 2539987683281859403, guid: 32d9df1d79750e447bac2bbc75d61e66, type: 3}
+  destructionRadius: 2.2
+  impactForce: 250
+  impactSound: {fileID: 8300000, guid: d4a350dd18dec69448317e124b00c6da, type: 3}
   appliesVampirism: 0
 --- !u!1 &3840232195605876884
 GameObject:

@@ -7,12 +7,13 @@ public class HarmonicProjectile : MonoBehaviour
     [SerializeField] private GameObject explosionParticlesPrefab;
     [SerializeField] private float destructionRadius = 1.6f;
     [SerializeField] private float impactForce = 200f;
+    [SerializeField] private AudioClip impactSound;
 
     public bool appliesVampirism = false;
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player") || other.gameObject.layer == LayerMask.NameToLayer("Rooms"))
+        if (other.CompareTag("Player") || other.gameObject.layer == LayerMask.NameToLayer("Rooms") || other.GetComponent<Checkpoint>() != null)
         {
             return;
         }
@@ -43,6 +44,11 @@ public class HarmonicProjectile : MonoBehaviour
         {
             GameObject explosion = Instantiate(explosionParticlesPrefab, transform.position, Quaternion.identity);
             Destroy(explosion, 1.5f);
+        }
+
+        if (impactSound != null)
+        {
+            AudioSource.PlayClipAtPoint(impactSound, transform.position);
         }
 
         Destroy(gameObject);

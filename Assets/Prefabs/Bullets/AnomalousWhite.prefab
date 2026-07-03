@@ -161,6 +161,7 @@ MonoBehaviour:
   explosionParticlesPrefab: {fileID: 6355656772950184143, guid: 45981744c3e66f54292110b2f5614928, type: 3}
   destructionRadius: 1.2
   impactForce: 150
+  impactSound: {fileID: 8300000, guid: d4a350dd18dec69448317e124b00c6da, type: 3}
   appliesVampirism: 0
 --- !u!114 &5359638934182240129
 MonoBehaviour:

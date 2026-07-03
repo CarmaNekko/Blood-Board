@@ -55,6 +55,7 @@ public class DungeonLightingManager : MonoBehaviour
     private float cachedAverageRoomArea;
     private bool hasAppliedLighting;
     private NativeRoomLightingZone activeNativeRoomZone;
+    private Color effectiveBrightAmbientColor;
 
     public float CurrentDarkness { get; private set; }
 
@@ -62,6 +63,7 @@ public class DungeonLightingManager : MonoBehaviour
     {
         ResolveMainLight();
         CacheOriginalMainLightIntensity();
+        effectiveBrightAmbientColor = brightAmbientColor;
     }
 
     private void Update()
@@ -132,8 +134,15 @@ public class DungeonLightingManager : MonoBehaviour
         {
             RenderSettings.ambientMode = UnityEngine.Rendering.AmbientMode.Flat;
             
+            Color baseAmbient = brightAmbientColor;
+            if (activeNativeRoomZone != null && activeNativeRoomZone.OverrideAmbient)
+            {
+                baseAmbient = activeNativeRoomZone.AmbientColor;
+            }
+            effectiveBrightAmbientColor = baseAmbient;
+            
             float brightness = Options.BrightnessOffset;
-            Color adjustedBrightAmbient = brightAmbientColor + (Color.white * brightness * brightnessMultiplier);
+            Color adjustedBrightAmbient = baseAmbient + (Color.white * brightness * brightnessMultiplier);
             RenderSettings.ambientLight = Color.Lerp(adjustedBrightAmbient, darkAmbientColor, CurrentDarkness);
             
             float ambientIntensity = Mathf.Lerp(brightAmbientIntensity, darkAmbientIntensity, CurrentDarkness);
@@ -251,6 +260,10 @@ public class DungeonLightingManager : MonoBehaviour
         }
 
         activeNativeRoomZone = zone;
+        if (activeNativeRoomZone.OverrideAmbient)
+        {
+            effectiveBrightAmbientColor = activeNativeRoomZone.AmbientColor;
+        }
         ApplyDarkness(CalculateEffectiveDarkness());
     }
 
@@ -420,7 +433,9 @@ private void ApplyBackground()
         
         float brightness = Options.BrightnessOffset;
         float currentDarkness = baseDarkness;
-        Color adjustedBrightAmbient = brightAmbientColor + (Color.white * brightness * brightnessMultiplier);
+        
+        Color baseAmbient = effectiveBrightAmbientColor;
+        Color adjustedBrightAmbient = baseAmbient + (Color.white * brightness * brightnessMultiplier);
         RenderSettings.ambientLight = Color.Lerp(adjustedBrightAmbient, darkAmbientColor, currentDarkness);
         RenderSettings.ambientIntensity = Mathf.Lerp(brightAmbientIntensity, darkAmbientIntensity, currentDarkness);
         

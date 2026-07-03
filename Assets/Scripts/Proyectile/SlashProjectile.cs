@@ -8,12 +8,13 @@ public class SlashProjectile : MonoBehaviour
     [SerializeField] private GameObject explosionParticlesPrefab;
     [SerializeField] private float destructionRadius = 2.2f;
     [SerializeField] private float impactForce = 250f;
+    [SerializeField] private AudioClip impactSound;
 
     public bool appliesVampirism = false;
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player") || other.gameObject.layer == LayerMask.NameToLayer("Rooms"))
+        if (other.CompareTag("Player") || other.gameObject.layer == LayerMask.NameToLayer("Rooms") || other.GetComponent<Checkpoint>() != null)
         {
             return;
         }
@@ -52,6 +53,11 @@ public class SlashProjectile : MonoBehaviour
         {
             GameObject explosion = Instantiate(explosionParticlesPrefab, transform.position, Quaternion.identity);
             Destroy(explosion, 1.5f);
+        }
+
+        if (hitTarget && impactSound != null)
+        {
+            AudioSource.PlayClipAtPoint(impactSound, transform.position);
         }
     }
 }

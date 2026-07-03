@@ -5,6 +5,7 @@ public class PawnProjectile : MonoBehaviour
     [SerializeField] private float speed = 10f;
     [SerializeField] private float explosionRadius = 2f;
     [SerializeField] private float explosionForce = 15f;
+    [SerializeField] private AudioClip impactSound;
 
     private Vector3 targetPosition;
     private Vector3 moveDirection;
@@ -34,7 +35,7 @@ public class PawnProjectile : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Enemy"))
+        if (other.CompareTag("Enemy") || other.GetComponent<Checkpoint>() != null)
         {
             return;
         }
@@ -42,6 +43,11 @@ public class PawnProjectile : MonoBehaviour
         if (other.gameObject.layer == LayerMask.NameToLayer("Rooms"))
         {
             return;
+        }
+
+        if (impactSound != null)
+        {
+            AudioSource.PlayClipAtPoint(impactSound, transform.position);
         }
 
         if (other.CompareTag("Player"))

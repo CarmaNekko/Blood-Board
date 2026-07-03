@@ -19,6 +19,11 @@ public class NativeRoomLightingZone : RoomInstance
     [Tooltip("Si esta activo, la zona usa la iluminacion base del DungeonLightingManager y no modifica la oscuridad.")]
     [SerializeField] private bool useDungeonManagerBaseLighting = true;
 
+    [Header("Ambient Override")]
+    [Tooltip("Si está activo, usa el ambiente definido aquí en lugar del ambiente procedural.")]
+    [SerializeField] private bool overrideAmbient;
+    [SerializeField] private Color ambientColor = new Color(0.3f, 0.22f, 0.25f);
+
     [SerializeField] private bool overrideDarkness = true;
     [Tooltip("El valor de oscuridad a usar. Si 'Use Room Size Influence' está activo, este es el valor base.")]
     [Range(0f, 1f)]
@@ -61,6 +66,8 @@ public class NativeRoomLightingZone : RoomInstance
     public bool ModifyFog => modifyFog;
     public float FogStartDistanceOffset => fogStartDistanceOffset;
     public float FogEndDistanceOffset => fogEndDistanceOffset;
+    public bool OverrideAmbient => overrideAmbient;
+    public Color AmbientColor => ambientColor;
 
     private DungeonLightingManager lightingManager;
     private bool playerInside;

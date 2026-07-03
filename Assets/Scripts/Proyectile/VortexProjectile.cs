@@ -14,6 +14,7 @@ public class VortexProjectile : MonoBehaviour
     [SerializeField] private float destructionRadius = 1.2f;
     [SerializeField] private float impactForce = 250f;
     [SerializeField] private float attractionDurationOnWallHit = 0.5f;
+    [SerializeField] private AudioClip impactSound;
 
     public bool appliesVampirism = false;
     private Rigidbody myRb;
@@ -27,7 +28,7 @@ public class VortexProjectile : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (hasHit || other.CompareTag("Player") || other.gameObject.layer == LayerMask.NameToLayer("Rooms"))
+        if (hasHit || other.CompareTag("Player") || other.gameObject.layer == LayerMask.NameToLayer("Rooms") || other.GetComponent<Checkpoint>() != null)
         {
             return;
         }
@@ -38,6 +39,10 @@ public class VortexProjectile : MonoBehaviour
         int groundLayer = LayerMask.NameToLayer("Ground");
         if ((wallLayer != -1 && other.gameObject.layer == wallLayer) || (groundLayer != -1 && other.gameObject.layer == groundLayer))
         {
+            if (impactSound != null)
+            {
+                AudioSource.PlayClipAtPoint(impactSound, transform.position);
+            }
             hasHit = true;
             StartCoroutine(ApplyAttractionAtPoint(transform.position, pullRadius, pullSpeed, attractionDurationOnWallHit, enemyLayer));
             if (explosionParticlesPrefab != null)
@@ -53,6 +58,10 @@ public class VortexProjectile : MonoBehaviour
         if (pillar != null)
         {
             pillar.DamageAtPoint(transform.position, destructionRadius, impactForce);
+            if (impactSound != null)
+            {
+                AudioSource.PlayClipAtPoint(impactSound, transform.position);
+            }
             if (explosionParticlesPrefab != null)
             {
                 GameObject explosion = Instantiate(explosionParticlesPrefab, transform.position, Quaternion.identity);
@@ -88,6 +97,10 @@ public class VortexProjectile : MonoBehaviour
 
         if (hitTarget)
         {
+            if (impactSound != null)
+            {
+                AudioSource.PlayClipAtPoint(impactSound, other.ClosestPoint(transform.position));
+            }
             hasHit = true;
             StartCoroutine(ApplyAttractionAtPoint(transform.position, pullRadius, pullSpeed, attractionDurationOnWallHit, enemyLayer));
             if (explosionParticlesPrefab != null)
