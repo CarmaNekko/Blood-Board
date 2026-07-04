@@ -1,6 +1,5 @@
 using UnityEngine;
 
-[DisallowMultipleComponent]
 public class DynamicLightController : MonoBehaviour
 {
     [Header("Target Light")]
