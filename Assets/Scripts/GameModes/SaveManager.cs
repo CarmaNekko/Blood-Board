@@ -19,6 +19,8 @@ public class SaveData
     public bool hasVortexAttack;
     public bool hasVampirism;
     public bool hasBulletRain;
+    public bool hasEchoShot;
+    public float echoShotChancePercent;
     public int coins;
 }
 
@@ -54,7 +56,7 @@ public class PlayerPrefsSaveSystem : SaveSystem
             powerUpHealth = existingData != null ? existingData.powerUpHealth : 0,
             powerUpDamage = existingData != null ? existingData.powerUpDamage : 0,
             powerUpSpeed = existingData != null ? existingData.powerUpSpeed : 0,
-            hasAnomalousSoul = existingData != null ? existingData.hasAnomalousSoul : false, hasSlashAttack = existingData != null ? existingData.hasSlashAttack : false, hasVortexAttack = existingData != null ? existingData.hasVortexAttack : false, hasVampirism = existingData != null ? existingData.hasVampirism : false, hasBulletRain = existingData != null ? existingData.hasBulletRain : false,
+            hasAnomalousSoul = existingData != null ? existingData.hasAnomalousSoul : false, hasSlashAttack = existingData != null ? existingData.hasSlashAttack : false, hasVortexAttack = existingData != null ? existingData.hasVortexAttack : false, hasVampirism = existingData != null ? existingData.hasVampirism : false, hasBulletRain = existingData != null ? existingData.hasBulletRain : false, hasEchoShot = existingData != null ? existingData.hasEchoShot : false, echoShotChancePercent = existingData != null ? existingData.echoShotChancePercent : 10f,
             coins = CoinManager.Instance != null ? CoinManager.Instance.Coins : (existingData != null ? existingData.coins : 0)
         };
         Save(slot, data);
@@ -153,6 +155,8 @@ public class SaveManager : MonoBehaviour
             hasVortexAttack = existingData != null ? existingData.hasVortexAttack : false,
             hasVampirism = existingData != null ? existingData.hasVampirism : false,
             hasBulletRain = existingData != null ? existingData.hasBulletRain : false,
+            hasEchoShot = existingData != null ? existingData.hasEchoShot : false,
+            echoShotChancePercent = existingData != null ? existingData.echoShotChancePercent : 10f,
             coins = CoinManager.Instance != null ? CoinManager.Instance.Coins : (existingData != null ? existingData.coins : 0)
         };
         saveSystem.Save(slot, data);
@@ -178,6 +182,8 @@ public class SaveManager : MonoBehaviour
             hasVortexAttack = false,
             hasVampirism = false,
             hasBulletRain = false,
+            hasEchoShot = false,
+            echoShotChancePercent = 10f,
             coins = 0
         };
         saveSystem.Save(slot, data);
@@ -204,6 +210,8 @@ public class SaveManager : MonoBehaviour
             hasVortexAttack = existingData != null ? existingData.hasVortexAttack : false,
             hasVampirism = existingData != null ? existingData.hasVampirism : false,
             hasBulletRain = existingData != null ? existingData.hasBulletRain : false,
+            hasEchoShot = existingData != null ? existingData.hasEchoShot : false,
+            echoShotChancePercent = existingData != null ? existingData.echoShotChancePercent : 10f,
             coins = CoinManager.Instance != null ? CoinManager.Instance.Coins : (existingData != null ? existingData.coins : 0)
         };
 
@@ -346,6 +354,9 @@ public class SaveManager : MonoBehaviour
             case "bulletRain":
                 data.hasBulletRain = true;
                 break;
+            case "echoShot":
+                data.hasEchoShot = true;
+                break;
         }
 
         saveSystem.Save(slot, data);
@@ -367,6 +378,11 @@ public class SaveManager : MonoBehaviour
         }
         if (shooter.HasVampirism()) data.hasVampirism = true;
         if (shooter.HasBulletRain()) data.hasBulletRain = true;
+        if (shooter.HasEchoShot())
+        {
+            data.hasEchoShot = true;
+            data.echoShotChancePercent = shooter.GetEchoShotChancePercent();
+        }
 
         saveSystem.Save(slot, data);
     }
