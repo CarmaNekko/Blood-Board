@@ -11446,6 +11446,7 @@ MonoBehaviour:
   mainLight: {fileID: 332619939}
   brightMainLightMultiplier: 0.65
   darkMainLightMultiplier: 0.08
+  brightnessMultiplier: 0.5
   controlSceneLighting: 1
   controlDistanceFog: 1
   useDistanceFog: 1
@@ -13562,6 +13563,10 @@ MonoBehaviour:
     powerUpPrefab: {fileID: 246719132695152999, guid: 7ea7b6b0ff2d70c49a95186f298de525, type: 3}
     price: 500
     availableFromFloor: 2
+  - displayNameOverride: Ecos de la Magia
+    powerUpPrefab: {fileID: 8217863006081931101, guid: ab3e3ed83a2d8cb4abddcb7c71b75ed2, type: 3}
+    price: 1000
+    availableFromFloor: 3
   shopUI: {fileID: 884970667}
   closeAfterPurchase: 0
 --- !u!1 &2136879117
