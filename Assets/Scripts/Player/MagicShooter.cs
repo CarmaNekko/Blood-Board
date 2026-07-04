@@ -40,6 +40,11 @@ public class MagicShooter : MonoBehaviour
     [SerializeField] private GameObject anomalousSoulBlackPrefab;
     [SerializeField] private GameObject anomalousSoulHarmonicPrefab;
 
+    [Header("Echo Shot Setup")]
+    [SerializeField] private bool hasEchoShot = false;
+    [SerializeField, Range(0f, 100f)] private float echoShotChance = 10f;
+    [SerializeField, Range(0f, 0.2f)] private float echoShotDelay = 0.05f;
+
     [Header("Vortex Attack Setup")]
     [SerializeField] private GameObject whiteVortexPrefab;
     [SerializeField] private GameObject blackVortexPrefab;
@@ -564,47 +569,69 @@ public class MagicShooter : MonoBehaviour
 
     private void Shoot(GameObject magicPrefab, bool isWhiteMagic, bool willOverheat)
     {
-        if (magicPrefab != null)
+        if (magicPrefab == null)
         {
-            if (audioSource != null)
+            return;
+        }
+
+        if (audioSource != null)
+        {
+            AudioClip clip = isWhiteMagic 
+                ? (willOverheat ? lastWhiteShotClip : whiteShootClip)
+                : (willOverheat ? lastBlackShotClip : blackShootClip);
+            if (clip != null) audioSource.PlayOneShot(clip);
+        }
+
+        SpawnProjectile(magicPrefab, firePoint.position, firePoint.rotation);
+
+        if (hasEchoShot && Random.value <= echoShotChance / 100f)
+        {
+            StartCoroutine(SpawnEchoShotAfterDelay(magicPrefab));
+        }
+
+        if (cameraEffects != null) cameraEffects.ApplyShootRecoil();
+
+        if (hasAnomalousSoul)
+        {
+            GameObject anomalousPrefab = null;
+
+            if (magicPrefab == whiteMagicPrefab) anomalousPrefab = anomalousSoulWhitePrefab;
+            else if (magicPrefab == blackMagicPrefab) anomalousPrefab = anomalousSoulBlackPrefab;
+            else if (magicPrefab == harmonicMagicPrefab) anomalousPrefab = anomalousSoulHarmonicPrefab;
+
+            if (anomalousPrefab != null)
             {
-                AudioClip clip = isWhiteMagic 
-                    ? (willOverheat ? lastWhiteShotClip : whiteShootClip)
-                    : (willOverheat ? lastBlackShotClip : blackShootClip);
-                if (clip != null) audioSource.PlayOneShot(clip);
-            }
-            
-            GameObject projectile = Instantiate(magicPrefab, firePoint.position, firePoint.rotation);
-
-            if (isVampirismActive)
-            {
-                MagicProjectile mp = projectile.GetComponent<MagicProjectile>();
-                if (mp != null) mp.appliesVampirism = true;
-
-                HarmonicProjectile hp = projectile.GetComponent<HarmonicProjectile>();
-                if (hp != null) hp.appliesVampirism = true;
-            }
-
-            Rigidbody rb = projectile.GetComponent<Rigidbody>();
-            if (rb != null) rb.linearVelocity = firePoint.forward * shootForce;
-            Destroy(projectile, 2f);
-
-            if (cameraEffects != null) cameraEffects.ApplyShootRecoil();
-
-            if (hasAnomalousSoul)
-            {
-                GameObject anomalousPrefab = null;
-
-                if (magicPrefab == whiteMagicPrefab) anomalousPrefab = anomalousSoulWhitePrefab;
-                else if (magicPrefab == blackMagicPrefab) anomalousPrefab = anomalousSoulBlackPrefab;
-                else if (magicPrefab == harmonicMagicPrefab) anomalousPrefab = anomalousSoulHarmonicPrefab;
-
-                if (anomalousPrefab != null)
-                {
-                    FireAnomalousSoul(anomalousPrefab);
-                }
+                FireAnomalousSoul(anomalousPrefab);
             }
         }
+    }
+
+    private IEnumerator SpawnEchoShotAfterDelay(GameObject prefab)
+    {
+        if (echoShotDelay > 0f)
+        {
+            yield return new WaitForSeconds(echoShotDelay);
+        }
+
+        SpawnProjectile(prefab, firePoint.position, firePoint.rotation);
+    }
+
+    private void SpawnProjectile(GameObject prefab, Vector3 position, Quaternion rotation)
+    {
+        GameObject projectile = Instantiate(prefab, position, rotation);
+
+        if (isVampirismActive)
+        {
+            MagicProjectile mp = projectile.GetComponent<MagicProjectile>();
+            if (mp != null) mp.appliesVampirism = true;
+
+            HarmonicProjectile hp = projectile.GetComponent<HarmonicProjectile>();
+            if (hp != null) hp.appliesVampirism = true;
+        }
+
+        Rigidbody rb = projectile.GetComponent<Rigidbody>();
+        if (rb != null) rb.linearVelocity = rotation * Vector3.forward * shootForce;
+        Destroy(projectile, 2f);
     }
 
     private void FireAnomalousSoul(GameObject anomalousPrefab)
@@ -757,6 +784,28 @@ public class MagicShooter : MonoBehaviour
     public bool HasAnomalousSoul()
     {
         return hasAnomalousSoul;
+    }
+
+    public bool UnlockEchoShot(float chancePercent)
+    {
+        if (hasEchoShot)
+        {
+            return false;
+        }
+
+        hasEchoShot = true;
+        echoShotChance = Mathf.Clamp(chancePercent, 0f, 100f);
+        return true;
+    }
+
+    public bool HasEchoShot()
+    {
+        return hasEchoShot;
+    }
+
+    public float GetEchoShotChancePercent()
+    {
+        return echoShotChance;
     }
 
     public bool UnlockAnomalousSoul()
