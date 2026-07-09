@@ -49,14 +49,23 @@ public class LevelManager : MonoBehaviour
         }
         else
         {
-            Debug.LogError("No se encontro el ModularGenerator en la escena.");
+            ProceduralTutorial tutorialGenerator = UnityEngine.Object.FindFirstObjectByType<ProceduralTutorial>();
+
+            if (tutorialGenerator != null)
+            {
+                tutorialGenerator.GenerateTutorialLevel();
+            }
+            else
+            {
+                Debug.LogError("No se encontro ni ModularGenerator ni ProceduralTutorial en la escena.");
+            }
         }
     }
 
     private void Start()
     {
         int currentScore = ScoreManager.Instance != null ? ScoreManager.Instance.GetCurrentScore() : 0;
-        
+
         if (SceneManager.GetActiveScene().name == BossCheckpointState.DefaultLevelScene)
         {
             SaveData data = SaveManager.LoadFromSlot(GameModeManager.CurrentSlot);
@@ -65,7 +74,6 @@ public class LevelManager : MonoBehaviour
                 ScoreManager.Instance?.SetCurrentScore(data.score);
             }
             SaveManager.SaveToSlot(GameModeManager.CurrentSlot, currentLevel, currentScore, FindFirstObjectByType<PlayerHealth>()?.currentHealth ?? 100f, GameModeManager.CurrentMode.GetModeName());
-            Debug.Log($"Guardado checkpoint al iniciar piso: {currentLevel} con salud: {FindFirstObjectByType<PlayerHealth>()?.currentHealth}");
         }
     }
 
