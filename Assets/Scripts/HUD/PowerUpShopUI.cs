@@ -213,6 +213,8 @@ public class PowerUpShopUI : MonoBehaviour
         if (name.Contains("vortex")) return "vortexAttack";
         if (name.Contains("vampirism")) return "vampirism";
         if (name.Contains("bullet") && name.Contains("rain")) return "bulletRain";
+        if (name.Contains("laser")) return "laserShot";
+        if (name.Contains("bomb")) return "bombShot";
         if (name.Contains("health")) return "health";
         if (name.Contains("damage")) return "damage";
         if (name.Contains("speed")) return "speed";

@@ -2650,6 +2650,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d6dce634115f6cd429f7c0a16f969618, type: 3}
+--- !u!114 &419567338 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1720149335189047290, guid: d9fad25a5ba93d54da34f557342663f8, type: 3}
+  m_PrefabInstance: {fileID: 2483767973135500894}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
 --- !u!114 &433248445 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 3235203057364746111, guid: d9fad25a5ba93d54da34f557342663f8, type: 3}
@@ -8348,6 +8359,10 @@ MonoBehaviour:
   canInteract: 1
   shopTitle: Tienda Ambulante
   items:
+  - displayNameOverride: Disparo Laser
+    powerUpPrefab: {fileID: 246719132695152999, guid: 865afd2e1b4d52f4ea7c51328690b43f, type: 3}
+    price: 500
+    availableFromFloor: 1
   - displayNameOverride: "Absorci\xF3n de Vitalidad"
     powerUpPrefab: {fileID: 246719132695152999, guid: 0b62ebb95f0539945832d1519db359dc, type: 3}
     price: 500
@@ -8356,6 +8371,10 @@ MonoBehaviour:
     powerUpPrefab: {fileID: 246719132695152999, guid: b5ccda3257954ff1ab59f195eef65214, type: 3}
     price: 1000
     availableFromFloor: 1
+  - displayNameOverride: Disparo Bomba
+    powerUpPrefab: {fileID: 246719132695152999, guid: 48fc7541d49f00943b973469d01e324b, type: 3}
+    price: 2000
+    availableFromFloor: 2
   - displayNameOverride: "Alma An\xF3mala"
     powerUpPrefab: {fileID: 246719132695152999, guid: 632830bb702ae8b439e5755bd3144113, type: 3}
     price: 2000
@@ -8364,6 +8383,10 @@ MonoBehaviour:
     powerUpPrefab: {fileID: 246719132695152999, guid: 7ea7b6b0ff2d70c49a95186f298de525, type: 3}
     price: 500
     availableFromFloor: 2
+  - displayNameOverride: Ecos de la Magia
+    powerUpPrefab: {fileID: 8217863006081931101, guid: ab3e3ed83a2d8cb4abddcb7c71b75ed2, type: 3}
+    price: 2000
+    availableFromFloor: 3
   shopUI: {fileID: 433248445}
   closeAfterPurchase: 0
 --- !u!1 &1129493557
@@ -15015,7 +15038,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerInteractor
   interactKey: 101
-  promptText: {fileID: 0}
+  promptText: {fileID: 419567338}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

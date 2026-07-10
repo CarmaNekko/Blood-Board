@@ -325,6 +325,7 @@ MonoBehaviour:
   blackMagicPrefab: {fileID: 8704798185733213193, guid: d895a193937f5534f9fef31172878c0a, type: 3}
   harmonicMagicPrefab: {fileID: 6653451336201665546, guid: f08b9556715ddfd4480818093a57cab1, type: 3}
   currentChargedAttack: 0
+  currentMainShotType: 1
   whiteSlashPrefab: {fileID: 4196008582005932241, guid: 231dfd9f3edf483428d9957693187f22, type: 3}
   blackSlashPrefab: {fileID: 6090206308156702687, guid: 5b77fd4af1800b74db7a7ec4c88969dc, type: 3}
   harmonicSlashPrefab: {fileID: 3537563102514347109, guid: 032000ac57a7a7548bfc53a65f0d1c35, type: 3}
@@ -348,9 +349,19 @@ MonoBehaviour:
   anomalousSoulWhitePrefab: {fileID: 6653451336201665546, guid: 07280cfccf3cd864a83bd0be00ae9a90, type: 3}
   anomalousSoulBlackPrefab: {fileID: 8704798185733213193, guid: aa4d7cd2f627d3b46b56cdddf240c5d4, type: 3}
   anomalousSoulHarmonicPrefab: {fileID: 6653451336201665546, guid: 4d2b311618a50dc4c81403e7b874c070, type: 3}
+  hasEchoShot: 0
+  echoShotChance: 10
+  echoShotDelay: 0.05
   whiteVortexPrefab: {fileID: 6653451336201665546, guid: 0fd071c311afe6e43a3fcdd54931a1d4, type: 3}
   blackVortexPrefab: {fileID: 8704798185733213193, guid: 23f72c6115e7ec848aeef74aa4acb6cf, type: 3}
   harmonicVortexPrefab: {fileID: 6653451336201665546, guid: 13a6d53b260178341875806ac800dd3f, type: 3}
+  whiteLaserProjectilePrefab: {fileID: 8852293634377127150, guid: f208303c56739284096bceda8b04e6cc, type: 3}
+  blackLaserProjectilePrefab: {fileID: 8852293634377127150, guid: 0e73584c410b82c45acc8ec92c45f339, type: 3}
+  harmonicLaserProjectilePrefab: {fileID: 8852293634377127150, guid: e1343197c16570e43856dbad45a2fa3b, type: 3}
+  bombExtraManaCost: 15
+  whiteBombProjectilePrefab: {fileID: 6653451336201665546, guid: c1209a9c8e61e3c4eba1d24ccec01f77, type: 3}
+  blackBombProjectilePrefab: {fileID: 8704798185733213193, guid: 0d4be79f689ed0e40b590467aef611b1, type: 3}
+  harmonicBombProjectilePrefab: {fileID: 8704798185733213193, guid: ed2aa2066177aae4394ab848d106fe60, type: 3}
   firePoint: {fileID: 8885997691368852185}
   shootForce: 30
   cameraEffects: {fileID: 0}

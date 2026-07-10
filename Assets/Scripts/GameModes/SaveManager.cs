@@ -21,6 +21,7 @@ public class SaveData
     public bool hasBulletRain;
     public bool hasEchoShot;
     public float echoShotChancePercent;
+    public int mainShotType;
     public int coins;
 }
 
@@ -56,7 +57,7 @@ public class PlayerPrefsSaveSystem : SaveSystem
             powerUpHealth = existingData != null ? existingData.powerUpHealth : 0,
             powerUpDamage = existingData != null ? existingData.powerUpDamage : 0,
             powerUpSpeed = existingData != null ? existingData.powerUpSpeed : 0,
-            hasAnomalousSoul = existingData != null ? existingData.hasAnomalousSoul : false, hasSlashAttack = existingData != null ? existingData.hasSlashAttack : false, hasVortexAttack = existingData != null ? existingData.hasVortexAttack : false, hasVampirism = existingData != null ? existingData.hasVampirism : false, hasBulletRain = existingData != null ? existingData.hasBulletRain : false, hasEchoShot = existingData != null ? existingData.hasEchoShot : false, echoShotChancePercent = existingData != null ? existingData.echoShotChancePercent : 10f,
+            hasAnomalousSoul = existingData != null ? existingData.hasAnomalousSoul : false, hasSlashAttack = existingData != null ? existingData.hasSlashAttack : false, hasVortexAttack = existingData != null ? existingData.hasVortexAttack : false, hasVampirism = existingData != null ? existingData.hasVampirism : false, hasBulletRain = existingData != null ? existingData.hasBulletRain : false, hasEchoShot = existingData != null ? existingData.hasEchoShot : false, echoShotChancePercent = existingData != null ? existingData.echoShotChancePercent : 10f, mainShotType = existingData != null ? existingData.mainShotType : 1,
             coins = CoinManager.Instance != null ? CoinManager.Instance.Coins : (existingData != null ? existingData.coins : 0)
         };
         Save(slot, data);
@@ -157,8 +158,10 @@ public class SaveManager : MonoBehaviour
             hasBulletRain = existingData != null ? existingData.hasBulletRain : false,
             hasEchoShot = existingData != null ? existingData.hasEchoShot : false,
             echoShotChancePercent = existingData != null ? existingData.echoShotChancePercent : 10f,
+            mainShotType = existingData != null ? existingData.mainShotType : 1,
             coins = CoinManager.Instance != null ? CoinManager.Instance.Coins : (existingData != null ? existingData.coins : 0)
         };
+
         saveSystem.Save(slot, data);
         BossCheckpointState.SetLevelCheckpoint();
     }
@@ -184,6 +187,7 @@ public class SaveManager : MonoBehaviour
             hasBulletRain = false,
             hasEchoShot = false,
             echoShotChancePercent = 10f,
+            mainShotType = 1,
             coins = 0
         };
         saveSystem.Save(slot, data);
@@ -212,6 +216,7 @@ public class SaveManager : MonoBehaviour
             hasBulletRain = existingData != null ? existingData.hasBulletRain : false,
             hasEchoShot = existingData != null ? existingData.hasEchoShot : false,
             echoShotChancePercent = existingData != null ? existingData.echoShotChancePercent : 10f,
+            mainShotType = existingData != null ? existingData.mainShotType : 1,
             coins = CoinManager.Instance != null ? CoinManager.Instance.Coins : (existingData != null ? existingData.coins : 0)
         };
 
@@ -357,6 +362,15 @@ public class SaveManager : MonoBehaviour
             case "echoShot":
                 data.hasEchoShot = true;
                 break;
+            case "laserShot":
+                data.mainShotType = 2;
+                break;
+            case "bombShot":
+                data.mainShotType = 3;
+                break;
+            case "normalShot":
+                data.mainShotType = 1;
+                break;
         }
 
         saveSystem.Save(slot, data);
@@ -382,6 +396,25 @@ public class SaveManager : MonoBehaviour
         {
             data.hasEchoShot = true;
             data.echoShotChancePercent = shooter.GetEchoShotChancePercent();
+        }
+
+        if (shooter is MagicShooter ms)
+        {
+            switch (ms.GetCurrentMainShotType())
+            {
+                case MagicShooter.MainShotType.Normal:
+                    data.mainShotType = 1;
+                    break;
+                case MagicShooter.MainShotType.Laser:
+                    data.mainShotType = 2;
+                    break;
+                case MagicShooter.MainShotType.Bomb:
+                    data.mainShotType = 3;
+                    break;
+                default:
+                    data.mainShotType = 1;
+                    break;
+            }
         }
 
         saveSystem.Save(slot, data);

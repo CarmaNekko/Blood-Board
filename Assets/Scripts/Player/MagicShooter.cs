@@ -11,8 +11,13 @@ public class MagicShooter : MonoBehaviour
     [SerializeField] private GameObject harmonicMagicPrefab;
 
     public enum ChargedAttackType { None, Slash, Vortex }
+    public enum MainShotType { None, Normal, Laser, Bomb }
+
     [Header("Charged Attack Settings")]
     [SerializeField] private ChargedAttackType currentChargedAttack = ChargedAttackType.None;
+
+    [Header("Main Shot Setup")]
+    [SerializeField] private MainShotType currentMainShotType = MainShotType.Normal;
 
     [Header("Slash Attack Setup")]
     [SerializeField] private GameObject whiteSlashPrefab;
@@ -49,6 +54,18 @@ public class MagicShooter : MonoBehaviour
     [SerializeField] private GameObject whiteVortexPrefab;
     [SerializeField] private GameObject blackVortexPrefab;
     [SerializeField] private GameObject harmonicVortexPrefab;
+
+    [Header("Laser Shot Setup")]
+    [SerializeField] private GameObject whiteLaserProjectilePrefab;
+    [SerializeField] private GameObject blackLaserProjectilePrefab;
+    [SerializeField] private GameObject harmonicLaserProjectilePrefab;
+    [SerializeField] private float laserSpeedMultiplier = 1.5f;
+
+    [Header("Bomb Shot Setup")]
+    [SerializeField] private float bombExtraManaCost = 10f;
+    [SerializeField] private GameObject whiteBombProjectilePrefab;
+    [SerializeField] private GameObject blackBombProjectilePrefab;
+    [SerializeField] private GameObject harmonicBombProjectilePrefab;
 
     [Header("Shooting Setup")]
     [SerializeField] private Transform firePoint;
@@ -204,13 +221,13 @@ public class MagicShooter : MonoBehaviour
             if (fire1Up && holdTimer < timeToStartCharge)
             {
                 if (isHarmonicActive) StartCoroutine(HandleHarmonicShoot());
-                else if (!isWhiteOverheated && currentWhiteMana >= whiteManaCost) StartCoroutine(HandleShootRequest(whiteMagicPrefab));
+                else if (!isWhiteOverheated && currentWhiteMana >= GetTotalWhiteShotCost()) StartCoroutine(HandleShootRequest(whiteMagicPrefab));
                 holdTimer = 0f;
             }
             else if (fire2Up && holdTimer < timeToStartCharge)
             {
                 if (isHarmonicActive) StartCoroutine(HandleHarmonicShoot());
-                else if (!isBlackOverheated && currentBlackMana >= blackManaCost) StartCoroutine(HandleShootRequest(blackMagicPrefab));
+                else if (!isBlackOverheated && currentBlackMana >= GetTotalBlackShotCost()) StartCoroutine(HandleShootRequest(blackMagicPrefab));
                 holdTimer = 0f;
             }
         }
@@ -228,17 +245,29 @@ public class MagicShooter : MonoBehaviour
         }
     }
 
+    private float GetTotalWhiteShotCost()
+    {
+        if (currentMainShotType == MainShotType.Laser) return whiteManaCost * 0.5f;
+        return whiteManaCost + (currentMainShotType == MainShotType.Bomb ? bombExtraManaCost : 0f);
+    }
+
+    private float GetTotalBlackShotCost()
+    {
+        if (currentMainShotType == MainShotType.Laser) return blackManaCost * 0.5f;
+        return blackManaCost + (currentMainShotType == MainShotType.Bomb ? bombExtraManaCost : 0f);
+    }
+
     private void HandleBaseMagicInput(bool fire1Up, bool fire2Up)
     {
         if (fire1Up)
         {
             if (isHarmonicActive) StartCoroutine(HandleHarmonicShoot());
-            else if (!isWhiteOverheated && currentWhiteMana >= whiteManaCost) StartCoroutine(HandleShootRequest(whiteMagicPrefab));
+            else if (!isWhiteOverheated && currentWhiteMana >= GetTotalWhiteShotCost()) StartCoroutine(HandleShootRequest(whiteMagicPrefab));
         }
         else if (fire2Up)
         {
             if (isHarmonicActive) StartCoroutine(HandleHarmonicShoot());
-            else if (!isBlackOverheated && currentBlackMana >= blackManaCost) StartCoroutine(HandleShootRequest(blackMagicPrefab));
+            else if (!isBlackOverheated && currentBlackMana >= GetTotalBlackShotCost()) StartCoroutine(HandleShootRequest(blackMagicPrefab));
         }
 
         holdTimer = 0f;
@@ -548,18 +577,20 @@ public class MagicShooter : MonoBehaviour
             yield return new WaitForSeconds(movingShootDelay);
         }
 
-        if (isWhiteMagic && currentWhiteMana >= whiteManaCost)
+        if (isWhiteMagic && currentWhiteMana >= GetTotalWhiteShotCost())
         {
-            bool willOverheat = (currentWhiteMana - whiteManaCost) < whiteManaCost;
+            float totalCost = GetTotalWhiteShotCost();
+            bool willOverheat = (currentWhiteMana - totalCost) < whiteManaCost;
             Shoot(magicPrefab, true, willOverheat);
-            currentWhiteMana -= whiteManaCost;
+            currentWhiteMana -= totalCost;
             if (currentWhiteMana < whiteManaCost) isWhiteOverheated = true;
         }
-        else if (!isWhiteMagic && !isHarmonic && currentBlackMana >= blackManaCost)
+        else if (!isWhiteMagic && !isHarmonic && currentBlackMana >= GetTotalBlackShotCost())
         {
-            bool willOverheat = (currentBlackMana - blackManaCost) < blackManaCost;
+            float totalCost = GetTotalBlackShotCost();
+            bool willOverheat = (currentBlackMana - totalCost) < blackManaCost;
             Shoot(magicPrefab, false, willOverheat);
-            currentBlackMana -= blackManaCost;
+            currentBlackMana -= totalCost;
             if (currentBlackMana < blackManaCost) isBlackOverheated = true;
         }
 
@@ -582,11 +613,22 @@ public class MagicShooter : MonoBehaviour
             if (clip != null) audioSource.PlayOneShot(clip);
         }
 
-        SpawnProjectile(magicPrefab, firePoint.position, firePoint.rotation);
+        if (currentMainShotType == MainShotType.Laser)
+        {
+            SpawnLaser(magicPrefab, isWhiteMagic, willOverheat);
+        }
+        else if (currentMainShotType == MainShotType.Bomb)
+        {
+            SpawnBomb(magicPrefab, isWhiteMagic, willOverheat);
+        }
+        else
+        {
+            SpawnProjectile(magicPrefab, firePoint.position, firePoint.rotation);
+        }
 
         if (hasEchoShot && Random.value <= echoShotChance / 100f)
         {
-            StartCoroutine(SpawnEchoShotAfterDelay(magicPrefab));
+            StartCoroutine(SpawnEchoShotAfterDelay(magicPrefab, isWhiteMagic, willOverheat));
         }
 
         if (cameraEffects != null) cameraEffects.ApplyShootRecoil();
@@ -606,14 +648,97 @@ public class MagicShooter : MonoBehaviour
         }
     }
 
-    private IEnumerator SpawnEchoShotAfterDelay(GameObject prefab)
+    private void SpawnLaser(GameObject magicPrefab, bool isWhiteMagic, bool willOverheat)
+    {
+        GameObject prefab = null;
+        MagicColor color = MagicColor.White;
+
+        if (magicPrefab == harmonicMagicPrefab)
+        {
+            prefab = harmonicLaserProjectilePrefab;
+            color = MagicColor.Harmonic;
+        }
+        else if (isWhiteMagic)
+        {
+            prefab = whiteLaserProjectilePrefab;
+            color = MagicColor.White;
+        }
+        else
+        {
+            prefab = blackLaserProjectilePrefab;
+            color = MagicColor.Black;
+        }
+
+        if (prefab == null) return;
+
+        GameObject laser = Instantiate(prefab, firePoint.position, firePoint.rotation);
+        LaserProjectile lp = laser.GetComponent<LaserProjectile>();
+        if (lp != null)
+        {
+            lp.laserColor = color;
+            lp.appliesVampirism = isVampirismActive;
+        }
+
+        Rigidbody rb = laser.GetComponent<Rigidbody>();
+        if (rb != null) rb.linearVelocity = firePoint.forward * shootForce * laserSpeedMultiplier;
+        Destroy(laser, 2f);
+    }
+
+    private void SpawnBomb(GameObject magicPrefab, bool isWhiteMagic, bool willOverheat)
+    {
+        GameObject prefab = null;
+        MagicColor color = MagicColor.White;
+
+        if (magicPrefab == harmonicMagicPrefab)
+        {
+            prefab = harmonicBombProjectilePrefab;
+            color = MagicColor.Harmonic;
+        }
+        else if (isWhiteMagic)
+        {
+            prefab = whiteBombProjectilePrefab;
+            color = MagicColor.White;
+        }
+        else
+        {
+            prefab = blackBombProjectilePrefab;
+            color = MagicColor.Black;
+        }
+
+        if (prefab == null) return;
+
+        GameObject bomb = Instantiate(prefab, firePoint.position, firePoint.rotation);
+        BombProjectile bp = bomb.GetComponent<BombProjectile>();
+        if (bp != null)
+        {
+            bp.bombColor = color;
+            bp.appliesVampirism = isVampirismActive;
+        }
+
+        Rigidbody rb = bomb.GetComponent<Rigidbody>();
+        if (rb != null) rb.linearVelocity = firePoint.forward * shootForce;
+        Destroy(bomb, 2f);
+    }
+
+    private IEnumerator SpawnEchoShotAfterDelay(GameObject magicPrefab, bool isWhiteMagic, bool willOverheat)
     {
         if (echoShotDelay > 0f)
         {
             yield return new WaitForSeconds(echoShotDelay);
         }
 
-        SpawnProjectile(prefab, firePoint.position, firePoint.rotation);
+        if (currentMainShotType == MainShotType.Laser)
+        {
+            SpawnLaser(magicPrefab, isWhiteMagic, willOverheat);
+        }
+        else if (currentMainShotType == MainShotType.Bomb)
+        {
+            SpawnBomb(magicPrefab, isWhiteMagic, willOverheat);
+        }
+        else
+        {
+            SpawnProjectile(magicPrefab, firePoint.position, firePoint.rotation);
+        }
     }
 
     private void SpawnProjectile(GameObject prefab, Vector3 position, Quaternion rotation)
@@ -858,6 +983,48 @@ public class MagicShooter : MonoBehaviour
         return true;
     }
 
+    public bool UnlockLaserShot()
+    {
+        if (currentMainShotType == MainShotType.Laser) return false;
+        currentMainShotType = MainShotType.Laser;
+        return true;
+    }
+
+    public bool HasLaserShot()
+    {
+        return currentMainShotType == MainShotType.Laser;
+    }
+
+    public bool UnlockBombShot(float extraManaCost)
+    {
+        if (currentMainShotType == MainShotType.Bomb) return false;
+        currentMainShotType = MainShotType.Bomb;
+        bombExtraManaCost = Mathf.Max(0f, extraManaCost);
+        return true;
+    }
+
+    public bool HasBombShot()
+    {
+        return currentMainShotType == MainShotType.Bomb;
+    }
+
+    public bool UnlockNormalShot()
+    {
+        if (currentMainShotType == MainShotType.Normal) return false;
+        currentMainShotType = MainShotType.Normal;
+        return true;
+    }
+
+    public bool HasNormalShot()
+    {
+        return currentMainShotType == MainShotType.Normal;
+    }
+
+    public MainShotType GetCurrentMainShotType()
+    {
+        return currentMainShotType;
+    }
+
     public void ResetChargedAttack()
     {
         currentChargedAttack = ChargedAttackType.None;
@@ -891,6 +1058,25 @@ public class MagicShooter : MonoBehaviour
         if (data.hasVampirism && !isVampirismActive)
         {
             isVampirismActive = true;
+        }
+
+        if (data.hasEchoShot && !hasEchoShot)
+        {
+            hasEchoShot = true;
+            echoShotChance = data.echoShotChancePercent > 0f ? data.echoShotChancePercent : echoShotChance;
+        }
+
+        if (data.mainShotType == 2)
+        {
+            currentMainShotType = MainShotType.Laser;
+        }
+        else if (data.mainShotType == 3)
+        {
+            currentMainShotType = MainShotType.Bomb;
+        }
+        else
+        {
+            currentMainShotType = MainShotType.Normal;
         }
     }
 }
