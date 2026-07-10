@@ -359,7 +359,7 @@ public class TitleScreenSelection : MonoBehaviour
         ScoreManager.Instance?.ResetCurrentScore();
         SaveManager.SaveNewGameSlot(selectedSlot, 0, 0, 100f, GameModeManager.CurrentMode.GetModeName());
         Debug.Log($"Nueva partida Normal iniciada en slot {selectedSlot}. Guardado inicial en tutorial (piso 0).");
-        CheckerboardTransition.LoadScene("Tutorial");
+        CheckerboardTransition.LoadScene("Tutorialv3");
     }
 
     public void OnEndlessButton()
@@ -380,7 +380,7 @@ public class TitleScreenSelection : MonoBehaviour
 
     public void OnPlayButton()
     {
-        CheckerboardTransition.LoadScene("Tutorial");
+        CheckerboardTransition.LoadScene("Tutorialv3");
     }
 
     public void OnOptionsButton()

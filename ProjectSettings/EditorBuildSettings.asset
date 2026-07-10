@@ -9,6 +9,9 @@ EditorBuildSettings:
     path: Assets/Scenes/NewTitleScreen.unity
     guid: 9e118d056e57a6547ae71575b3889f19
   - enabled: 1
+    path: Assets/Scenes/Tutorialv3.unity
+    guid: fbbd784d20ebf8d43b974d2442cf2afa
+  - enabled: 1
     path: Assets/Scenes/Tutorial.unity
     guid: 21570dbcffaa5db4a8bc8d21d7e33785
   - enabled: 1
@@ -26,9 +29,6 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Rock_Boss.unity
     guid: d4403e69b71b61446a2b370c45cf58f8
-  - enabled: 1
-    path: Assets/Scenes/TutorialProcedural.unity
-    guid: e97d32f2da4180f4b8073d69404d3843
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0

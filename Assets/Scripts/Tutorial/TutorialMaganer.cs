@@ -45,8 +45,8 @@ public class TutorialManager : MonoBehaviour
         UpdateText(textSpace, "Presiona \"Space\" para saltar. (0/1)", Color.yellow);
         if (textTab != null) UpdateText(textTab, "Presiona \"Tab\" para abrir el minimapa. (0/1)", Color.yellow);
 
-        UpdateText(textLeftClick, "Presionar \"Click Izquierdo\" para disparar magia blanca al guardia negro. (0/1)", Color.yellow);
-        UpdateText(textRightClick, "Presionar \"Click Derecho\" para disparar magia negra al guardia blanco. (0/1)", Color.yellow);
+        UpdateText(textLeftClick, "Presionar \"Click Izquierdo\" para disparar magia blanca. (0/1)", Color.yellow);
+        UpdateText(textRightClick, "Presionar \"Click Derecho\" para disparar magia negra. (0/1)", Color.yellow);
 
         if (combatPanel != null)
         {
@@ -111,13 +111,13 @@ public class TutorialManager : MonoBehaviour
             if (!completedLeftClick && Input.GetMouseButtonDown(0))
             {
                 completedLeftClick = true;
-                UpdateText(textLeftClick, "Presionar \"Click Izquierdo\" para disparar magia blanca al guardia negro. (1/1)", Color.green);
+                UpdateText(textLeftClick, "Presionar \"Click Izquierdo\" para disparar magia blanca. (1/1)", Color.green);
             }
 
             if (!completedRightClick && Input.GetMouseButtonDown(1))
             {
                 completedRightClick = true;
-                UpdateText(textRightClick, "Presionar \"Click Derecho\" para disparar magia negra al guardia blanco. (1/1)", Color.green);
+                UpdateText(textRightClick, "Presionar \"Click Derecho\" para disparar magia negra. (1/1)", Color.green);
             }
 
             if (completedLeftClick && completedRightClick)
