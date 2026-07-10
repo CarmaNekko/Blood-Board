@@ -117,9 +117,14 @@ public class QueenBossController : MonoBehaviour
         }
         else
         {
-            if (currentPhase >= 2 && Random.value > 0.4f)
+            if (currentPhase == 2)
             {
                 StartCoroutine(UltimateSpinAttack());
+            }
+            else if (currentPhase >= 3)
+            {
+                if (Random.value > 0.4f) StartCoroutine(UltimateSpinAttack());
+                else StartCoroutine(BishopMissiles());
             }
             else
             {
@@ -352,8 +357,7 @@ public class QueenBossController : MonoBehaviour
             transform.Rotate(0, currentSpinSpeed * Time.deltaTime, 0);
             timer += Time.deltaTime;
             spawnTimer += Time.deltaTime;
-
-            if (spawnTimer > spawnInterval)
+            if (spawnTimer > spawnInterval && currentPhase > 2)
             {
                 SpawnMissileWarningAround(player.position, targetingPrecisionRadius);
                 SpawnMissileWarningAround(transform.position, randomMissileSpawnRadius);

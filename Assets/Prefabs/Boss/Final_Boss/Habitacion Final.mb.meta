@@ -1,19 +1,9 @@
 fileFormatVersion: 2
-guid: 38e587b2cfcf5374a91e066aa7d7f8cb
+guid: 328b90acbdcfd14448f2e80b193b3127
 ModelImporter:
   serializedVersion: 24200
   internalIDToNameTable: []
-  externalObjects:
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: pasted__lambert17
-    second: {fileID: 2100000, guid: 65da4d3df089b344e84844407973100b, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: pasted__lambert19
-    second: {fileID: 2100000, guid: d9698294569c457408450af88feb7096, type: 2}
+  externalObjects: {}
   materials:
     materialImportMode: 2
     materialName: 0
@@ -82,7 +72,7 @@ ModelImporter:
     strictVertexDataChecks: 0
   tangentSpace:
     normalSmoothAngle: 60
-    normalImportMode: 0
+    normalImportMode: 1
     tangentImportMode: 3
     normalCalculationMode: 4
     legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0

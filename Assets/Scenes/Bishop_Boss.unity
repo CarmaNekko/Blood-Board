@@ -12330,6 +12330,7 @@ MonoBehaviour:
   mainLight: {fileID: 332619939}
   brightMainLightMultiplier: 0.65
   darkMainLightMultiplier: 0.08
+  brightnessMultiplier: 0.5
   controlSceneLighting: 1
   controlDistanceFog: 1
   useDistanceFog: 1
@@ -12691,7 +12692,7 @@ MonoBehaviour:
   knightScene: Knigh_Boss
   bishopScene: Bishop_Boss
   rookScene: Rock_Boss
-  kingQueenScene: KingQueen_Boss
+  kingQueenScene: Final_Boss
 --- !u!4 &1867799482
 Transform:
   m_ObjectHideFlags: 0
