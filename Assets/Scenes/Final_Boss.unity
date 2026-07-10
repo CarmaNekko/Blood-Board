@@ -1711,6 +1711,11 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: -0.5, y: 0.5, z: 0.5}
+--- !u!23 &738164152 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 5343371352649685441, guid: 38e587b2cfcf5374a91e066aa7d7f8cb, type: 3}
+  m_PrefabInstance: {fileID: 492081496}
+  m_PrefabAsset: {fileID: 0}
 --- !u!65 &739619402
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -2660,6 +2665,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a6dd1f84c39eff14486060d22814c655, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::QueenBossController
+  bossColor: 1
   floorsToDestroy:
   - {fileID: 332216859}
   - {fileID: 481624757}
@@ -2667,7 +2673,7 @@ MonoBehaviour:
   - {fileID: 481624755}
   distanceBetweenFloors: 30
   maxHealth: 1500
-  queenRenderer: {fileID: 0}
+  queenRenderer: {fileID: 738164152}
   damageFlashColor: {r: 1, g: 0, b: 0, a: 1}
   arenaLimit: 33
   slideSpeed: 8
@@ -2887,9 +2893,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::FinalBossStarter
   barriersToActivate:
   - {fileID: 1342120191}
-  scriptsToActivate:
+  componentsToActivate:
   - {fileID: 1071602037}
   - {fileID: 1207408872}
+  activationDelay: 1
 --- !u!4 &1142430678
 Transform:
   m_ObjectHideFlags: 0
@@ -3132,6 +3139,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f921bb58d879fb043bd7c90993468322, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::KingBossController
+  bossColor: 1
+  potionPrefab: {fileID: 1091627858203028328, guid: 22ac102733aa4cd43b9719099f308b2f, type: 3}
   queenShieldVisual: {fileID: 972919830}
   enemyPrefabs:
   - {fileID: 1373527571380540041, guid: 2c7f150f9ba254b4ebfd34bb522ddbcc, type: 3}

@@ -1,9 +1,11 @@
 using UnityEngine;
+using System.Collections;
 
 public class FinalBossStarter : MonoBehaviour
 {
     public GameObject[] barriersToActivate;
-    public MonoBehaviour[] scriptsToActivate;
+    public Behaviour[] componentsToActivate;
+    [SerializeField] private float activationDelay = 2.0f;
 
     private void OnTriggerEnter(Collider other)
     {
@@ -11,21 +13,22 @@ public class FinalBossStarter : MonoBehaviour
         {
             foreach (GameObject barrier in barriersToActivate)
             {
-                if (barrier != null)
-                {
-                    barrier.SetActive(true);
-                }
+                if (barrier != null) barrier.SetActive(true);
             }
 
-            foreach (MonoBehaviour script in scriptsToActivate)
-            {
-                if (script != null)
-                {
-                    script.enabled = true;
-                }
-            }
-
-            gameObject.SetActive(false);
+            StartCoroutine(ActivateBossesWithDelay());
         }
+    }
+
+    private IEnumerator ActivateBossesWithDelay()
+    {
+        yield return new WaitForSeconds(activationDelay);
+
+        foreach (Behaviour comp in componentsToActivate)
+        {
+            if (comp != null) comp.enabled = true;
+        }
+
+        gameObject.SetActive(false);
     }
 }

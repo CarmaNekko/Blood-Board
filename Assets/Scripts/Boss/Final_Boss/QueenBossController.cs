@@ -3,6 +3,9 @@ using System.Collections;
 
 public class QueenBossController : MonoBehaviour
 {
+    [Header("Vulnerabilidad")]
+    [SerializeField] private MagicColor bossColor = MagicColor.Black;
+
     [Header("Destrucción de Pisos")]
     public GameObject[] floorsToDestroy;
     public float distanceBetweenFloors = 30f;
@@ -19,7 +22,7 @@ public class QueenBossController : MonoBehaviour
     private Color originalColor;
     private Coroutine flashCoroutine;
 
-    [Header("Sistema de Fases (5 Pisos)")]
+    [Header("Sistema de Fases")]
     private int currentPhase = 1;
     private bool isInvulnerable = false;
     private float phase2Threshold;
@@ -27,7 +30,7 @@ public class QueenBossController : MonoBehaviour
     private float phase4Threshold;
     private float phase5Threshold;
 
-    [Header("Sistema de Rieles (Bordes)")]
+    [Header("Sistema de Rieles")]
     public float arenaLimit = 33f;
     public float slideSpeed = 12f;
 
@@ -39,22 +42,22 @@ public class QueenBossController : MonoBehaviour
     public float attackCooldown = 2.5f;
     private float currentCooldown = 0f;
 
-    [Header("Rechazo (Empuje Solo Físico)")]
+    [Header("Rechazo")]
     public float repelForce = 60f;
     public float repelDamage = 15f;
 
-    [Header("Embestida (Torre)")]
+    [Header("Embestida")]
     public float dashSpeed = 50f;
     public float forcedDashTimeout = 8f;
     private float timeSinceLastDash = 0f;
 
-    [Header("Captura (Aplastamiento)")]
+    [Header("Captura")]
     public float jumpHeight = 8f;
     public float hoverTime = 0.8f;
     public float smashDamageRadius = 5f;
     public float smashDamage = 30f;
 
-    [Header("Misiles (Alfil)")]
+    [Header("Misiles")]
     public GameObject missileWarningPrefab;
     public int totalMissilesPerAttack = 8;
     public int targetedMissilesCount = 3;
@@ -62,7 +65,7 @@ public class QueenBossController : MonoBehaviour
     public float randomMissileSpawnRadius = 15f;
     public float timeBetweenWarningAndDamage = 2.5f;
 
-    [Header("Lasers (Peón Campeón)")]
+    [Header("Lasers")]
     public GameObject[] spinLasers;
 
     private bool isAttacking = false;
@@ -198,6 +201,10 @@ public class QueenBossController : MonoBehaviour
 
     public void TakeDamage(float amount, MagicColor hitColor)
     {
+        if (!this.enabled) return;
+
+        if (hitColor == bossColor) return;
+
         if (isInvulnerable) return;
 
         currentHealth -= amount;

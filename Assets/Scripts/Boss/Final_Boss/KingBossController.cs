@@ -4,6 +4,12 @@ using UnityEngine.SceneManagement;
 
 public class KingBossController : MonoBehaviour
 {
+    [Header("Vulnerabilidad")]
+    [SerializeField] private MagicColor bossColor = MagicColor.Black;
+
+    [Header("Recompensas")]
+    public GameObject potionPrefab;
+
     [Header("Escudo de la Reina")]
     public GameObject queenShieldVisual;
     private bool isProtecting = false;
@@ -97,6 +103,14 @@ public class KingBossController : MonoBehaviour
         isProtecting = false;
         if (queenShieldVisual != null) queenShieldVisual.SetActive(false);
 
+        if (potionPrefab != null)
+        {
+            float nextFloorY = -LevelManager.currentLevel * 27f;
+
+            Vector3 dropPosition = new Vector3(0f, nextFloorY, 0f);
+            Instantiate(potionPrefab, dropPosition, Quaternion.identity);
+        }
+
         if (queen != null)
         {
             queen.EndPhaseTransition();
@@ -136,6 +150,7 @@ public class KingBossController : MonoBehaviour
     public void TakeDamage(float amount, MagicColor hitColor)
     {
         if (!isVulnerable) return;
+        if (hitColor == bossColor) return;
 
         SceneManager.LoadScene(creditsSceneName);
     }
