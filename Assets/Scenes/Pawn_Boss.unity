@@ -2122,7 +2122,7 @@ MonoBehaviour:
   knightScene: Knigh_Boss
   bishopScene: Bishop_Boss
   rookScene: Rock_Boss
-  kingQueenScene: KingQueen_Boss
+  kingQueenScene: Final_Boss
 --- !u!4 &349674248
 Transform:
   m_ObjectHideFlags: 0

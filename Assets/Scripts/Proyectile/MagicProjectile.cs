@@ -75,6 +75,9 @@ public class MagicProjectile : MonoBehaviour
         QueenBossController queen = other.GetComponentInParent<QueenBossController>();
         if (queen != null) queen.TakeDamage(damage, projectileColor);
 
+        KingBossController king = other.GetComponentInParent<KingBossController>();
+        if (king != null) king.TakeDamage(damage, projectileColor);
+
         Destroy(gameObject);
     }
 }

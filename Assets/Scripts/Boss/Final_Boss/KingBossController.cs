@@ -12,8 +12,16 @@ public class KingBossController : MonoBehaviour
     public GameObject[] enemyPrefabs;
     public Transform[] spawnPoints;
 
-    [Header("Configuración de la Torre")]
+    [Header("Configuración de Descenso")]
     public float distanceBetweenFloors = 30f;
+
+    [Header("Animación de Flote (Rey)")]
+    public Vector2 hoverArenaPosition = new Vector2(0f, 20f);
+    public float floatSpeed = 2f;
+    public float floatAmplitude = 0.5f;
+    private bool isFloating = false;
+    private Vector3 floatCenterPos;
+    private bool hasEnteredArena = false;
 
     [Header("Estado Final (Piso 5)")]
     private bool isVulnerable = false;
@@ -43,6 +51,12 @@ public class KingBossController : MonoBehaviour
             {
                 BreakShield();
             }
+        }
+
+        if (isFloating)
+        {
+            float newY = floatCenterPos.y + Mathf.Sin(Time.time * floatSpeed) * floatAmplitude;
+            transform.position = new Vector3(transform.position.x, newY, transform.position.z);
         }
     }
 
@@ -93,8 +107,30 @@ public class KingBossController : MonoBehaviour
     {
         isVulnerable = true;
         isProtecting = false;
+        isFloating = false;
+
         if (queenShieldVisual != null) queenShieldVisual.SetActive(false);
         if (throneBarrier != null) throneBarrier.SetActive(false);
+
+        StartCoroutine(FallToGroundRoutine());
+    }
+
+    private System.Collections.IEnumerator FallToGroundRoutine()
+    {
+        Vector3 startPos = transform.position;
+        Vector3 targetPos = new Vector3(startPos.x, startPos.y - 10.5f, startPos.z);
+
+        float fallTime = 0.8f;
+        float currentFallTime = 0f;
+
+        while (currentFallTime < fallTime)
+        {
+            transform.position = Vector3.Lerp(startPos, targetPos, currentFallTime / fallTime);
+            currentFallTime += Time.deltaTime;
+            yield return null;
+        }
+
+        transform.position = targetPos;
     }
 
     public void TakeDamage(float amount, MagicColor hitColor)
@@ -111,18 +147,32 @@ public class KingBossController : MonoBehaviour
 
     private System.Collections.IEnumerator DescendRoutine()
     {
-        float startY = transform.position.y;
-        float targetY = startY - distanceBetweenFloors;
+        Vector3 startPos = transform.position;
+
+        float targetY = startPos.y - distanceBetweenFloors;
+        if (!hasEnteredArena)
+        {
+            targetY += 10.5f;
+            hasEnteredArena = true;
+        }
+
+        Vector3 targetPos = new Vector3(hoverArenaPosition.x, targetY, hoverArenaPosition.y);
+
         float fallTime = 1.5f;
         float currentFallTime = 0f;
 
+        isFloating = false;
+
         while (currentFallTime < fallTime)
         {
-            transform.position = new Vector3(transform.position.x, Mathf.Lerp(startY, targetY, currentFallTime / fallTime), transform.position.z);
+            transform.position = Vector3.Lerp(startPos, targetPos, currentFallTime / fallTime);
             currentFallTime += Time.deltaTime;
             yield return null;
         }
 
-        transform.position = new Vector3(transform.position.x, targetY, transform.position.z);
+        transform.position = targetPos;
+
+        floatCenterPos = transform.position;
+        isFloating = true;
     }
 }
