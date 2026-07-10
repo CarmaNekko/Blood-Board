@@ -2,18 +2,30 @@ using System.Collections.Generic;
 using Unity.AI.Navigation;
 using UnityEngine;
 
+[System.Serializable]
+public struct FloorRoomPool
+{
+    public int floorNumber;
+    public GameObject startRoomPrefab;
+    public GameObject finalRoomPrefab;
+    public List<GameObject> roomPrefabs;
+    public List<GameObject> corridorPrefabs;
+    public List<GameObject> deadEndPrefabs;
+}
+
 public class ModularGenerator : MonoBehaviour
 {
-    [Header("Habitaciones")]
+    [Header("Habitaciones Base (Por defecto)")]
     public GameObject startRoomPrefab;
     public GameObject finalRoomPrefab;
     public List<GameObject> roomPrefabs;
 
-    [Header("Pasillos")]
+    [Header("Pasillos y Parches Base (Por defecto)")]
     public List<GameObject> corridorPrefabs;
-
-    [Header("Parches")]
     public List<GameObject> deadEndPrefabs;
+
+    [Header("Bolsas de Cuartos por Piso")]
+    public List<FloorRoomPool> roomsByFloor;
 
     [Header("Configuracion")]
     public int maxRooms = 6;
@@ -28,6 +40,9 @@ public class ModularGenerator : MonoBehaviour
 
     private int roomCount;
     private DungeonLayout generatedLayout;
+    private GameObject lastSpawnedRoomPrefab;
+    private Vector3 lastExitForward;
+    private int straightLineCount = 0;
 
     public DungeonLayout GenerateLevel(int targetRooms)
     {
@@ -45,8 +60,12 @@ public class ModularGenerator : MonoBehaviour
         allSpawnedPieces.Clear();
         roomCount = 0;
         generatedLayout = new DungeonLayout();
+        lastSpawnedRoomPrefab = null;
+        lastExitForward = Vector3.zero;
+        straightLineCount = 0;
 
-        GameObject startRoom = Instantiate(startRoomPrefab, Vector3.zero, Quaternion.identity);
+        GameObject startPrefabToUse = GetStartRoomPrefab();
+        GameObject startRoom = Instantiate(startPrefabToUse, Vector3.zero, Quaternion.identity);
         allSpawnedPieces.Add(startRoom);
         roomCount++;
 
@@ -74,6 +93,56 @@ public class ModularGenerator : MonoBehaviour
         return generatedLayout;
     }
 
+    private GameObject GetStartRoomPrefab()
+    {
+        if (roomsByFloor != null)
+        {
+            int index = roomsByFloor.FindIndex(p => p.floorNumber == LevelManager.currentLevel);
+            if (index >= 0 && roomsByFloor[index].startRoomPrefab != null) return roomsByFloor[index].startRoomPrefab;
+        }
+        return startRoomPrefab;
+    }
+
+    private GameObject GetFinalRoomPrefab()
+    {
+        if (roomsByFloor != null)
+        {
+            int index = roomsByFloor.FindIndex(p => p.floorNumber == LevelManager.currentLevel);
+            if (index >= 0 && roomsByFloor[index].finalRoomPrefab != null) return roomsByFloor[index].finalRoomPrefab;
+        }
+        return finalRoomPrefab;
+    }
+
+    private List<GameObject> GetRoomPrefabs()
+    {
+        if (roomsByFloor != null)
+        {
+            int index = roomsByFloor.FindIndex(p => p.floorNumber == LevelManager.currentLevel);
+            if (index >= 0 && roomsByFloor[index].roomPrefabs != null && roomsByFloor[index].roomPrefabs.Count > 0) return roomsByFloor[index].roomPrefabs;
+        }
+        return roomPrefabs;
+    }
+
+    private List<GameObject> GetCorridorPrefabs()
+    {
+        if (roomsByFloor != null)
+        {
+            int index = roomsByFloor.FindIndex(p => p.floorNumber == LevelManager.currentLevel);
+            if (index >= 0 && roomsByFloor[index].corridorPrefabs != null && roomsByFloor[index].corridorPrefabs.Count > 0) return roomsByFloor[index].corridorPrefabs;
+        }
+        return corridorPrefabs;
+    }
+
+    private List<GameObject> GetDeadEndPrefabs()
+    {
+        if (roomsByFloor != null)
+        {
+            int index = roomsByFloor.FindIndex(p => p.floorNumber == LevelManager.currentLevel);
+            if (index >= 0 && roomsByFloor[index].deadEndPrefabs != null && roomsByFloor[index].deadEndPrefabs.Count > 0) return roomsByFloor[index].deadEndPrefabs;
+        }
+        return deadEndPrefabs;
+    }
+
     private void ApplyGeneratedLighting()
     {
         if (lightingManager == null)
@@ -91,20 +160,42 @@ public class ModularGenerator : MonoBehaviour
     {
         if (pendingCorridorDoors.Count > 0)
         {
-            DoorConnector targetDoor = TakeRandomPendingDoor(pendingCorridorDoors);
+            DoorConnector targetDoor = TakeSmartPendingDoor(pendingCorridorDoors);
             if (targetDoor != null)
             {
-                TryConnect(targetDoor, roomPrefabs, false);
+                TryConnect(targetDoor, GetRoomPrefabs(), false);
             }
         }
         else if (pendingRoomDoors.Count > 0)
         {
-            DoorConnector targetDoor = TakeRandomPendingDoor(pendingRoomDoors);
+            DoorConnector targetDoor = TakeSmartPendingDoor(pendingRoomDoors);
             if (targetDoor != null)
             {
-                TryConnect(targetDoor, corridorPrefabs, true);
+                TryConnect(targetDoor, GetCorridorPrefabs(), true);
             }
         }
+    }
+
+    private DoorConnector TakeSmartPendingDoor(List<DoorConnector> doorList)
+    {
+        doorList.RemoveAll(d => d == null || d.isConnected);
+        if (doorList.Count == 0) return null;
+
+        if (straightLineCount >= 1)
+        {
+            List<DoorConnector> lateralDoors = doorList.FindAll(d => Mathf.Abs(Vector3.Dot(d.transform.forward, lastExitForward)) < 0.5f);
+            if (lateralDoors.Count > 0)
+            {
+                DoorConnector chosen = lateralDoors[Random.Range(0, lateralDoors.Count)];
+                doorList.Remove(chosen);
+                return chosen;
+            }
+        }
+
+        int index = Random.Range(0, doorList.Count);
+        DoorConnector door = doorList[index];
+        doorList.RemoveAt(index);
+        return door;
     }
 
     private bool TryConnect(DoorConnector targetDoor, List<GameObject> prefabList, bool isCorridor)
@@ -121,6 +212,13 @@ public class ModularGenerator : MonoBehaviour
             GameObject temp = shuffled[i];
             shuffled[i] = shuffled[randomIndex];
             shuffled[randomIndex] = temp;
+        }
+
+        if (!isCorridor && shuffled.Count > 1 && lastSpawnedRoomPrefab != null && shuffled[0] == lastSpawnedRoomPrefab)
+        {
+            GameObject temp = shuffled[0];
+            shuffled[0] = shuffled[1];
+            shuffled[1] = temp;
         }
 
         foreach (GameObject prefab in shuffled)
@@ -146,6 +244,16 @@ public class ModularGenerator : MonoBehaviour
                 newDoor.isConnected = true;
                 targetDoor.isConnected = true;
 
+                if (Mathf.Abs(Vector3.Dot(targetDoor.transform.forward, lastExitForward)) > 0.9f)
+                {
+                    straightLineCount++;
+                }
+                else
+                {
+                    straightLineCount = 0;
+                }
+                lastExitForward = targetDoor.transform.forward;
+
                 if (isCorridor)
                 {
                     RegisterStandaloneArea(newPiece, MapAreaShape.Corridor, false);
@@ -154,6 +262,7 @@ public class ModularGenerator : MonoBehaviour
                 else
                 {
                     roomCount++;
+                    lastSpawnedRoomPrefab = prefab;
                     int newRoomId = RegisterRoom(newPiece, DungeonRoomType.Normal, false);
                     int parentRoomId = targetDoor.GetSourceRoomNodeId();
                     if (parentRoomId >= 0)
@@ -181,12 +290,14 @@ public class ModularGenerator : MonoBehaviour
             if (TryPlaceFinalRoomAtDoor(pendingCorridorDoors[i])) return;
         }
 
+        List<GameObject> currentCorridors = GetCorridorPrefabs();
+
         for (int i = pendingRoomDoors.Count - 1; i >= 0; i--)
         {
             DoorConnector roomDoor = pendingRoomDoors[i];
             if (roomDoor == null || roomDoor.isConnected) continue;
 
-            foreach (GameObject corridorPrefab in corridorPrefabs)
+            foreach (GameObject corridorPrefab in currentCorridors)
             {
                 GameObject newCorridor = Instantiate(corridorPrefab);
                 DoorConnector[] corridorDoors = newCorridor.GetComponentsInChildren<DoorConnector>();
@@ -214,7 +325,7 @@ public class ModularGenerator : MonoBehaviour
     {
         if (targetDoor == null || targetDoor.isConnected) return false;
 
-        GameObject finalRoom = Instantiate(finalRoomPrefab);
+        GameObject finalRoom = Instantiate(GetFinalRoomPrefab());
         DoorConnector finalDoor = finalRoom.GetComponentInChildren<DoorConnector>();
 
         AlignPiece(targetDoor, finalDoor, finalRoom);
@@ -242,6 +353,8 @@ public class ModularGenerator : MonoBehaviour
             }
         }
 
+        List<GameObject> currentCorridors = GetCorridorPrefabs();
+
         foreach (DoorConnector roomDoor in pendingRoomDoors)
         {
             if (roomDoor == null || roomDoor.isConnected)
@@ -251,7 +364,7 @@ public class ModularGenerator : MonoBehaviour
 
             bool corridorPlaced = false;
 
-            foreach (GameObject corridorPrefab in corridorPrefabs)
+            foreach (GameObject corridorPrefab in currentCorridors)
             {
                 GameObject corridor = Instantiate(corridorPrefab);
                 DoorConnector corridorEntrance = corridor.GetComponentInChildren<DoorConnector>();
@@ -298,12 +411,13 @@ public class ModularGenerator : MonoBehaviour
 
     private void PlaceDeadEnd(DoorConnector targetDoor)
     {
-        if (deadEndPrefabs.Count == 0 || targetDoor == null || targetDoor.isConnected)
+        List<GameObject> currentDeadEnds = GetDeadEndPrefabs();
+        if (currentDeadEnds.Count == 0 || targetDoor == null || targetDoor.isConnected)
         {
             return;
         }
 
-        GameObject prefabToUse = deadEndPrefabs[Random.Range(0, deadEndPrefabs.Count)];
+        GameObject prefabToUse = currentDeadEnds[Random.Range(0, currentDeadEnds.Count)];
         GameObject deadEnd = Instantiate(prefabToUse);
         DoorConnector deadEndDoor = deadEnd.GetComponentInChildren<DoorConnector>();
 
@@ -376,23 +490,6 @@ public class ModularGenerator : MonoBehaviour
                 pendingRoomDoors.Add(door);
             }
         }
-    }
-
-    private DoorConnector TakeRandomPendingDoor(List<DoorConnector> doorList)
-    {
-        while (doorList.Count > 0)
-        {
-            int index = Random.Range(0, doorList.Count);
-            DoorConnector door = doorList[index];
-            doorList.RemoveAt(index);
-
-            if (door != null && !door.isConnected)
-            {
-                return door;
-            }
-        }
-
-        return null;
     }
 
     private int RegisterRoom(GameObject roomObject, DungeonRoomType roomType, bool discoverOnStart)

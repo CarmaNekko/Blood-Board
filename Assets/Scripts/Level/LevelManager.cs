@@ -35,7 +35,14 @@ public class LevelManager : MonoBehaviour
         CurrentLayout = null;
         currentEnemiesPerRoom = baseEnemiesPerRoom + (extraEnemiesPerLevel * (currentLevel - 1));
 
-        int roomsToGenerate = baseRooms + (extraRoomsPerLevel * (currentLevel - 1));
+        int extraRooms = 0;
+        for (int i = 2; i <= currentLevel; i++)
+        {
+            if (i <= 3) extraRooms += extraRoomsPerLevel;
+            else extraRooms += 1;
+        }
+
+        int roomsToGenerate = baseRooms + extraRooms;
 
         Debug.Log($"Iniciando Nivel {currentLevel}. Salas: {roomsToGenerate}, Enemigos por sala: {currentEnemiesPerRoom}");
 

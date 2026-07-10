@@ -446,6 +446,66 @@ MonoBehaviour:
   - {fileID: 4158632963112747052, guid: 1e3689983ac3d534197e07eb1e178728, type: 3}
   deadEndPrefabs:
   - {fileID: 6291659561367954977, guid: c5a74124a8fa41e4784ac8278f4665dd, type: 3}
+  roomsByFloor:
+  - floorNumber: 1
+    startRoomPrefab: {fileID: 9215206470418219887, guid: ab716a295d34c3347bab88ef4803a2a5, type: 3}
+    finalRoomPrefab: {fileID: 3206246361914026675, guid: 37371f21f037fd04880b88901e668373, type: 3}
+    roomPrefabs:
+    - {fileID: 1133307281766849744, guid: d5a8ff85eb433da4bbac76b365d127e6, type: 3}
+    - {fileID: 1059234749075372331, guid: 4942a9f1aca1d8543b410a8a3b94fca5, type: 3}
+    - {fileID: 1059234749075372331, guid: 3fa95c8af715cd74da682444c1f0bfcb, type: 3}
+    - {fileID: 6045825802650325582, guid: f691004411479bb4c8c9a758650aa775, type: 3}
+    corridorPrefabs:
+    - {fileID: 4158632963112747052, guid: 1e3689983ac3d534197e07eb1e178728, type: 3}
+    deadEndPrefabs: []
+  - floorNumber: 2
+    startRoomPrefab: {fileID: 9215206470418219887, guid: 34f406b6a9d81bf46aa6d2b7de6e1075, type: 3}
+    finalRoomPrefab: {fileID: 3206246361914026675, guid: d067810ad5038ad4e9a85824078c57d2, type: 3}
+    roomPrefabs:
+    - {fileID: 6045825802650325582, guid: c0d37fd1de601d64e924339fc6c8e457, type: 3}
+    - {fileID: 1059234749075372331, guid: 1c8503fb38ae5fd4983945e3d146b95b, type: 3}
+    - {fileID: 1059234749075372331, guid: e52057f70e8bd88498e5ea6cc65874ec, type: 3}
+    - {fileID: 1133307281766849744, guid: a9ffbe0a581fe3b4db6e77312b14ef1d, type: 3}
+    corridorPrefabs:
+    - {fileID: 4158632963112747052, guid: 9c6b885f98aa97540bbceac5dcb4d166, type: 3}
+    deadEndPrefabs:
+    - {fileID: 6291659561367954977, guid: 1591168443db0ca4b95a19183c5bc99b, type: 3}
+  - floorNumber: 3
+    startRoomPrefab: {fileID: 9215206470418219887, guid: 9e348880742d66f46825645fd9a8fca1, type: 3}
+    finalRoomPrefab: {fileID: 3206246361914026675, guid: 80400f55b888c1a43b74733ea2bd1f59, type: 3}
+    roomPrefabs:
+    - {fileID: 6045825802650325582, guid: 7d74c26538750b44682d4d3c1eafea4d, type: 3}
+    - {fileID: 1059234749075372331, guid: c936b5cc7f80d9145a1b586ca143c7b1, type: 3}
+    - {fileID: 1059234749075372331, guid: 95b9481e8266bbd41a8f1b8b06d897c5, type: 3}
+    - {fileID: 1133307281766849744, guid: c219f9f1bb0b9fb48b1e22755dc6ca1f, type: 3}
+    corridorPrefabs:
+    - {fileID: 4158632963112747052, guid: 732408d348489d849aef950e0577bfd5, type: 3}
+    deadEndPrefabs:
+    - {fileID: 6291659561367954977, guid: 1de0ace9e9ebb7f4ca2627269581ab17, type: 3}
+  - floorNumber: 4
+    startRoomPrefab: {fileID: 9215206470418219887, guid: be886ddd9eb98794fae1f6e39ffa7446, type: 3}
+    finalRoomPrefab: {fileID: 3206246361914026675, guid: b542910fa53d3be46b6ade6c2aa0798a, type: 3}
+    roomPrefabs:
+    - {fileID: 6045825802650325582, guid: 17fe3b74ebde8f54b9875784c6bb86a2, type: 3}
+    - {fileID: 1059234749075372331, guid: 6d5482bffe535e24788dda7533e12d03, type: 3}
+    - {fileID: 1059234749075372331, guid: 04649329e05a0c14ea6afd3cd4844baf, type: 3}
+    - {fileID: 1133307281766849744, guid: af057a08069af5d4c80527e9149e762f, type: 3}
+    corridorPrefabs:
+    - {fileID: 4158632963112747052, guid: d68fde1e548d92a46a85d84ddd5b4e02, type: 3}
+    deadEndPrefabs:
+    - {fileID: 6291659561367954977, guid: 31be48ecb417b6544af858f392862018, type: 3}
+  - floorNumber: 5
+    startRoomPrefab: {fileID: 9215206470418219887, guid: 1bcde0e5b8d87e94da1d6a8b5c915011, type: 3}
+    finalRoomPrefab: {fileID: 3206246361914026675, guid: 2b04d748d18411340b42b5b11aff10f9, type: 3}
+    roomPrefabs:
+    - {fileID: 6045825802650325582, guid: b8113924f9edc054fbb763670454bb1f, type: 3}
+    - {fileID: 1059234749075372331, guid: dc9ebcf809a8d0945bb3078b3615b286, type: 3}
+    - {fileID: 1059234749075372331, guid: af4b868d6d314164e9d8097e3fc6c324, type: 3}
+    - {fileID: 1133307281766849744, guid: c9f21faa66f572040905845b7f56e540, type: 3}
+    corridorPrefabs:
+    - {fileID: 4158632963112747052, guid: 9a7a36c764a74cd44ade504636d18b30, type: 3}
+    deadEndPrefabs:
+    - {fileID: 6291659561367954977, guid: 951b1d3df759cba4fbdd4ba89f063bcc, type: 3}
   maxRooms: 6
   collisionMask:
     serializedVersion: 2
